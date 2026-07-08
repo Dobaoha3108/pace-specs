@@ -988,7 +988,7 @@ Depends On
 
 Depends On
 
-- Reward
+- Voucher
 - Pig Coin Wallet
 
 ---
@@ -997,7 +997,7 @@ Depends On
 
 Depends On
 
-- Reward
+- Voucher
 
 ---
 
