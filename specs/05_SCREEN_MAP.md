@@ -1278,9 +1278,7 @@ Các Module dự kiến có thể bổ sung:
 - Premium Subscription
 - Family Budget
 - Shared Saving Goal
-- Recurring Expense
 - Bill Reminder
-- Investment Tracking
 - Export Report
 - Referral Program
 - Reward Campaign
