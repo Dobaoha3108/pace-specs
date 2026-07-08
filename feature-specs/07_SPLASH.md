@@ -1,318 +1,355 @@
-# 02. Home Dashboard Screen Specification
+# 07. SPLASH
 
-## 1. Purpose
+Version: 1.0 (MVP)
 
-Home Dashboard là màn hình trung tâm của PACE.
+Project: PACE - Personal Finance Management App
 
-Đây là màn hình người dùng sử dụng nhiều nhất, giúp họ theo dõi tình trạng tài chính hiện tại, ghi nhận khoản chi, nhận cảnh báo từ Pig Pig và duy trì thói quen chi tiêu trong hạn mức.
-
-Sau khi hoàn thành Onboarding, người dùng sẽ luôn được điều hướng về Home Dashboard.
+Status: Final
 
 ---
 
-# 2. User Story
+# 1. Purpose
 
-As a student,
+Splash Screen là màn hình đầu tiên được hiển thị khi người dùng mở ứng dụng.
 
-I want to nhìn thấy ngay tình trạng tài chính hiện tại của mình,
+Mục tiêu của Splash Screen là:
 
-So that mình biết hôm nay còn bao nhiêu tiền để tiêu và có thể đưa ra quyết định chi tiêu hợp lý.
+- Hiển thị nhận diện thương hiệu PACE.
+- Khởi tạo ứng dụng.
+- Chuẩn bị dữ liệu cần thiết.
+- Kiểm tra trạng thái người dùng.
+- Điều hướng người dùng tới màn hình phù hợp.
 
----
-
-# 3. Preconditions
-
-- Người dùng đã hoàn thành Onboarding.
-- Budget Engine đã được khởi tạo.
-- Người dùng đã đăng nhập vào ứng dụng.
+Splash Screen không cho phép người dùng thực hiện bất kỳ thao tác nào.
 
 ---
 
-# 4. Screen Layout
+# 2. Screen Overview
 
-Home Dashboard bao gồm các khu vực chính:
+Screen Name
 
-1. Header
-2. Daily Budget Card
-3. Pig Pig AI Insight Card
-4. Budget Streak
-5. Recent Transactions
-6. Bottom Navigation
+Splash
 
 ---
 
-# 5. Components
+Business Goal
 
-## 5.1 Header
-
-Hiển thị:
-
-- Avatar người dùng
-- Lời chào
-
-Ví dụ:
-
-Xin chào, Hà 👋
+Khởi tạo ứng dụng và xác định luồng điều hướng ban đầu.
 
 ---
 
-## 5.2 Daily Budget Card
+Entry Point
 
-Đây là thành phần quan trọng nhất của Dashboard.
-
-Hiển thị:
-
-- Ngân sách còn lại trong tháng
-- Thanh tiến độ ngân sách
-- Hôm nay còn được tiêu bao nhiêu
-- Dự kiến ngân sách mỗi ngày
-
-Ví dụ
-
-Còn được tiêu trong tháng
-
-2.350.000đ
-
-Progress Bar
-
-75%
-
-Thông tin nhanh
-
-• Hôm nay còn: 82.000đ
-
-• Dự kiến mỗi ngày: 78.000đ
-
-• Tiến độ tiết kiệm: 18%
+App Launch
 
 ---
 
-## 5.3 Pig Pig AI Card
+Exit Point
 
-Pig Pig luôn xuất hiện trên Dashboard.
-
-Mục tiêu:
-
-Chủ động hỗ trợ người dùng.
-
-Pig Pig có thể hiển thị:
-
-• Cảnh báo vượt ngân sách.
-
-• Lời khen khi duy trì Budget Streak.
-
-• Gợi ý tiết kiệm.
-
-• Daily Check-in.
-
-Ví dụ
-
-🐷
-
-Pig Pig nhận thấy bạn đang chi tiêu cao hơn tuần trước 18%.
-
-Nếu tiếp tục, ngân sách mỗi ngày sẽ giảm xuống còn khoảng 64.000đ.
-
-Button
-
-Tôi đã hiểu
-
-Button
-
-Xem chi tiết
+- Onboarding
+- Dashboard
 
 ---
 
-## 5.4 Budget Streak
+# 3. Screen Type
 
-Hiển thị số ngày liên tiếp người dùng tiêu trong hạn mức.
-
-Ví dụ
-
-🔥
-
-Budget Streak
-
-8 ngày
-
-Nếu bị vượt ngân sách.
-
-Streak sẽ kết thúc.
+Entry Screen
 
 ---
 
-## 5.5 Recent Transactions
+# 4. Used Components
 
-Hiển thị tối đa:
+- CMP-015 Loading State
 
-10 giao dịch gần nhất.
+---
 
-Thông tin mỗi giao dịch:
+# 5. Preconditions
 
-- Icon danh mục
-- Tên giao dịch
-- Thời gian
-- Số tiền
+Không có.
 
-Có button
+Splash luôn là màn hình đầu tiên sau khi ứng dụng được mở.
 
-Xem tất cả
+---
+
+# 6. User Flow
+
+```
+App Launch
 
 ↓
 
-Expense History
-
----
-
-## 5.6 Floating Action Button
-
-Button nổi
-
-+
-
-Chức năng:
-
-Thêm khoản chi mới.
+Splash
 
 ↓
 
-Đi tới
+Initialize Application
 
-Add Expense Screen
+↓
 
----
+Check User Status
 
-## 5.7 Bottom Navigation
+↓
 
-Bao gồm:
+Nếu User chưa hoàn thành Onboarding
 
-🏠 Trang chủ
+↓
 
-💳 Giao dịch
+Onboarding
 
-📊 Báo cáo
+↓
 
-👤 Tài khoản
+Nếu User đã hoàn thành Onboarding
 
----
+↓
 
-# 6. User Interaction
-
-Người dùng có thể:
-
-• Nhấn "+" để thêm giao dịch.
-
-• Nhấn Pig Pig để xem AI Copilot.
-
-• Nhấn "Xem tất cả" để mở Expense History.
-
-• Chuyển tab bằng Bottom Navigation.
+Dashboard
+```
 
 ---
 
-# 7. Business Rules
+# 7. Screen Content
 
-## Rule 1
+Splash chỉ hiển thị:
 
-Daily Budget được lấy từ Budget Engine.
+- Logo PACE.
+- App Name.
+- Loading Animation.
 
-Dashboard không tự tính toán.
+Không hiển thị:
 
----
-
-## Rule 2
-
-Sau mỗi giao dịch mới.
-
-Dashboard phải cập nhật ngay:
-
-- Budget Remaining
-- Daily Budget
-- Progress Bar
-- Recent Transactions
+- Button.
+- Navigation.
+- Notification.
+- User Information.
 
 ---
 
-## Rule 3
+# 8. User Actions
 
-Pig Pig đọc dữ liệu từ Budget Engine.
+Không có.
 
-Pig Pig không thực hiện tính toán.
-
-Pig Pig chỉ:
-
-- Giải thích.
-- Đưa ra cảnh báo.
-- Động viên.
-- Gợi ý.
+User không thể tương tác với Splash Screen.
 
 ---
 
-## Rule 4
+# 9. System Response
 
-Nếu Budget Remaining nhỏ hơn Daily Budget.
+Sau khi Splash được hiển thị.
 
-Pig Pig hiển thị cảnh báo màu vàng.
+Hệ thống thực hiện:
+
+Step 1
+
+Load Application Configuration.
+
+↓
+
+Step 2
+
+Khởi tạo Local Storage.
+
+↓
+
+Step 3
+
+Kiểm tra trạng thái User.
+
+↓
+
+Step 4
+
+Xác định màn hình điều hướng tiếp theo.
+
+↓
+
+Step 5
+
+Điều hướng.
 
 ---
 
-## Rule 5
+# 10. Navigation
 
-Nếu ngân sách còn lại bằng 0.
+Nếu:
 
-Pig Pig hiển thị cảnh báo màu đỏ.
+User chưa hoàn thành Onboarding.
 
----
+↓
 
-# 8. Validation
+Open
 
-Không có input trực tiếp trên Dashboard.
-
-Mọi dữ liệu đều lấy từ hệ thống.
+Onboarding
 
 ---
 
-# 9. Edge Cases
+Nếu:
 
-## Case 1
+User đã hoàn thành Onboarding.
 
-Chưa có giao dịch.
+↓
+
+Open
+
+Dashboard
+
+---
+
+# 11. Display Rules
+
+Splash chỉ hiển thị trong thời gian hệ thống khởi tạo ứng dụng.
+
+Sau khi hoàn thành quá trình khởi tạo.
+
+↓
+
+Splash phải tự động đóng.
+
+Splash không được phép hiển thị lại trong cùng một phiên sử dụng.
+
+---
+
+# 12. Validation
+
+Không có User Input.
+
+Không có Validation.
+
+---
+
+# 13. Screen States
+
+## Loading
 
 Hiển thị:
 
-"Bạn chưa có giao dịch nào."
+- Logo PACE.
+- App Name.
+- Loading Animation.
 
 ---
 
-## Case 2
+## Completed
 
-Không có Saving Goal.
-
-Ẩn Progress Saving.
+Hệ thống điều hướng sang màn hình tiếp theo.
 
 ---
 
-## Case 3
+# 14. Error Handling
 
-Không có AI Insight.
+Nếu quá trình khởi tạo thất bại.
 
-Pig Pig hiển thị lời chào mặc định.
+↓
+
+Hiển thị thông báo:
+
+"Không thể khởi tạo ứng dụng."
+
+↓
+
+Hiển thị nút:
+
+Retry
+
+↓
+
+Thực hiện lại quá trình khởi tạo.
 
 ---
 
-## Case 4
+# 15. Related Specification
 
-Không có Internet.
+Business Workflow
 
-Dashboard vẫn hiển thị dữ liệu đã lưu gần nhất.
+- User Onboarding & Budget Initialization
 
 ---
 
-# 10. Acceptance Criteria
+System Workflow
 
-- Dashboard hiển thị đầy đủ thông tin ngân sách.
-- Budget Card cập nhật ngay sau mỗi giao dịch.
-- Pig Pig hiển thị đúng Insight theo dữ liệu hiện tại.
-- Floating Action Button mở màn hình Add Expense.
-- Bottom Navigation hoạt động đúng.
-- Người dùng có thể truy cập các màn hình liên quan từ Dashboard.
+- Application Initialization
+
+---
+
+Data Model
+
+- User
+
+---
+
+Business Rules
+
+- NAV-001
+
+---
+
+UI Components
+
+- CMP-015 Loading State
+
+---
+
+# 16. Acceptance Criteria
+
+## AC-001
+
+Khi ứng dụng được mở.
+
+↓
+
+Splash luôn là màn hình đầu tiên.
+
+---
+
+## AC-002
+
+Splash hiển thị Logo PACE và Loading Animation.
+
+---
+
+## AC-003
+
+User không thể tương tác với Splash.
+
+---
+
+## AC-004
+
+Nếu User chưa hoàn thành Onboarding.
+
+↓
+
+Hệ thống mở Onboarding.
+
+---
+
+## AC-005
+
+Nếu User đã hoàn thành Onboarding.
+
+↓
+
+Hệ thống mở Dashboard.
+
+---
+
+## AC-006
+
+Splash chỉ xuất hiện một lần trong mỗi lần mở ứng dụng.
+
+---
+
+## AC-007
+
+Nếu khởi tạo thất bại.
+
+↓
+
+Hiển thị Retry.
+
+↓
+
+User có thể thử lại.
+
+---
+
+# End of Document
