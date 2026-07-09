@@ -250,7 +250,8 @@ Ví dụ:
 
 "Bạn đã sử dụng 42% ngân sách tuần."
 
-Dashboard chỉ hiển thị dữ liệu tóm tắt.
+Dashboard chỉ hiển thị snapshot ngắn gọn để User ra quyết định nhanh.
+Không hiển thị biểu đồ hoặc phân tích chi tiết.
 
 Các biểu đồ chi tiết và xu hướng chi tiêu được hiển thị trong Financial Report.
 
