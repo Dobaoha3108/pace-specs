@@ -8,6 +8,7 @@ import { DashboardScreen } from "@/features/dashboard/components/dashboard-scree
 import type { DashboardNavigationTarget } from "@/features/dashboard/types";
 import { ExpenseScreen } from "@/features/expense/components/expense-screen";
 import { OnboardingScreen } from "@/features/onboarding/components/onboarding-screen";
+import { PigPigScreen } from "@/features/pig-pig/components/pig-pig-screen";
 import { ReportScreen } from "@/features/report/components/report-screen";
 import { RewardScreen } from "@/features/reward/components/reward-screen";
 import { SavingGoalScreen } from "@/features/saving-goal/components/saving-goal-screen";
@@ -25,6 +26,7 @@ const routeTitles: Record<DashboardNavigationTarget, string> = {
   "my-voucher": "My Voucher",
   "reward-detail": "Redeemed Voucher",
   "pig-pig": "Pig Pig Chat",
+  "pig-pig-history": "Pig Pig History",
   notification: "Notification Center",
   profile: "Profile",
   "saving-goal-list": "Saving Goal",
@@ -140,6 +142,16 @@ export function AppEntry() {
         onNavigate={navigate}
         selectedRewardId={selectedRewardId}
         selectedVoucherId={selectedVoucherId}
+      />
+    );
+  }
+
+  if (route === "pig-pig" || route === "pig-pig-history") {
+    return (
+      <PigPigScreen
+        mode={route === "pig-pig-history" ? "history" : "chat"}
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
       />
     );
   }

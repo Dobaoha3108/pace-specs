@@ -16,6 +16,7 @@ export type DashboardNavigationTarget =
   | "my-voucher"
   | "reward-detail"
   | "pig-pig"
+  | "pig-pig-history"
   | "notification"
   | "profile"
   | "saving-goal-list"
