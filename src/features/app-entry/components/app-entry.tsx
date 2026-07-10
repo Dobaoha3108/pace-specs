@@ -8,6 +8,8 @@ import { DashboardScreen } from "@/features/dashboard/components/dashboard-scree
 import type { DashboardNavigationTarget } from "@/features/dashboard/types";
 import { ExpenseScreen } from "@/features/expense/components/expense-screen";
 import { OnboardingScreen } from "@/features/onboarding/components/onboarding-screen";
+import { ReportScreen } from "@/features/report/components/report-screen";
+import { RewardScreen } from "@/features/reward/components/reward-screen";
 import { SavingGoalScreen } from "@/features/saving-goal/components/saving-goal-screen";
 import { SplashScreen } from "@/features/splash/components/splash-screen";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
@@ -19,6 +21,9 @@ const routeTitles: Record<DashboardNavigationTarget, string> = {
   report: "Financial Report",
   "add-expense": "Add Expense",
   reward: "Reward Marketplace",
+  "voucher-detail": "Voucher Detail",
+  "my-voucher": "My Voucher",
+  "reward-detail": "Redeemed Voucher",
   "pig-pig": "Pig Pig Chat",
   notification: "Notification Center",
   profile: "Profile",
@@ -37,6 +42,8 @@ export function AppEntry() {
   const [hasSplashError, setHasSplashError] = useState(false);
   const [selectedExpenseId, setSelectedExpenseId] = useState<string>();
   const [selectedGoalId, setSelectedGoalId] = useState<string>();
+  const [selectedVoucherId, setSelectedVoucherId] = useState<string>();
+  const [selectedRewardId, setSelectedRewardId] = useState<string>();
 
   function navigate(target: DashboardNavigationTarget, id?: string) {
     if (target === "expense-detail" || target === "expense-edit") {
@@ -45,6 +52,14 @@ export function AppEntry() {
 
     if (target === "saving-goal-detail" || target === "saving-goal-edit") {
       setSelectedGoalId(id);
+    }
+
+    if (target === "voucher-detail") {
+      setSelectedVoucherId(id);
+    }
+
+    if (target === "reward-detail") {
+      setSelectedRewardId(id);
     }
 
     setRoute(target);
@@ -90,6 +105,41 @@ export function AppEntry() {
       <DashboardScreen
         onMissingBudget={() => setRoute("onboarding")}
         onNavigate={navigate}
+      />
+    );
+  }
+
+  if (route === "report") {
+    return (
+      <ReportScreen
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+      />
+    );
+  }
+
+  if (
+    route === "reward" ||
+    route === "voucher-detail" ||
+    route === "my-voucher" ||
+    route === "reward-detail"
+  ) {
+    const rewardMode =
+      route === "voucher-detail"
+        ? "voucher-detail"
+        : route === "my-voucher"
+          ? "my-voucher"
+          : route === "reward-detail"
+            ? "reward-detail"
+            : "marketplace";
+
+    return (
+      <RewardScreen
+        mode={rewardMode}
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+        selectedRewardId={selectedRewardId}
+        selectedVoucherId={selectedVoucherId}
       />
     );
   }
