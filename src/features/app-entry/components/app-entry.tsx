@@ -7,8 +7,10 @@ import { MobileFrame } from "@/components/app/mobile-frame";
 import { DashboardScreen } from "@/features/dashboard/components/dashboard-screen";
 import type { DashboardNavigationTarget } from "@/features/dashboard/types";
 import { ExpenseScreen } from "@/features/expense/components/expense-screen";
+import { NotificationScreen } from "@/features/notification/components/notification-screen";
 import { OnboardingScreen } from "@/features/onboarding/components/onboarding-screen";
 import { PigPigScreen } from "@/features/pig-pig/components/pig-pig-screen";
+import { ProfileScreen } from "@/features/profile/components/profile-screen";
 import { ReportScreen } from "@/features/report/components/report-screen";
 import { RewardScreen } from "@/features/reward/components/reward-screen";
 import { SavingGoalScreen } from "@/features/saving-goal/components/saving-goal-screen";
@@ -28,7 +30,9 @@ const routeTitles: Record<DashboardNavigationTarget, string> = {
   "pig-pig": "Pig Pig Chat",
   "pig-pig-history": "Pig Pig History",
   notification: "Notification Center",
+  "notification-detail": "Notification Detail",
   profile: "Profile",
+  "profile-financial-settings": "Financial Settings",
   "saving-goal-list": "Saving Goal",
   "saving-goal-detail": "Saving Goal Detail",
   "saving-goal-create": "Create Saving Goal",
@@ -46,6 +50,7 @@ export function AppEntry() {
   const [selectedGoalId, setSelectedGoalId] = useState<string>();
   const [selectedVoucherId, setSelectedVoucherId] = useState<string>();
   const [selectedRewardId, setSelectedRewardId] = useState<string>();
+  const [selectedNotificationId, setSelectedNotificationId] = useState<string>();
 
   function navigate(target: DashboardNavigationTarget, id?: string) {
     if (target === "expense-detail" || target === "expense-edit") {
@@ -64,7 +69,19 @@ export function AppEntry() {
       setSelectedRewardId(id);
     }
 
+    if (target === "notification-detail") {
+      setSelectedNotificationId(id);
+    }
+
     setRoute(target);
+  }
+
+  function logoutToSplash() {
+    setHasSplashError(false);
+    setRoute("splash");
+    window.setTimeout(() => {
+      setRoute("onboarding");
+    }, 900);
   }
 
   const initializeApplication = useCallback(() => {
@@ -151,6 +168,28 @@ export function AppEntry() {
       <PigPigScreen
         mode={route === "pig-pig-history" ? "history" : "chat"}
         onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+      />
+    );
+  }
+
+  if (route === "notification" || route === "notification-detail") {
+    return (
+      <NotificationScreen
+        mode={route === "notification-detail" ? "detail" : "list"}
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+        selectedNotificationId={selectedNotificationId}
+      />
+    );
+  }
+
+  if (route === "profile" || route === "profile-financial-settings") {
+    return (
+      <ProfileScreen
+        mode={route === "profile-financial-settings" ? "financial-settings" : "overview"}
+        onBack={() => setRoute("dashboard")}
+        onLogout={logoutToSplash}
         onNavigate={navigate}
       />
     );
