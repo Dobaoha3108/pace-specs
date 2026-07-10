@@ -16,7 +16,6 @@ import {
   parseCurrencyInput,
 } from "@/lib/finance/amount";
 import type {
-  FinancialScenario,
   FinancialSetupData,
   OnboardingStep,
   SavingGoalSetupData,
@@ -31,7 +30,6 @@ type OnboardingScreenProps = {
 type FinancialErrors = {
   monthlyIncome?: string;
   fixedExpenses?: string;
-  remainingBudget?: string;
 };
 
 type SavingGoalErrors = {
@@ -49,7 +47,6 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const [financialInputs, setFinancialInputs] = useState({
     monthlyIncome: "",
     fixedExpenses: "",
-    remainingBudget: "",
   });
   const [savingGoalInputs, setSavingGoalInputs] = useState({
     name: "",
@@ -66,51 +63,43 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const now = useMemo(() => new Date(), []);
-  const scenario: FinancialScenario =
-    now.getDate() === 1 ? "first-day" : "mid-month";
   const currentStepNumber =
     step === "welcome" ? 1 : step === "financial" ? 2 : step === "saving-goal" ? 3 : 4;
 
   const monthlyIncome = parseCurrencyInput(financialInputs.monthlyIncome);
   const fixedExpenses = parseCurrencyInput(financialInputs.fixedExpenses);
-  const remainingBudget = parseCurrencyInput(financialInputs.remainingBudget);
   const monthlyBudgetPreview =
-    scenario === "first-day" &&
     Number.isFinite(monthlyIncome) &&
     Number.isFinite(fixedExpenses)
       ? monthlyIncome - fixedExpenses
-      : remainingBudget;
+      : Number.NaN;
 
   function validateFinancialSetup() {
     const nextErrors: FinancialErrors = {};
 
-    if (scenario === "first-day") {
-      if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
-        nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
-      }
+    if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
+      nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
+    }
 
-      if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
-        nextErrors.fixedExpenses = "Chi phí cố định phải lớn hơn hoặc bằng 0.";
-      }
+    if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
+      nextErrors.fixedExpenses = "Fixed Cost phải lớn hơn hoặc bằng 0.";
+    }
 
-      if (
-        Number.isFinite(monthlyIncome) &&
-        Number.isFinite(fixedExpenses) &&
-        fixedExpenses > monthlyIncome
-      ) {
-        nextErrors.fixedExpenses =
-          "Chi phí cố định không được lớn hơn thu nhập.";
-      }
+    if (
+      Number.isFinite(monthlyIncome) &&
+      Number.isFinite(fixedExpenses) &&
+      fixedExpenses > monthlyIncome
+    ) {
+      nextErrors.fixedExpenses =
+        "Fixed Cost không được lớn hơn Monthly Income.";
+    }
 
-      if (
-        Number.isFinite(monthlyIncome) &&
-        Number.isFinite(fixedExpenses) &&
-        monthlyIncome - fixedExpenses <= 0
-      ) {
-        nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
-      }
-    } else if (!Number.isFinite(remainingBudget) || remainingBudget <= 0) {
-      nextErrors.remainingBudget = "Giá trị phải lớn hơn 0.";
+    if (
+      Number.isFinite(monthlyIncome) &&
+      Number.isFinite(fixedExpenses) &&
+      monthlyIncome - fixedExpenses <= 0
+    ) {
+      nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
     }
 
     setFinancialErrors(nextErrors);
@@ -124,12 +113,11 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
       return;
     }
 
-    const budgetAmount =
-      scenario === "first-day" ? monthlyIncome - fixedExpenses : remainingBudget;
+    const budgetAmount = monthlyIncome - fixedExpenses;
 
     setFinancialData({
-      monthlyIncome: scenario === "first-day" ? monthlyIncome : budgetAmount,
-      fixedExpenses: scenario === "first-day" ? fixedExpenses : 0,
+      monthlyIncome,
+      fixedExpenses,
       monthlyBudget: budgetAmount,
       remainingBudget: budgetAmount,
     });
@@ -291,7 +279,6 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
                   monthlyBudgetPreview={monthlyBudgetPreview}
                   onChange={setFinancialInputs}
                   onContinue={continueFromFinancialSetup}
-                  scenario={scenario}
                 />
               ) : null}
               {step === "saving-goal" ? (
@@ -351,72 +338,54 @@ function FinancialSetupStep({
   monthlyBudgetPreview,
   onChange,
   onContinue,
-  scenario,
 }: {
   errors: FinancialErrors;
-  inputs: { monthlyIncome: string; fixedExpenses: string; remainingBudget: string };
+  inputs: { monthlyIncome: string; fixedExpenses: string };
   monthlyBudgetPreview: number;
   onChange: (value: {
     monthlyIncome: string;
     fixedExpenses: string;
-    remainingBudget: string;
   }) => void;
   onContinue: () => void;
-  scenario: FinancialScenario;
 }) {
   return (
     <div className="space-y-lg">
       <div>
         <h1 className="text-h2">Financial Setup</h1>
         <p className="mt-xs text-body text-pace-text-secondary">
-          {scenario === "first-day"
-            ? "Nhập thu nhập và chi phí cố định để PACE tính budget tháng này."
-            : "Nhập số tiền bạn còn có thể chi tiêu trong phần còn lại của tháng này."}
+          Nhập Monthly Income và Fixed Cost để PACE tính budget mặc định cho
+          tháng hiện tại.
         </p>
       </div>
 
-      {scenario === "first-day" ? (
-        <div className="space-y-md">
-          <Input
-            error={errors.monthlyIncome}
-            inputMode="numeric"
-            label="Monthly Income"
-            leftAddon="VND"
-            onChange={(event) =>
-              onChange({ ...inputs, monthlyIncome: event.target.value })
-            }
-            placeholder="5000000"
-            value={inputs.monthlyIncome}
-          />
-          <Input
-            error={errors.fixedExpenses}
-            inputMode="numeric"
-            label="Fixed Expenses"
-            leftAddon="VND"
-            onChange={(event) =>
-              onChange({ ...inputs, fixedExpenses: event.target.value })
-            }
-            placeholder="1500000"
-            value={inputs.fixedExpenses}
-          />
-        </div>
-      ) : (
+      <div className="space-y-md">
         <Input
-          error={errors.remainingBudget}
+          error={errors.monthlyIncome}
           inputMode="numeric"
-          label="Remaining Budget"
+          label="Monthly Income"
           leftAddon="VND"
           onChange={(event) =>
-            onChange({ ...inputs, remainingBudget: event.target.value })
+            onChange({ ...inputs, monthlyIncome: event.target.value })
           }
-          placeholder="2500000"
-          value={inputs.remainingBudget}
+          placeholder="5000000"
+          value={inputs.monthlyIncome}
         />
-      )}
+        <Input
+          error={errors.fixedExpenses}
+          inputMode="numeric"
+          label="Fixed Cost"
+          leftAddon="VND"
+          onChange={(event) =>
+            onChange({ ...inputs, fixedExpenses: event.target.value })
+          }
+          placeholder="1500000"
+          value={inputs.fixedExpenses}
+        />
+      </div>
 
       <Card>
         <p className="text-caption text-pace-text-secondary">
-          Bạn sẽ có thể chi tiêu
+          Budget = Monthly Income - Fixed Cost
         </p>
         <p className="mt-xs text-title">
           {Number.isFinite(monthlyBudgetPreview) && monthlyBudgetPreview > 0
