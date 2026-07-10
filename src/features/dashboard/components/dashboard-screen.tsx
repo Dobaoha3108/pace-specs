@@ -23,7 +23,7 @@ import type {
 import type { Expense, SavingGoal } from "@/types/finance";
 
 type DashboardScreenProps = {
-  onNavigate?: (target: DashboardNavigationTarget) => void;
+  onNavigate?: (target: DashboardNavigationTarget, id?: string) => void;
   onMissingBudget?: () => void;
 };
 
@@ -125,7 +125,7 @@ export function DashboardScreen({
             <SavingGoalSection
               goals={data.activeSavingGoals}
               onCreate={() => onNavigate?.("saving-goal-create")}
-              onOpenGoal={() => onNavigate?.("saving-goal-detail")}
+              onOpenGoal={(goal) => onNavigate?.("saving-goal-detail", goal.id)}
               onViewAll={() => onNavigate?.("saving-goal-list")}
             />
 
@@ -152,7 +152,9 @@ export function DashboardScreen({
 
             <RecentExpenseSection
               expenses={data.recentExpenses}
-              onOpenExpense={() => onNavigate?.("expense-detail")}
+              onOpenExpense={(expense) =>
+                onNavigate?.("expense-detail", expense.id)
+              }
               onViewAll={() => onNavigate?.("expense-history")}
             />
 

@@ -6,7 +6,9 @@ import { BottomNav } from "@/components/app/bottom-nav";
 import { MobileFrame } from "@/components/app/mobile-frame";
 import { DashboardScreen } from "@/features/dashboard/components/dashboard-screen";
 import type { DashboardNavigationTarget } from "@/features/dashboard/types";
+import { ExpenseScreen } from "@/features/expense/components/expense-screen";
 import { OnboardingScreen } from "@/features/onboarding/components/onboarding-screen";
+import { SavingGoalScreen } from "@/features/saving-goal/components/saving-goal-screen";
 import { SplashScreen } from "@/features/splash/components/splash-screen";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
 
@@ -23,13 +25,30 @@ const routeTitles: Record<DashboardNavigationTarget, string> = {
   "saving-goal-list": "Saving Goal",
   "saving-goal-detail": "Saving Goal Detail",
   "saving-goal-create": "Create Saving Goal",
+  "saving-goal-history": "Saving Goal History",
+  "saving-goal-edit": "Edit Saving Goal",
   "expense-history": "Expense History",
   "expense-detail": "Expense Detail",
+  "expense-edit": "Edit Expense",
 };
 
 export function AppEntry() {
   const [route, setRoute] = useState<AppRoute>("splash");
   const [hasSplashError, setHasSplashError] = useState(false);
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string>();
+  const [selectedGoalId, setSelectedGoalId] = useState<string>();
+
+  function navigate(target: DashboardNavigationTarget, id?: string) {
+    if (target === "expense-detail" || target === "expense-edit") {
+      setSelectedExpenseId(id);
+    }
+
+    if (target === "saving-goal-detail" || target === "saving-goal-edit") {
+      setSelectedGoalId(id);
+    }
+
+    setRoute(target);
+  }
 
   const initializeApplication = useCallback(() => {
     setHasSplashError(false);
@@ -70,7 +89,60 @@ export function AppEntry() {
     return (
       <DashboardScreen
         onMissingBudget={() => setRoute("onboarding")}
-        onNavigate={setRoute}
+        onNavigate={navigate}
+      />
+    );
+  }
+
+  if (
+    route === "add-expense" ||
+    route === "expense-history" ||
+    route === "expense-detail" ||
+    route === "expense-edit"
+  ) {
+    const expenseMode =
+      route === "add-expense"
+        ? "add"
+        : route === "expense-history"
+          ? "history"
+          : route === "expense-edit"
+            ? "edit"
+            : "detail";
+
+    return (
+      <ExpenseScreen
+        mode={expenseMode}
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+        selectedExpenseId={selectedExpenseId}
+      />
+    );
+  }
+
+  if (
+    route === "saving-goal-list" ||
+    route === "saving-goal-detail" ||
+    route === "saving-goal-create" ||
+    route === "saving-goal-history" ||
+    route === "saving-goal-edit"
+  ) {
+    const savingGoalMode =
+      route === "saving-goal-create"
+        ? "create"
+        : route === "saving-goal-history"
+          ? "history"
+          : route === "saving-goal-edit"
+            ? "edit"
+            : route === "saving-goal-detail"
+              ? "detail"
+              : "list";
+
+    return (
+      <SavingGoalScreen
+        mode={savingGoalMode}
+        onBack={() => setRoute("dashboard")}
+        onNavigate={navigate}
+        selectedGoalId={selectedGoalId}
       />
     );
   }
@@ -78,7 +150,7 @@ export function AppEntry() {
   return (
     <PlaceholderScreen
       onBack={() => setRoute("dashboard")}
-      onNavigate={setRoute}
+      onNavigate={navigate}
       route={route}
     />
   );
@@ -90,7 +162,7 @@ function PlaceholderScreen({
   route,
 }: {
   onBack: () => void;
-  onNavigate: (target: DashboardNavigationTarget) => void;
+  onNavigate: (target: DashboardNavigationTarget, id?: string) => void;
   route: DashboardNavigationTarget;
 }) {
   const bottomNavItem =

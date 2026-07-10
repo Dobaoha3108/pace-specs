@@ -18,8 +18,11 @@ export type DashboardNavigationTarget =
   | "saving-goal-list"
   | "saving-goal-detail"
   | "saving-goal-create"
+  | "saving-goal-history"
+  | "saving-goal-edit"
   | "expense-history"
-  | "expense-detail";
+  | "expense-detail"
+  | "expense-edit";
 
 export type DashboardViewModel = {
   user: User;

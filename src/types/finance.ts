@@ -82,6 +82,9 @@ export interface SavingGoal {
   status: SavingGoalStatus;
   cancelRequestedAt?: ISODateTime;
   cancelAvailableAt?: ISODateTime;
+  withdrawRequestedAmount?: Currency;
+  withdrawRequestedAt?: ISODateTime;
+  withdrawAvailableAt?: ISODateTime;
   createdAt: ISODateTime;
   updatedAt: ISODateTime;
 }
