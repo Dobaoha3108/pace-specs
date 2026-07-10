@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pace-primary: #6ba1ff;
+  --pace-secondary: #fff23d;
+  --pace-success: #32e15e;
+  --pace-warning: #ffa200;
+  --pace-danger: #ff4d4f;
+  --pace-background: #f7f9fc;
+  --pace-surface: #ffffff;
+  --pace-text-primary: #1f2937;
+  --pace-text-secondary: #6b7280;
+  --pace-border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #eaf1ff;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--pace-text-primary);
+  background: #eaf1ff;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  min-height: 44px;
+}
+
+@layer base {
+  h1 {
+    @apply text-h1;
+  }
+
+  h2 {
+    @apply text-h2;
+  }
+}
+
+@layer components {
+  .pace-screen {
+    @apply min-h-full bg-pace-background px-md py-lg;
+  }
+}

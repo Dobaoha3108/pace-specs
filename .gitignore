@@ -1,1 +1,15 @@
 .DS_Store
+node_modules
+.next
+.pnpm-store
+.next-dev.*
+out
+dist
+coverage
+tsconfig.tsbuildinfo
+.env
+.env*.local
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
