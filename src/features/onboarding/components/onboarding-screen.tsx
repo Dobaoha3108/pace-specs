@@ -200,13 +200,27 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
       {
         id: createId(),
         userId,
-        balance: 0,
-        totalEarned: 0,
+        balance: 500,
+        totalEarned: 500,
         totalSpent: 0,
         createdAt: timestamp,
         updatedAt: timestamp,
       },
     ]);
+    paceLocalDataSource.pigPigInsights.replaceAll([
+      {
+        id: createId(),
+        userId,
+        title: "Welcome to PACE",
+        content:
+          "Pig Pig is ready to help you understand your budget, expenses, saving goals and Pig Coins.",
+        insightType: "Information",
+        source: "Budget",
+        createdAt: timestamp,
+      },
+    ]);
+    paceLocalDataSource.notifications.replaceAll([]);
+    paceLocalDataSource.chatHistories.replaceAll([]);
 
     return { user, budget, timestamp };
   }

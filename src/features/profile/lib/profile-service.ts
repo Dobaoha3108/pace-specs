@@ -1,7 +1,7 @@
 import {
   getCurrentBudget,
   getCurrentUser,
-  recalculateBudget,
+  synchronizeFinancialState,
 } from "@/features/finance/lib/finance-service";
 import {
   ensureRewardSeedData,
@@ -54,7 +54,7 @@ export function updateFinancialInformation({
   };
 
   paceLocalDataSource.budgets.upsert(updatedBudget);
-  return recalculateBudget(budget.userId);
+  return synchronizeFinancialState(budget.userId, "Budget");
 }
 
 export function setLocalPushEnabled(isEnabled: boolean) {

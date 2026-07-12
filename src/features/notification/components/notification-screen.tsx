@@ -184,6 +184,7 @@ function getRelatedTarget(notification: Notification) {
     target === "expense-detail" ||
     target === "saving-goal-detail" ||
     target === "reward-detail" ||
+    target === "reward" ||
     target === "report" ||
     target === "dashboard" ||
     target === "saving-goal-history"

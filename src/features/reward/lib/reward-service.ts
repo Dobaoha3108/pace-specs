@@ -131,6 +131,19 @@ export function ensureRewardSeedData(userId: string) {
     .find((wallet) => wallet.userId === userId);
 
   if (existingWallet) {
+    if (
+      existingWallet.balance === 0 &&
+      existingWallet.totalEarned === 0 &&
+      existingWallet.totalSpent === 0
+    ) {
+      paceLocalDataSource.pigCoinWallets.upsert({
+        ...existingWallet,
+        balance: 500,
+        totalEarned: 500,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
     return;
   }
 
@@ -250,7 +263,7 @@ function createRedeemNotification(
     title: "Redeem voucher successful",
     message: "Your voucher is ready in My Voucher.",
     type: "Voucher",
-    deepLinkTarget: "reward",
+    deepLinkTarget: "reward-detail",
     relatedEntityId: rewardId,
     isRead: false,
     createdAt: new Date().toISOString(),

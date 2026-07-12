@@ -48,10 +48,7 @@ export function loadReportViewModel(
   const expenses = listUserExpenses(user.id)
     .filter((expense) => isExpenseInRange(expense, range.start, range.end))
     .filter((expense) => categoryId === "All" || expense.categoryId === categoryId);
-  const completedExpenses = expenses.filter(
-    (expense) => expense.status === "Completed",
-  );
-  const totalSpending = completedExpenses.reduce(
+  const totalSpending = expenses.reduce(
     (total, expense) => total + expense.amount,
     0,
   );
@@ -72,7 +69,7 @@ export function loadReportViewModel(
     budgetUsage,
     categorySummaries: buildCategorySummaries(
       categories,
-      completedExpenses,
+      expenses,
       totalSpending,
     ),
     recentExpenses: [...expenses]
@@ -83,12 +80,12 @@ export function loadReportViewModel(
 
 function buildCategorySummaries(
   categories: ExpenseCategory[],
-  completedExpenses: Expense[],
+  expenses: Expense[],
   totalSpending: number,
 ) {
   return categories
     .map((category) => {
-      const categoryTotal = completedExpenses
+      const categoryTotal = expenses
         .filter((expense) => expense.categoryId === category.id)
         .reduce((total, expense) => total + expense.amount, 0);
 
