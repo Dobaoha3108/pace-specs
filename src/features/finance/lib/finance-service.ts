@@ -135,6 +135,67 @@ export function countCompletedExpensesCreatedThisWeek(userId: string) {
     }).length;
 }
 
+function getTodayKey(now: Date) {
+  return now.toISOString().slice(0, 10);
+}
+
+function getExpenseDayKey(expense: Expense) {
+  return new Date(expense.completedDate ?? expense.plannedDate)
+    .toISOString()
+    .slice(0, 10);
+}
+
+export function getTodaysExpenseTotal(
+  userId: string,
+  options?: { excludeExpenseId?: string },
+) {
+  const todayKey = getTodayKey(new Date());
+
+  return paceLocalDataSource
+    .expenses
+    .list()
+    .filter(
+      (expense) =>
+        expense.userId === userId &&
+        expense.id !== options?.excludeExpenseId &&
+        getExpenseDayKey(expense) === todayKey,
+    )
+    .reduce((total, expense) => total + expense.amount, 0);
+}
+
+export function checkDailyBudgetOverspend({
+  amount,
+  effectiveDate,
+  excludeExpenseId,
+  userId,
+}: {
+  userId: string;
+  amount: number;
+  effectiveDate: string;
+  excludeExpenseId?: string;
+}): { exceeds: boolean; overBy: number } {
+  const todayKey = getTodayKey(new Date());
+  const effectiveDateKey = new Date(effectiveDate).toISOString().slice(0, 10);
+
+  if (effectiveDateKey !== todayKey) {
+    return { exceeds: false, overBy: 0 };
+  }
+
+  const budget = getCurrentBudget(userId);
+
+  if (!budget) {
+    return { exceeds: false, overBy: 0 };
+  }
+
+  const todaysExpenseTotal = getTodaysExpenseTotal(userId, {
+    excludeExpenseId,
+  });
+  const projectedTotal = todaysExpenseTotal + amount;
+  const overBy = projectedTotal - budget.remainingDailyBudget;
+
+  return { exceeds: overBy > 0, overBy: Math.max(0, overBy) };
+}
+
 export function saveExpense(expense: Expense) {
   paceLocalDataSource.expenses.upsert(expense);
   synchronizeFinancialState(expense.userId, "Expense");
