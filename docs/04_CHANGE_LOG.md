@@ -89,32 +89,6 @@ User phản hồi sau khi test: thấy ô "Tốc độ chi tiêu" không cần t
 
 - Rule `EXP-007` (pop-up cảnh báo vượt ngân sách hôm nay) không liên quan tới Tốc độ chi tiêu, giữ nguyên không đổi.
 
-## 2026-07-13 (5) — [PROPOSAL] Onboarding: Budget Reset Day do User tự chọn, không còn mặc định theo ngày hoàn thành Onboarding
-
-### Trạng thái
-
-`Proposed` — chờ Dương xác nhận Open Questions ở `docs/03_DELTA_SPEC.md` (DELTA-003) trước khi merge vào spec chính thức và sửa code. Chưa có thay đổi code nào ở mục này.
-
-### Lý do
-
-Hiện tại `budgetResetDay` được System tự gán bằng ngày User hoàn thành Onboarding (`new Date().getDate()`), User không được hỏi và không thể chọn ngày này. Yêu cầu mới: User phải tự nhập/chọn Budget Reset Day (ngày nhận Income hàng tháng) qua UI chọn lịch, khớp với thiết kế gốc ở `specs/13_BUSINESS WORKFLOW.md` và field `payday` ở `specs/10_DOMAIN_MODEL.md`.
-
-### Spec thay đổi (Draft, chờ Approved)
-
-- `feature-specs/21_ONBOARDING.md` — Version 1.1 → 1.2 (Status: Draft). Thêm Bước 0 “Chọn Budget Reset Day” bắt buộc trước khi xác định Scenario A/B; Scenario A/B giờ xác định bằng so sánh ngày hôm nay với Budget Reset Day vừa chọn (thay vì “ngày 1 đầu tháng dương lịch”). Cập nhật Screen Content, User Actions, System Response, Navigation, Display Rules, Validation, AC-003/004/008 và thêm AC-004a, AC-008b.
-- `specs/11_DATA_MODEL.md` — field `budgetResetDay`: bỏ mô tả “mặc định bằng ngày hoàn thành Onboarding”, ghi rõ đây là input bắt buộc từ User, thêm rule tháng thiếu ngày (dùng ngày cuối tháng).
-- `docs/03_DELTA_SPEC.md` — thêm DELTA-003 (chi tiết flow, validation, open questions).
-
-### Code thay đổi
-
-Chưa có — sẽ thực hiện sau khi Open Questions được xác nhận (dự kiến: `src/features/onboarding/components/onboarding-screen.tsx`, `src/features/onboarding/types.ts`, thêm component chọn lịch mới).
-
-### Chưa thống nhất (xem DELTA-003 để xác nhận)
-
-1. Thứ tự hỏi Budget Reset Day trong Step 2 (trước hay sau Income/Fixed Expenses).
-2. Có cần đổi công thức “số ngày còn lại trong chu kỳ” ở Dashboard/Expense (EXP-007, ô “Dự kiến hết”) sang tính theo Budget Reset Day thay vì hết tháng dương lịch hay không — nếu có sẽ cần DELTA-004 riêng.
-3. Rule tháng thiếu ngày (chọn 31 → dùng ngày cuối tháng) có đúng ý muốn không.
-
 ## 2026-07-13 (5) — Bug fix: Reward dùng icon/logo mặc định thay vì asset thật
 
 ### Phân loại
@@ -129,3 +103,46 @@ Bug implementation (không phải requirement mới) — asset đã có sẵn tr
 ### Không thay đổi
 
 - `src/components/reward/voucher-card.tsx` giữ nguyên fallback icon `Gift` khi `brandLogo` không có — đây là cơ chế dự phòng hợp lý, không phải lỗi.
+
+## 2026-07-13 (6) — Onboarding: Budget Reset Day do User tự chọn, không còn mặc định theo ngày hoàn thành Onboarding
+
+### Trạng thái
+
+`Merged`. Nguồn gốc: `docs/03_DELTA_SPEC.md` — DELTA-003. (Thay thế entry PROPOSAL cùng nội dung trước đó — đã chốt xong Open Question và merge vào spec + code.)
+
+### Lý do
+
+Trước đó `budgetResetDay` được System tự gán bằng ngày User hoàn thành Onboarding (`new Date().getDate()`), User không được hỏi và không thể chọn ngày này. Yêu cầu mới: User phải tự nhập/chọn Budget Reset Day (ngày nhận Income hàng tháng) qua UI chọn lịch, khớp với thiết kế gốc ở `specs/13_BUSINESS WORKFLOW.md` và field `payday` ở `specs/10_DOMAIN_MODEL.md`.
+
+### Spec thay đổi
+
+- `feature-specs/21_ONBOARDING.md` — Version 1.1 → 1.2 (Status: Final). Thêm Bước 2.0 "Chọn Budget Reset Day" bắt buộc, hiển thị đầu tiên trong Financial Setup, trước khi xác định Scenario A/B; Scenario A/B giờ xác định bằng so sánh ngày hôm nay với Budget Reset Day vừa chọn (thay vì "ngày 1 đầu tháng dương lịch"). Cập nhật Screen Content, User Actions, System Response, Navigation, Display Rules, Validation, AC-003/004/008, thêm AC-004a, AC-008b. Thêm `CMP-016 Day Picker Grid` vào Used Components.
+- `specs/11_DATA_MODEL.md` — field `budgetResetDay`: bỏ mô tả "mặc định bằng ngày hoàn thành Onboarding", ghi rõ là input bắt buộc từ User, thêm rule tháng thiếu ngày (dùng ngày cuối tháng).
+- `specs/16_COMPONENT_LIBRARY` — thêm `CMP-016 Day Picker Grid` (lưới chọn ngày 1–31, dùng cho Onboarding và Budget Settings).
+- `docs/03_DELTA_SPEC.md` — DELTA-003 chuyển sang `Merged`, ghi lại quyết định cho từng Open Question cũ. Tạo `DELTA-004` (`Proposed`, chưa merge) để theo dõi riêng phần "đổi mốc tính số ngày còn lại trong chu kỳ ở Dashboard/Expense theo Budget Reset Day" — nằm ngoài phạm vi Onboarding, không block việc merge DELTA-003.
+
+### Code thay đổi
+
+- `src/features/onboarding/types.ts` — thêm field `budgetResetDay: number` vào `FinancialSetupData`.
+- `src/features/onboarding/components/onboarding-screen.tsx` — thêm Bước 2.0 (Day Picker Grid chọn 1–31, bắt buộc); thêm logic xác định Scenario A/B bằng cách so sánh ngày hôm nay với `budgetResetDay` vừa chọn; tách UI Financial Setup thành 2 nhánh theo Scenario (Scenario A: Monthly Income + Fixed Expenses; Scenario B: Remaining Budget); bỏ `const budgetResetDay = new Date().getDate();`, dùng giá trị User chọn khi tạo Budget.
+- `src/lib/finance/amount.ts` — thêm `resolveBudgetResetDayForMonth()` (áp dụng rule "tháng thiếu ngày → dùng ngày cuối tháng") và `isBudgetResetDay()` / `getNextBudgetResetDate()` phục vụ xác định Scenario.
+- `src/lib/validation/business-rules.ts` — `assertBudgetIsValid()`: chỉ bắt buộc `monthlyBudget = monthlyIncome - fixedExpenses` khi `monthlyIncome > 0` (Scenario A); với Scenario B (`monthlyIncome === 0`), chỉ yêu cầu `monthlyBudget > 0`.
+
+### Không thay đổi
+
+- `specs/12_BUSINESS_RULES.md`, `feature-specs/22_DASHBOARD.md`, `feature-specs/23_EXPENSE.md` — công thức "số ngày còn lại trong chu kỳ" vẫn tính theo hết tháng dương lịch, chưa đổi theo Budget Reset Day. Theo dõi ở DELTA-004 (Proposed).
+- Cấu trúc 4 bước chính của Onboarding (`OnboardingStep`) không đổi — Day Picker là bước con trong "Financial Setup", không phải bước mới ở cấp cao nhất.
+
+## 2026-07-13 (7) — Cập nhật quy trình làm việc: không cần chờ duyệt spec trước khi merge
+
+### Lý do
+
+Dương yêu cầu: từ nay khi có requirement mới, AI viết spec chính xác và merge thẳng vào spec chính thức trước khi sửa code, không cần gửi bản nháp chờ duyệt trước — để tiết kiệm thời gian, tránh phải trao đổi qua lại nhiều lần cho cùng một yêu cầu.
+
+### Spec thay đổi
+
+- `docs/00_TECH_RULES.md` — thêm mục "Quy trình khi có Requirement mới": AI tự quyết định Open Question hợp lý, merge thẳng vào `specs/`/`feature-specs/`, cập nhật `docs/03_DELTA_SPEC.md` (Merged) và `docs/04_CHANGE_LOG.md`, sửa code, build/lint, rồi mới đóng gói `.zip` giao một lần duy nhất. Chỉ giữ trạng thái `Proposed` cho phần thực sự cần quyết định business nằm ngoài phạm vi yêu cầu ban đầu (ví dụ DELTA-004 ở trên).
+
+### Không thay đổi
+
+- Không ảnh hưởng tới spec/code của bất kỳ feature nào khác.
