@@ -47,11 +47,22 @@ export function assertBudgetIsValid(budget: Budget): void {
     );
   }
 
-  if (budget.monthlyBudget !== budget.monthlyIncome - budget.fixedExpenses) {
+  if (
+    budget.monthlyIncome > 0 &&
+    budget.monthlyBudget !== budget.monthlyIncome - budget.fixedExpenses
+  ) {
     throw new AppError(
       "BUSINESS_RULE_VIOLATION",
       "Monthly budget must equal monthly income minus fixed expenses.",
       { context: { rule: "Budget monthlyBudget calculation" } },
+    );
+  }
+
+  if (budget.monthlyIncome === 0 && budget.monthlyBudget <= 0) {
+    throw new AppError(
+      "BUSINESS_RULE_VIOLATION",
+      "Monthly budget must be greater than 0.",
+      { context: { rule: "BGT-001", budgetId: budget.id } },
     );
   }
 }
