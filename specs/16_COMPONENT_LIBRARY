@@ -1437,6 +1437,67 @@ Confirmation Dialog không thực hiện Business Logic.
 
 ---
 
+## CMP-016
+
+# Day Picker Grid
+
+## Purpose
+
+Cho phép User chọn một ngày trong tháng (1–31) dưới dạng lưới số, dùng cho các trường hợp cần một ngày định kỳ hàng tháng thay vì một ngày cụ thể trên lịch dương.
+
+---
+
+## Used By
+
+- Onboarding (Financial Setup — chọn Budget Reset Day)
+- Budget Settings (đổi Budget Reset Day)
+
+---
+
+## Business Responsibility
+
+Thu thập một giá trị Integer từ 1 đến 31, tránh User nhập tay sai định dạng hoặc chọn ngày không hợp lệ.
+
+---
+
+## Display Data
+
+- Lưới 31 ô, mỗi ô là một số từ 1 đến 31.
+- Ô đang được chọn hiển thị nổi bật (khác màu nền/viền).
+- Label/câu hỏi phía trên lưới (ví dụ: "Bạn nhận Income vào ngày nào hàng tháng?").
+
+---
+
+## User Actions
+
+- Chạm chọn một ô số.
+
+---
+
+## States
+
+- Empty (chưa chọn ngày nào — bắt buộc chọn mới đi tiếp được)
+- Selected (đã chọn một ngày)
+- Validation Error (bắt buộc nhưng chưa chọn, User cố gắng đi tiếp)
+
+---
+
+## Display Rules
+
+Chỉ cho phép chọn đúng 1 ngày tại một thời điểm.
+
+Không cho nhập tay tự do (không có ô input dạng số đi kèm) — chỉ chọn qua lưới, để tránh nhập sai định dạng hoặc giá trị ngoài khoảng 1–31.
+
+Component không tự suy luận "tháng thiếu ngày" — việc quy đổi ngày cuối tháng khi tháng không có đủ số ngày đã chọn được xử lý ở tầng Business Rule/System Logic, không phải ở Component này.
+
+---
+
+## Related Business Rules
+
+- BGT-001 (Budget Reset Day validation)
+
+---
+
 # 10. Component Dependency
 
 Các Component được kết hợp để tạo thành từng màn hình.
