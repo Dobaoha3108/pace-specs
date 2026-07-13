@@ -13,8 +13,6 @@ type BudgetSummaryCardProps = {
   budgetCycle: string;
   budgetProgress: number;
   projectedDaysLeftLabel: string;
-  spendingPaceLabel: string;
-  spendingPaceDelta: number;
   state?: BudgetSummaryState;
   onEditBudget?: () => void;
 };
@@ -26,8 +24,6 @@ export function BudgetSummaryCard({
   onEditBudget,
   projectedDaysLeftLabel,
   remainingBudget,
-  spendingPaceDelta,
-  spendingPaceLabel,
   state = "normal",
   todayBudget,
   todayRemaining,
@@ -68,24 +64,13 @@ export function BudgetSummaryCard({
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-sm">
+      <div className="grid grid-cols-2 gap-sm">
         <BudgetInfoBox
           label="Hôm nay nên tiêu"
           secondaryValue={`/ ${todayBudget}`}
           value={todayRemaining}
         />
         <BudgetInfoBox label="Dự kiến hết" value={projectedDaysLeftLabel} />
-        <BudgetInfoBox
-          label="Tốc độ chi tiêu"
-          tone={
-            spendingPaceDelta > 0
-              ? "warning"
-              : spendingPaceDelta < 0
-                ? "success"
-                : "neutral"
-          }
-          value={spendingPaceLabel}
-        />
       </div>
 
       {isWarning ? (
