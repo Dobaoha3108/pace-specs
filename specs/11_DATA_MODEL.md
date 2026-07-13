@@ -282,11 +282,13 @@ Allowed Values
 
 Description
 
-Ngày hệ thống yêu cầu User cập nhật Budget cho chu kỳ mới.
+Ngày hệ thống yêu cầu User cập nhật Budget cho chu kỳ mới (tương ứng khái niệm "Ngày nhận tiền / Payday" ở `specs/10_DOMAIN_MODEL.md`, Entity User).
 
-Mặc định bằng ngày hoàn thành Onboarding.
+Do User tự nhập/chọn (qua UI chọn lịch) trong bước Financial Setup của Onboarding. Đây là trường bắt buộc, **không còn giá trị mặc định** suy ra từ ngày hoàn thành Onboarding.
 
-User có thể thay đổi trong Budget Settings.
+Nếu tháng hiện tại không có đủ số ngày bằng `budgetResetDay` (ví dụ chọn 31 nhưng tháng chỉ có 28/29/30 ngày), hệ thống dùng ngày cuối cùng của tháng đó làm ngày Reset thực tế trong tháng đó.
+
+User có thể thay đổi trong Budget Settings sau khi hoàn thành Onboarding.
 
 ---
 
