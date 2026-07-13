@@ -152,7 +152,7 @@ Daily Budget Overspend Confirmation
 
 Khi User lưu (Save) một Expense (tạo mới hoặc chỉnh sửa), hệ thống phải kiểm tra:
 
-Tổng Expense (Planned + Completed) trong ngày hôm nay, tính cả Expense vừa nhập > Remaining Daily Budget hiện tại.
+Tổng Expense (Planned + Completed) trong ngày hôm nay, tính cả Expense vừa nhập > Số tiền được tiêu hôm nay (baseline cố định trong ngày, xem công thức tại specs/17_UI_LAYOUT.md mục "Budget Overview Card").
 
 Nếu điều kiện đúng, hiển thị Confirmation Dialog (CMP-015) trước khi lưu, với nội dung cảnh báo số tiền vượt là bao nhiêu. Dialog có hai lựa chọn:
 
