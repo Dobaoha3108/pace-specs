@@ -11,7 +11,9 @@ type BudgetSummaryCardProps = {
   remainingDailyBudget: string;
   budgetCycle: string;
   budgetProgress: number;
-  dailyProgress: number;
+  projectedDaysLeftLabel: string;
+  spendingPaceLabel: string;
+  spendingPaceDelta: number;
   state?: BudgetSummaryState;
   onEditBudget?: () => void;
 };
@@ -19,11 +21,13 @@ type BudgetSummaryCardProps = {
 export function BudgetSummaryCard({
   budgetCycle,
   budgetProgress,
-  dailyProgress,
   monthlyBudget,
   onEditBudget,
+  projectedDaysLeftLabel,
   remainingBudget,
   remainingDailyBudget,
+  spendingPaceDelta,
+  spendingPaceLabel,
   state = "normal",
 }: BudgetSummaryCardProps) {
   const isWarning = state === "warning";
@@ -48,12 +52,12 @@ export function BudgetSummaryCard({
       </div>
 
       <div className="rounded-card bg-pace-primary p-md text-white">
-        <p className="text-caption opacity-90">Remaining Budget</p>
+        <p className="text-caption opacity-90">Còn được tiêu trong tháng</p>
         <p className="mt-xs text-[32px] font-bold leading-10">
           {remainingBudget}
-        </p>
-        <p className="mt-xs text-caption opacity-90">
-          Monthly Budget: {monthlyBudget}
+          <span className="ml-xs text-caption font-normal opacity-90">
+            / {monthlyBudget}
+          </span>
         </p>
         <Progress
           className="mt-md bg-white/25"
@@ -62,26 +66,28 @@ export function BudgetSummaryCard({
         />
       </div>
 
-      <div>
-        <div className="mb-sm flex items-center justify-between gap-md">
-          <p className="text-caption text-pace-text-secondary">
-            Remaining Daily Budget
-          </p>
-          <p
-            className={cn(
-              "text-caption",
-              isWarning ? "text-pace-warning" : "text-pace-text-primary",
-            )}
-          >
-            {remainingDailyBudget}
-          </p>
-        </div>
-        <Progress
-          max={100}
-          tone={isWarning ? "warning" : "success"}
-          value={dailyProgress}
+      <div className="grid grid-cols-3 gap-sm">
+        <BudgetInfoBox label="Hôm nay nên tiêu" value={remainingDailyBudget} />
+        <BudgetInfoBox label="Dự kiến hết" value={projectedDaysLeftLabel} />
+        <BudgetInfoBox
+          label="Tốc độ chi tiêu"
+          tone={
+            spendingPaceDelta > 0
+              ? "warning"
+              : spendingPaceDelta < 0
+                ? "success"
+                : "neutral"
+          }
+          value={spendingPaceLabel}
         />
       </div>
+
+      {isWarning ? (
+        <p className="text-caption text-pace-warning">
+          Bạn đang tiêu vượt mức cho phép hôm nay. Cân nhắc điều chỉnh để
+          không hết tiền sớm nhé.
+        </p>
+      ) : null}
 
       {onEditBudget ? (
         <button
@@ -93,5 +99,33 @@ export function BudgetSummaryCard({
         </button>
       ) : null}
     </Card>
+  );
+}
+
+function BudgetInfoBox({
+  label,
+  tone = "neutral",
+  value,
+}: {
+  label: string;
+  tone?: "neutral" | "warning" | "success";
+  value: string;
+}) {
+  return (
+    <div className="rounded-input bg-pace-background p-sm text-center">
+      <p className="text-[11px] leading-tight text-pace-text-secondary">
+        {label}
+      </p>
+      <p
+        className={cn(
+          "mt-xs text-caption font-semibold",
+          tone === "warning" && "text-pace-warning",
+          tone === "success" && "text-pace-success",
+          tone === "neutral" && "text-pace-text-primary",
+        )}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
