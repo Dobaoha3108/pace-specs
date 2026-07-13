@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Gift, TicketCheck } from "lucide-react";
+import { ChevronRight, Gift, TicketCheck } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { BottomNav } from "@/components/app/bottom-nav";
 import { MobileFrame } from "@/components/app/mobile-frame";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatNumber } from "@/lib/finance/amount";
 import {
   ensureRewardSeedData,
   getCurrentRewardUser,
@@ -130,22 +131,37 @@ function RewardMarketplace({
 }) {
   return (
     <div className="space-y-lg">
-      <Card>
-        <div className="flex items-center justify-between gap-md">
-          <div>
+      <Card className="relative overflow-hidden bg-pace-pig-highlight">
+        <div className="flex items-start justify-between gap-md">
+          <div className="min-w-0 flex-1 space-y-sm">
             <p className="text-caption text-pace-text-secondary">
-              Pig Coin Balance
+              Pig Coin của bạn
             </p>
-            <h1 className="mt-xs text-h2">{walletBalance}</h1>
+            <div className="flex items-center gap-sm">
+              <Image
+                alt="Pig Coin"
+                height={44}
+                src="/assets/icons/pig_coin.png"
+                width={44}
+              />
+              <h1 className="text-h2">{formatNumber(walletBalance)}</h1>
+            </div>
+            <button
+              className="flex items-center gap-xs text-caption font-medium text-pace-text-primary"
+              onClick={onMyVoucher}
+              type="button"
+            >
+              My Voucher
+              <ChevronRight aria-hidden className="size-4" />
+            </button>
           </div>
-          <div className="flex size-14 items-center justify-center rounded-full bg-pace-secondary text-pace-primary">
-            <Image
-              alt="Pig Coin"
-              height={32}
-              src="/assets/icons/pig_coin.png"
-              width={32}
-            />
-          </div>
+          <Image
+            alt="Pig Pig"
+            className="shrink-0"
+            height={96}
+            src="/assets/pig-pig/pig_default.png"
+            width={96}
+          />
         </div>
       </Card>
       <Button
