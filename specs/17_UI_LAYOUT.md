@@ -598,18 +598,22 @@ Hiển thị theo thứ tự:
    - Giá trị: Remaining Budget / Monthly Budget.
    - Progress Bar thể hiện tỉ lệ đã dùng / Monthly Budget.
 2. Info Row — 3 ô nằm ngang, chia đều:
-   - Ô 1 — Hôm nay nên tiêu: hiển thị Remaining Daily Budget hiện tại.
+   - Ô 1 — Hôm nay nên tiêu: hiển thị dạng phân số "Số tiền còn lại hôm nay / Số tiền được tiêu hôm nay" (ví dụ: hôm nay được tiêu 50.000đ, đã chi 30.000đ → hiển thị "20.000 đ / 50.000 đ"). "Số tiền được tiêu hôm nay" (baseline) được tính cố định cho ngày hôm nay, không giảm khi User chi tiêu trong ngày; chỉ phần "còn lại" giảm dần.
    - Ô 2 — Dự kiến hết: hiển thị số ngày dự kiến Remaining Budget về 0, tính theo tốc độ chi tiêu trung bình những ngày đã qua trong chu kỳ.
    - Ô 3 — Tốc độ chi tiêu: so sánh tổng chi tiêu thực tế từ đầu chu kỳ tới hiện tại với mức chi tiêu kế hoạch tới hiện tại. Hiển thị dạng phần trăm nhanh hơn/chậm hơn/đúng kế hoạch.
 3. Edit Budget Button.
 
-"Dự kiến hết" và "Tốc độ chi tiêu" là derived data, tính runtime từ Expense hiện có, không lưu thành field mới trong Local Storage — tương tự nguyên tắc áp dụng cho Financial Report (RPT-001).
+"Số tiền được tiêu hôm nay", "Số tiền còn lại hôm nay", "Dự kiến hết" và "Tốc độ chi tiêu" đều là derived data, tính runtime từ Expense hiện có, không lưu thành field mới trong Local Storage — tương tự nguyên tắc áp dụng cho Financial Report (RPT-001).
 
 Công thức:
 
+- Số tiền được tiêu hôm nay (baseline, cố định trong ngày) = (Remaining Budget hiện tại + Tổng chi tiêu đã phát sinh hôm nay) / Số ngày còn lại của chu kỳ.
+- Số tiền còn lại hôm nay = Số tiền được tiêu hôm nay − Tổng chi tiêu đã phát sinh hôm nay (tối thiểu 0).
 - Tốc độ chi tiêu (%) = (Tổng chi tiêu thực tế từ đầu chu kỳ / Chi tiêu kế hoạch tới hiện tại) − 1.
   Chi tiêu kế hoạch tới hiện tại = Monthly Budget / Tổng số ngày chu kỳ × Số ngày đã trôi qua.
 - Dự kiến hết (số ngày) = Remaining Budget / (Tổng chi tiêu thực tế từ đầu chu kỳ / Số ngày đã trôi qua).
+
+Ngưỡng cảnh báo vượt ngân sách hôm nay (EXP-007) dùng chung công thức "Số tiền được tiêu hôm nay" ở trên làm mốc so sánh, đảm bảo số hiển thị trên Dashboard khớp với điều kiện kích hoạt pop-up cảnh báo.
 
 Card chiếm toàn bộ chiều ngang khả dụng.
 
