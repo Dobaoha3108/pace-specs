@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Coins, Gift, TicketCheck } from "lucide-react";
+import Image from "next/image";
+import { Gift, TicketCheck } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { BottomNav } from "@/components/app/bottom-nav";
 import { MobileFrame } from "@/components/app/mobile-frame";
@@ -138,7 +139,12 @@ function RewardMarketplace({
             <h1 className="mt-xs text-h2">{walletBalance}</h1>
           </div>
           <div className="flex size-14 items-center justify-center rounded-full bg-pace-secondary text-pace-primary">
-            <Coins aria-hidden className="size-7" />
+            <Image
+              alt="Pig Coin"
+              height={32}
+              src="/assets/icons/pig_coin.png"
+              width={32}
+            />
           </div>
         </div>
       </Card>
