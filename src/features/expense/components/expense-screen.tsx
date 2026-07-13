@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { formatVnd, parseCurrencyInput } from "@/lib/finance/amount";
 import { createId } from "@/lib/id";
 import {
+  checkDailyBudgetOverspend,
   countCompletedExpensesCreatedThisWeek,
   deleteExpense,
   ensureDefaultExpenseCategories,
@@ -163,6 +164,10 @@ function ExpenseForm({
   }));
   const [errors, setErrors] = useState<ExpenseFormErrors>({});
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [pendingOverspend, setPendingOverspend] = useState<{
+    expense: Expense;
+    overBy: number;
+  } | null>(null);
 
   function validate() {
     const amount = parseCurrencyInput(form.amount);
@@ -197,14 +202,15 @@ function ExpenseForm({
       form.status === "Completed" &&
       countCompletedExpensesCreatedThisWeek(userId) >= 2;
     const status = shouldDowngradeCompleted ? "Planned" : form.status;
+    const plannedDate = new Date(form.plannedDate).toISOString();
 
-    onSubmit({
+    const nextExpense: Expense = {
       id: expense?.id ?? createId(),
       userId,
       amount,
       categoryId: form.categoryId,
       note: form.note.trim() || undefined,
-      plannedDate: new Date(form.plannedDate).toISOString(),
+      plannedDate,
       completedDate:
         status === "Completed"
           ? expense?.completedDate ?? new Date().toISOString()
@@ -212,7 +218,21 @@ function ExpenseForm({
       status,
       createdAt: expense?.createdAt ?? now,
       updatedAt: now,
+    };
+
+    const overspend = checkDailyBudgetOverspend({
+      userId,
+      amount,
+      effectiveDate: nextExpense.completedDate ?? nextExpense.plannedDate,
+      excludeExpenseId: expense?.id,
     });
+
+    if (overspend.exceeds) {
+      setPendingOverspend({ expense: nextExpense, overBy: overspend.overBy });
+      return;
+    }
+
+    onSubmit(nextExpense);
   }
 
   return (
@@ -271,6 +291,26 @@ function ExpenseForm({
         onCancel={() => setDialogMessage(null)}
         onConfirm={() => setDialogMessage(null)}
         title="Không thể lưu khoản chi"
+      />
+      <ConfirmationDialog
+        cancelLabel="Quay lại chỉnh sửa"
+        confirmLabel="Tiếp tục lưu"
+        isOpen={Boolean(pendingOverspend)}
+        message={
+          pendingOverspend
+            ? `Khoản chi này sẽ vượt số tiền nên tiêu hôm nay ${formatVnd(
+                pendingOverspend.overBy,
+              )}. Bạn vẫn muốn lưu chứ?`
+            : ""
+        }
+        onCancel={() => setPendingOverspend(null)}
+        onConfirm={() => {
+          if (pendingOverspend) {
+            onSubmit(pendingOverspend.expense);
+          }
+          setPendingOverspend(null);
+        }}
+        title="Vượt ngân sách hôm nay"
       />
     </div>
   );
