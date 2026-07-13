@@ -108,10 +108,14 @@ export function DashboardScreen({
             <BudgetSummaryCard
               budgetCycle={data.budget.cycle}
               budgetProgress={budgetUsage}
-              dailyProgress={getDailyBudgetUsage(data)}
               monthlyBudget={formatVnd(data.budget.monthlyBudget)}
+              projectedDaysLeftLabel={formatProjectedDaysLeft(
+                data.projectedDaysLeft,
+              )}
               remainingBudget={formatVnd(data.budget.remainingBudget)}
               remainingDailyBudget={formatVnd(data.budget.remainingDailyBudget)}
+              spendingPaceDelta={data.spendingPaceDelta}
+              spendingPaceLabel={formatSpendingPace(data.spendingPaceDelta)}
               state={data.budget.remainingDailyBudget <= 0 ? "warning" : "normal"}
             />
 
@@ -298,17 +302,21 @@ function getBudgetUsage(data: DashboardViewModel) {
   );
 }
 
-function getDailyBudgetUsage(data: DashboardViewModel) {
-  if (data.budget.remainingDailyBudget <= 0 || data.budget.monthlyBudget <= 0) {
-    return 0;
+function formatProjectedDaysLeft(projectedDaysLeft: number) {
+  if (projectedDaysLeft <= 0) {
+    return "Hôm nay";
   }
 
-  return Math.min(
-    100,
-    Math.round(
-      (data.budget.remainingDailyBudget / data.budget.monthlyBudget) * 100,
-    ),
-  );
+  return `Còn ${projectedDaysLeft} ngày`;
+}
+
+function formatSpendingPace(spendingPaceDelta: number) {
+  if (spendingPaceDelta === 0) {
+    return "Đúng kế hoạch";
+  }
+
+  const direction = spendingPaceDelta > 0 ? "Nhanh hơn" : "Chậm hơn";
+  return `${direction} ${Math.abs(spendingPaceDelta)}%`;
 }
 
 function getSavingGoalProgress(goal: SavingGoal) {
