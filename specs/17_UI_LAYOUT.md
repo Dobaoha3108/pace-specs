@@ -591,14 +591,25 @@ Thứ tự hiển thị từ trên xuống dưới:
 
 ## Budget Overview Card
 
-Hiển thị:
+Hiển thị theo thứ tự:
 
-- Monthly Budget.
-- Remaining Budget.
-- Remaining Daily Budget.
-- Progress Bar của Remaining Budget.
-- Progress Bar của Remaining Daily Budget.
-- Edit Budget Button.
+1. Remaining Budget Block (khối chính, nổi bật nhất).
+   - Label: "Còn được tiêu trong tháng".
+   - Giá trị: Remaining Budget / Monthly Budget.
+   - Progress Bar thể hiện tỉ lệ đã dùng / Monthly Budget.
+2. Info Row — 3 ô nằm ngang, chia đều:
+   - Ô 1 — Hôm nay nên tiêu: hiển thị Remaining Daily Budget hiện tại.
+   - Ô 2 — Dự kiến hết: hiển thị số ngày dự kiến Remaining Budget về 0, tính theo tốc độ chi tiêu trung bình những ngày đã qua trong chu kỳ.
+   - Ô 3 — Tốc độ chi tiêu: so sánh tổng chi tiêu thực tế từ đầu chu kỳ tới hiện tại với mức chi tiêu kế hoạch tới hiện tại. Hiển thị dạng phần trăm nhanh hơn/chậm hơn/đúng kế hoạch.
+3. Edit Budget Button.
+
+"Dự kiến hết" và "Tốc độ chi tiêu" là derived data, tính runtime từ Expense hiện có, không lưu thành field mới trong Local Storage — tương tự nguyên tắc áp dụng cho Financial Report (RPT-001).
+
+Công thức:
+
+- Tốc độ chi tiêu (%) = (Tổng chi tiêu thực tế từ đầu chu kỳ / Chi tiêu kế hoạch tới hiện tại) − 1.
+  Chi tiêu kế hoạch tới hiện tại = Monthly Budget / Tổng số ngày chu kỳ × Số ngày đã trôi qua.
+- Dự kiến hết (số ngày) = Remaining Budget / (Tổng chi tiêu thực tế từ đầu chu kỳ / Số ngày đã trôi qua).
 
 Card chiếm toàn bộ chiều ngang khả dụng.
 
