@@ -1,10 +1,10 @@
 # 08. ONBOARDING
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP, Draft — chờ xác nhận DELTA-003 trước khi chốt Final)
 
 Project: PACE - Personal Finance Management App
 
-Status: Final
+Status: Draft (xem `docs/03_DELTA_SPEC.md` — DELTA-003)
 
 ---
 
@@ -35,13 +35,29 @@ Sau khi hoàn thành Onboarding:
 
 ---
 
+## Budget Reset Day (Ngày nhận Income hàng tháng)
+
+> Cập nhật theo DELTA-003 (`docs/03_DELTA_SPEC.md`).
+
+Trước khi xác định Scenario, Financial Setup luôn hỏi User trước tiên:
+
+"Bạn nhận Income (lương/trợ cấp...) vào ngày nào hàng tháng?"
+
+User chọn một ngày từ **1 đến 31** thông qua UI chọn lịch (calendar/day-picker) — đây là **Budget Reset Day**, bắt buộc phải chọn, không có giá trị mặc định.
+
+Nếu tháng hiện tại không có đủ số ngày đó (ví dụ chọn 31 nhưng tháng chỉ có 28/29/30 ngày), hệ thống dùng ngày cuối cùng của tháng đó làm Budget Reset Day thực tế trong tháng thiếu ngày.
+
+Sau khi có Budget Reset Day, System so sánh **ngày hôm nay** với **Budget Reset Day vừa chọn** để xác định Scenario.
+
+---
+
 ## Budget Initialization
 
 PACE hỗ trợ hai kịch bản khởi tạo Budget.
 
 ### Scenario A
 
-User bắt đầu sử dụng ứng dụng vào ngày đầu tiên của tháng.
+Ngày hôm nay **đúng bằng** Budget Reset Day User vừa chọn (User bắt đầu sử dụng ứng dụng đúng vào ngày bắt đầu chu kỳ mới).
 
 ↓
 
@@ -58,31 +74,31 @@ Budget = Monthly Income - Fixed Expenses
 
 ↓
 
-Budget này sẽ được sử dụng làm Budget mặc định cho tháng hiện tại.
+Budget này sẽ được sử dụng làm Budget mặc định cho chu kỳ hiện tại.
 
 ↓
 
-Ở các tháng tiếp theo, User chỉ cần cập nhật Monthly Income nếu có thay đổi.
+Ở các chu kỳ tiếp theo, User chỉ cần cập nhật Monthly Income nếu có thay đổi.
 
 ---
 
 ### Scenario B
 
-User bắt đầu sử dụng ứng dụng từ giữa hoặc cuối tháng.
+Ngày hôm nay **khác** Budget Reset Day User vừa chọn (chu kỳ hiện tại đã bắt đầu từ trước, User cài đặt/setup app giữa chừng chu kỳ).
 
 ↓
 
 Financial Setup yêu cầu User nhập:
 
-"Số tiền bạn còn có thể chi tiêu trong phần còn lại của tháng này."
+"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
 
 ↓
 
-Giá trị này được sử dụng làm Budget của tháng đầu tiên.
+Giá trị này được sử dụng làm Budget của chu kỳ đầu tiên (chu kỳ rút gọn, tính từ hôm nay tới trước lần Budget Reset Day tiếp theo).
 
 ↓
 
-Đến ngày Reset Budget của tháng tiếp theo.
+Đến đúng Budget Reset Day của chu kỳ tiếp theo.
 
 ↓
 
@@ -97,7 +113,7 @@ System tự động tính Budget hàng tháng từ thời điểm đó.
 
 ---
 
-User luôn có thể chỉnh sửa Budget sau khi hoàn thành Onboarding thông qua chức năng Edit Budget trên Dashboard.
+User luôn có thể chỉnh sửa Budget và Budget Reset Day sau khi hoàn thành Onboarding thông qua chức năng Edit Budget trên Dashboard.
 
 ---
 
@@ -206,13 +222,28 @@ Bắt đầu
 
 ### Financial Setup
 
-Hệ thống tự xác định Scenario dựa trên ngày User bắt đầu sử dụng ứng dụng.
+### Step 2.0 — Chọn Budget Reset Day (bắt buộc, hiển thị đầu tiên)
+
+Hiển thị:
+
+- Câu hỏi: "Bạn nhận Income vào ngày nào hàng tháng?"
+- UI chọn lịch (calendar/day-picker), cho phép chọn 1 ngày từ 1–31.
+
+User phải chọn một ngày mới được đi tiếp.
+
+↓
+
+Hệ thống dùng lựa chọn này để xác định Scenario A hay B (so sánh với ngày hôm nay).
+
+---
+
+Hệ thống tự xác định Scenario dựa trên so sánh **ngày hôm nay** với **Budget Reset Day User vừa chọn**.
 
 ---
 
 ### Scenario A
 
-Nếu User bắt đầu sử dụng vào ngày đầu tiên của tháng.
+Nếu ngày hôm nay đúng bằng Budget Reset Day vừa chọn.
 
 ↓
 
@@ -231,19 +262,19 @@ Budget = Monthly Income - Fixed Expenses
 
 Hiển thị:
 
-"Bạn sẽ có XXX để chi tiêu trong tháng."
+"Bạn sẽ có XXX để chi tiêu trong chu kỳ này."
 
 ---
 
 ### Scenario B
 
-Nếu User bắt đầu sử dụng từ giữa hoặc cuối tháng.
+Nếu ngày hôm nay khác Budget Reset Day vừa chọn.
 
 ↓
 
 Hiển thị:
 
-"Số tiền bạn còn có thể chi tiêu trong phần còn lại của tháng này."
+"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
 
 ↓
 
@@ -251,7 +282,7 @@ User chỉ cần nhập một giá trị.
 
 ↓
 
-Giá trị này được sử dụng làm Budget của tháng đầu tiên.
+Giá trị này được sử dụng làm Budget của chu kỳ đầu tiên (chu kỳ rút gọn).
 
 ---
 
@@ -319,6 +350,14 @@ Bắt đầu sử dụng
 
 ## Financial Setup
 
+### Bước 0 (bắt buộc, mọi Scenario)
+
+User chọn:
+
+- Budget Reset Day (ngày nhận Income hàng tháng), qua UI chọn lịch.
+
+---
+
 ### Scenario A
 
 User nhập:
@@ -332,7 +371,7 @@ User nhập:
 
 User nhập:
 
-- Remaining Budget của tháng hiện tại.
+- Remaining Budget của chu kỳ hiện tại.
 
 ---
 
@@ -371,7 +410,15 @@ Open Financial Setup.
 
 ## Financial Setup
 
-System xác định Scenario hiện tại.
+System yêu cầu User chọn Budget Reset Day trước tiên (Bước 0).
+
+↓
+
+Validate Budget Reset Day (Required, 1–31).
+
+↓
+
+Nếu hợp lệ, System xác định Scenario hiện tại bằng cách so sánh ngày hôm nay với Budget Reset Day vừa chọn.
 
 ---
 
@@ -486,7 +533,15 @@ Open Financial Setup.
 
 ## Financial Setup
 
-Validation thành công.
+Budget Reset Day chưa được chọn.
+
+↓
+
+Không cho đi tiếp, hiển thị Validation Error ngay tại UI chọn lịch.
+
+---
+
+Validation thành công (đã chọn Budget Reset Day + các trường theo Scenario hợp lệ).
 
 ↓
 
@@ -558,13 +613,17 @@ Không hiển thị:
 
 ## Financial Setup
 
-Hệ thống tự động xác định Scenario dựa trên ngày User bắt đầu sử dụng ứng dụng.
+Hiển thị đầu tiên, bắt buộc với mọi User: UI chọn lịch để chọn Budget Reset Day (1–31). Không đi tiếp được nếu chưa chọn.
+
+↓
+
+Sau khi đã chọn Budget Reset Day, hệ thống tự động xác định Scenario dựa trên so sánh ngày hôm nay với Budget Reset Day vừa chọn (không còn dựa trên "ngày đầu tháng dương lịch" như trước).
 
 ---
 
 ### Scenario A
 
-(Ngày đầu tiên của tháng)
+(Ngày hôm nay đúng bằng Budget Reset Day vừa chọn)
 
 Hiển thị:
 
@@ -581,17 +640,17 @@ Budget = Monthly Income - Fixed Expenses
 
 Hiển thị:
 
-"Bạn sẽ có XXX để chi tiêu trong tháng."
+"Bạn sẽ có XXX để chi tiêu trong chu kỳ này."
 
 ---
 
 ### Scenario B
 
-(Từ ngày thứ hai của tháng trở đi)
+(Ngày hôm nay khác Budget Reset Day vừa chọn)
 
 Hiển thị:
 
-"Số tiền bạn còn có thể chi tiêu trong phần còn lại của tháng này."
+"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
 
 ↓
 
@@ -603,19 +662,19 @@ Sau khi hoàn thành Onboarding.
 
 ↓
 
-Ngày User hoàn thành Onboarding sẽ trở thành Budget Reset Day mặc định.
+Budget Reset Day đã lưu chính là ngày User tự chọn ở Bước 0 của Financial Setup — **không** còn lấy theo ngày hoàn thành Onboarding.
 
 Ví dụ:
 
-User hoàn thành Onboarding ngày 12.
+User chọn Budget Reset Day là ngày 25 (vì đây là ngày User nhận lương), dù User hoàn thành Onboarding vào ngày 12.
 
 ↓
 
-Từ tháng tiếp theo.
+Từ chu kỳ tiếp theo.
 
 ↓
 
-Ngày 12 hàng tháng.
+Ngày 25 hàng tháng (nếu tháng đó không có ngày 25 trở lên đủ như trường hợp chọn 29/30/31, hệ thống dùng ngày cuối tháng thay thế).
 
 ↓
 
@@ -666,6 +725,15 @@ Không hiển thị dữ liệu tài chính.
 ---
 
 # 13. Validation
+
+## Budget Reset Day (mọi Scenario)
+
+- Required.
+- Chỉ chọn qua UI lịch (calendar/day-picker), không cho nhập tay tự do.
+- Giá trị hợp lệ: số nguyên từ 1 đến 31.
+- Nếu tháng hiện tại không có đủ số ngày đó, hệ thống tự dùng ngày cuối tháng làm Reset Day thực tế trong tháng đó (không coi là lỗi Validation).
+
+---
 
 ## Scenario A
 
@@ -955,7 +1023,7 @@ Hệ thống chuyển sang Financial Setup.
 
 ## AC-003
 
-Nếu User bắt đầu sử dụng vào ngày đầu tiên của tháng.
+Nếu ngày hôm nay đúng bằng Budget Reset Day User vừa chọn ở Bước 0.
 
 ↓
 
@@ -974,13 +1042,23 @@ Budget = Monthly Income - Fixed Expenses.
 
 ## AC-004
 
-Nếu User bắt đầu sử dụng từ ngày thứ hai của tháng trở đi.
+Nếu ngày hôm nay khác Budget Reset Day User vừa chọn ở Bước 0.
 
 ↓
 
 Financial Setup chỉ yêu cầu User nhập:
 
-Remaining Budget của tháng hiện tại.
+Remaining Budget của chu kỳ hiện tại.
+
+---
+
+## AC-004a
+
+Financial Setup luôn yêu cầu User chọn Budget Reset Day (qua UI lịch, 1–31) **trước khi** xác định Scenario A hay B.
+
+↓
+
+Không được đi tiếp nếu chưa chọn Budget Reset Day.
 
 ---
 
@@ -1012,11 +1090,11 @@ Budget được khởi tạo thành công.
 
 ## AC-008
 
-Budget Reset Day mặc định bằng ngày User hoàn thành Onboarding.
+Budget Reset Day **do User tự chọn** qua UI lịch ở Bước 0 của Financial Setup — **không** còn mặc định bằng ngày User hoàn thành Onboarding.
 
 ↓
 
-Đến Budget Reset Day của tháng tiếp theo.
+Đến Budget Reset Day của chu kỳ tiếp theo (hoặc ngày cuối tháng, nếu tháng đó không có đủ số ngày User đã chọn).
 
 ↓
 
@@ -1028,6 +1106,16 @@ Hệ thống yêu cầu User cập nhật:
 ↓
 
 System tính Budget mới.
+
+---
+
+## AC-008b
+
+Nếu User không chọn Budget Reset Day (bỏ trống).
+
+↓
+
+Hệ thống không cho tiếp tục, hiển thị Validation Error tại UI chọn lịch.
 
 ---
 
@@ -1155,11 +1243,16 @@ Bottom Navigation bắt đầu hiển thị.
 
 Hiện tại MVP đã thống nhất:
 
-- Budget được khởi tạo theo hai Scenario.
+- Budget được khởi tạo theo hai Scenario, xác định bằng cách so sánh ngày hôm nay với Budget Reset Day User tự chọn.
 - Saving Goal trong Onboarding là Optional.
-- Budget Reset Day mặc định bằng ngày User hoàn thành Onboarding.
+- Budget Reset Day do User tự chọn qua UI lịch trong Financial Setup (bắt buộc, không còn mặc định theo ngày hoàn thành Onboarding — xem `docs/03_DELTA_SPEC.md`, DELTA-003).
 - User có thể chỉnh sửa Budget và Budget Reset Day sau khi hoàn thành Onboarding.
 - User chỉ thực hiện Onboarding một lần.
+
+Đang chờ xác nhận (xem DELTA-003 để biết chi tiết):
+
+- Thứ tự hỏi Budget Reset Day trong Step 2 (trước hay sau Income/Fixed Expenses).
+- Có cần đổi công thức "số ngày còn lại trong chu kỳ" ở Dashboard/Expense (hiện đang tính theo hết tháng dương lịch) sang tính theo "tới Budget Reset Day tiếp theo" hay không — nếu có, sẽ cần một Delta riêng (DELTA-004) vì ảnh hưởng ra ngoài phạm vi Onboarding.
 
 Các nội dung sau chưa thuộc phạm vi MVP:
 
