@@ -1,6 +1,7 @@
 export type OnboardingStep = "welcome" | "financial" | "saving-goal" | "completed";
 
 export type FinancialSetupData = {
+  budgetResetDay: number;
   monthlyIncome: number;
   fixedExpenses: number;
   remainingBudget: number;
