@@ -8,7 +8,8 @@ type BudgetSummaryState = "loading" | "normal" | "warning" | "empty";
 type BudgetSummaryCardProps = {
   monthlyBudget: string;
   remainingBudget: string;
-  remainingDailyBudget: string;
+  todayRemaining: string;
+  todayBudget: string;
   budgetCycle: string;
   budgetProgress: number;
   projectedDaysLeftLabel: string;
@@ -25,10 +26,11 @@ export function BudgetSummaryCard({
   onEditBudget,
   projectedDaysLeftLabel,
   remainingBudget,
-  remainingDailyBudget,
   spendingPaceDelta,
   spendingPaceLabel,
   state = "normal",
+  todayBudget,
+  todayRemaining,
 }: BudgetSummaryCardProps) {
   const isWarning = state === "warning";
 
@@ -67,7 +69,11 @@ export function BudgetSummaryCard({
       </div>
 
       <div className="grid grid-cols-3 gap-sm">
-        <BudgetInfoBox label="Hôm nay nên tiêu" value={remainingDailyBudget} />
+        <BudgetInfoBox
+          label="Hôm nay nên tiêu"
+          secondaryValue={`/ ${todayBudget}`}
+          value={todayRemaining}
+        />
         <BudgetInfoBox label="Dự kiến hết" value={projectedDaysLeftLabel} />
         <BudgetInfoBox
           label="Tốc độ chi tiêu"
@@ -104,10 +110,12 @@ export function BudgetSummaryCard({
 
 function BudgetInfoBox({
   label,
+  secondaryValue,
   tone = "neutral",
   value,
 }: {
   label: string;
+  secondaryValue?: string;
   tone?: "neutral" | "warning" | "success";
   value: string;
 }) {
@@ -118,7 +126,7 @@ function BudgetInfoBox({
       </p>
       <p
         className={cn(
-          "mt-xs text-caption font-semibold",
+          "mt-xs text-caption font-semibold leading-tight",
           tone === "warning" && "text-pace-warning",
           tone === "success" && "text-pace-success",
           tone === "neutral" && "text-pace-text-primary",
@@ -126,6 +134,11 @@ function BudgetInfoBox({
       >
         {value}
       </p>
+      {secondaryValue ? (
+        <p className="text-[10px] leading-tight text-pace-text-secondary">
+          {secondaryValue}
+        </p>
+      ) : null}
     </div>
   );
 }
