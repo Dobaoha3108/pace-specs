@@ -38,7 +38,6 @@ export type DashboardViewModel = {
   weeklySpending: number;
   weeklyBudget: number;
   weeklyBudgetUsage: number;
-  spendingPaceDelta: number;
   projectedDaysLeft: number;
   todayBudgetBaseline: number;
   todayRemainingBudget: number;
@@ -46,3 +45,4 @@ export type DashboardViewModel = {
   latestInsight?: PigPigInsight;
   unreadNotificationCount: number;
 };
+
