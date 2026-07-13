@@ -229,6 +229,18 @@ Validate
 
 ↓
 
+Kiểm tra Daily Budget Overspend (EXP-007)
+
+↓
+
+Nếu vượt Remaining Daily Budget hôm nay → Confirmation Dialog
+
+↓
+
+Nếu User chọn "Tiếp tục lưu" hoặc không vượt mức
+
+↓
+
 Create Expense
 
 ↓
@@ -286,6 +298,10 @@ Expense Detail
 ↓
 
 Edit Expense
+
+↓
+
+Kiểm tra Daily Budget Overspend (EXP-007)
 
 ↓
 
