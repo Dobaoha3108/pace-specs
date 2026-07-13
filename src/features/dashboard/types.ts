@@ -40,6 +40,8 @@ export type DashboardViewModel = {
   weeklyBudgetUsage: number;
   spendingPaceDelta: number;
   projectedDaysLeft: number;
+  todayBudgetBaseline: number;
+  todayRemainingBudget: number;
   recentExpenses: Expense[];
   latestInsight?: PigPigInsight;
   unreadNotificationCount: number;
