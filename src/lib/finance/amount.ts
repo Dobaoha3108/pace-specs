@@ -22,3 +22,11 @@ export function getRemainingDaysInMonth(date: Date): number {
 
   return Math.max(1, lastDayOfMonth - date.getDate() + 1);
 }
+
+export function getTotalDaysInMonth(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+export function getElapsedDaysInMonth(date: Date): number {
+  return date.getDate();
+}
