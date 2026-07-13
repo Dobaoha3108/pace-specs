@@ -142,6 +142,39 @@ Critical
 
 ---
 
+## EXP-007
+
+### Title
+
+Daily Budget Overspend Confirmation
+
+### Description
+
+Khi User lưu (Save) một Expense (tạo mới hoặc chỉnh sửa), hệ thống phải kiểm tra:
+
+Tổng Expense (Planned + Completed) trong ngày hôm nay, tính cả Expense vừa nhập > Remaining Daily Budget hiện tại.
+
+Nếu điều kiện đúng, hiển thị Confirmation Dialog (CMP-015) trước khi lưu, với nội dung cảnh báo số tiền vượt là bao nhiêu. Dialog có hai lựa chọn:
+
+- Tiếp tục lưu: Expense được tạo/cập nhật bình thường, đồng thời hệ thống vẫn tạo Notification "Budget Warning" như quy định ở NTF-004.
+- Quay lại chỉnh sửa: đóng dialog, không lưu Expense.
+
+Confirmation Dialog này không chặn việc lưu Expense, User vẫn có quyền tiêu vượt mức, dialog chỉ đóng vai trò xác nhận có chủ đích.
+
+Kiểm tra này chỉ áp dụng khi ngày hiệu lực của Expense (Completed Date nếu có, nếu không thì Planned Date) là ngày hôm nay.
+
+### Applies To
+
+- Expense
+- Budget
+- Dashboard
+
+### Priority
+
+Medium
+
+---
+
 # 6. Saving Goal Rules
 
 ## SVG-001
