@@ -13,6 +13,12 @@ export function formatVnd(amount: number): string {
   }).format(amount);
 }
 
+export function formatNumber(value: number): string {
+  return new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 export function getRemainingDaysInMonth(date: Date): number {
   const lastDayOfMonth = new Date(
     date.getFullYear(),
