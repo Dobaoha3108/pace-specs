@@ -17,6 +17,7 @@ const mockVouchers: RewardVoucher[] = [
   {
     id: "voucher-highlands-20k",
     brandName: "Highlands Coffee",
+    brandLogo: "/assets/voucher/Logo%20Highland.png",
     title: "Giam 20.000d cho hoa don tu 60.000d",
     description: "Voucher danh rieng cho khach hang than thiet cua PACE.",
     pigCoinCost: 50,
@@ -36,6 +37,7 @@ const mockVouchers: RewardVoucher[] = [
   {
     id: "voucher-cgv-30k",
     brandName: "CGV",
+    brandLogo: "/assets/voucher/Logo%20CGV.png",
     title: "Giam 30.000d ve xem phim",
     description: "Voucher danh rieng cho khach hang than thiet cua PACE.",
     pigCoinCost: 80,
@@ -55,6 +57,7 @@ const mockVouchers: RewardVoucher[] = [
   {
     id: "voucher-circlek-15k",
     brandName: "Circle K",
+    brandLogo: "/assets/voucher/Logo%20Circle%20K.png",
     title: "Giam 15.000d cho hoa don tu 50.000d",
     description: "Voucher danh rieng cho khach hang than thiet cua PACE.",
     pigCoinCost: 40,
@@ -74,6 +77,7 @@ const mockVouchers: RewardVoucher[] = [
   {
     id: "voucher-mixue-10k",
     brandName: "Mixue",
+    brandLogo: "/assets/voucher/Logo%20Mixue.png",
     title: "Giam 10.000d cho do uong bat ky",
     description: "Voucher danh rieng cho khach hang than thiet cua PACE.",
     pigCoinCost: 30,
@@ -93,6 +97,7 @@ const mockVouchers: RewardVoucher[] = [
   {
     id: "voucher-shopeefood-25k",
     brandName: "ShopeeFood",
+    brandLogo: "/assets/voucher/Logo%20shoppe%20food.png",
     title: "Freeship 25.000d",
     description: "Voucher danh rieng cho khach hang than thiet cua PACE.",
     pigCoinCost: 60,
