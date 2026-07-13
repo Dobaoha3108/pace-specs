@@ -163,6 +163,35 @@ export function getTodaysExpenseTotal(
     .reduce((total, expense) => total + expense.amount, 0);
 }
 
+export function getTodayBudgetBreakdown(
+  userId: string,
+  options?: { excludeExpenseId?: string },
+): {
+  todayBudgetBaseline: number;
+  todayRemainingBudget: number;
+  todaysExpenseTotal: number;
+} {
+  const budget = getCurrentBudget(userId);
+
+  if (!budget) {
+    return { todayBudgetBaseline: 0, todayRemainingBudget: 0, todaysExpenseTotal: 0 };
+  }
+
+  const todaysExpenseTotal = getTodaysExpenseTotal(userId, options);
+  const daysLeftInCycle = getRemainingDaysInMonth(new Date());
+  // Baseline is derived as if today's expenses hadn't happened yet, so it
+  // stays fixed for the day while remainingBudget (and thus this baseline's
+  // numerator) only moves once the day rolls over.
+  const todayBudgetBaseline =
+    (budget.remainingBudget + todaysExpenseTotal) / daysLeftInCycle;
+  const todayRemainingBudget = Math.max(
+    0,
+    todayBudgetBaseline - todaysExpenseTotal,
+  );
+
+  return { todayBudgetBaseline, todayRemainingBudget, todaysExpenseTotal };
+}
+
 export function checkDailyBudgetOverspend({
   amount,
   effectiveDate,
@@ -181,17 +210,12 @@ export function checkDailyBudgetOverspend({
     return { exceeds: false, overBy: 0 };
   }
 
-  const budget = getCurrentBudget(userId);
-
-  if (!budget) {
-    return { exceeds: false, overBy: 0 };
-  }
-
-  const todaysExpenseTotal = getTodaysExpenseTotal(userId, {
-    excludeExpenseId,
-  });
+  const { todayBudgetBaseline, todaysExpenseTotal } = getTodayBudgetBreakdown(
+    userId,
+    { excludeExpenseId },
+  );
   const projectedTotal = todaysExpenseTotal + amount;
-  const overBy = projectedTotal - budget.remainingDailyBudget;
+  const overBy = projectedTotal - todayBudgetBaseline;
 
   return { exceeds: overBy > 0, overBy: Math.max(0, overBy) };
 }
