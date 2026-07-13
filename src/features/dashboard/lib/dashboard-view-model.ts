@@ -1,4 +1,8 @@
-import { getRemainingDaysInMonth } from "@/lib/finance/amount";
+import {
+  getElapsedDaysInMonth,
+  getRemainingDaysInMonth,
+  getTotalDaysInMonth,
+} from "@/lib/finance/amount";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
 import type { BudgetStreak, Expense, PigPigInsight } from "@/types/finance";
 import type { DashboardViewModel } from "@/features/dashboard/types";
@@ -15,6 +19,15 @@ function isThisWeek(dateValue: string, now = new Date()) {
   endOfWeek.setDate(startOfWeek.getDate() + 7);
 
   return date >= startOfWeek && date < endOfWeek;
+}
+
+function isThisMonth(dateValue: string, now = new Date()) {
+  const date = new Date(dateValue);
+
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth()
+  );
 }
 
 function getExpenseDisplayDate(expense: Expense) {
@@ -102,6 +115,28 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
   );
   const weeklyBudgetUsage =
     weeklyBudget > 0 ? Math.round((weeklySpending / weeklyBudget) * 100) : 0;
+
+  const now = new Date();
+  const totalDaysInCycle = getTotalDaysInMonth(now);
+  const elapsedDaysInCycle = getElapsedDaysInMonth(now);
+  const cycleSpendingSoFar = expenses
+    .filter((expense) => isThisMonth(getExpenseDisplayDate(expense), now))
+    .reduce((total, expense) => total + expense.amount, 0);
+  const plannedSpendingToDate =
+    budget.monthlyBudget > 0
+      ? (budget.monthlyBudget / totalDaysInCycle) * elapsedDaysInCycle
+      : 0;
+  const spendingPaceDelta =
+    plannedSpendingToDate > 0
+      ? Math.round((cycleSpendingSoFar / plannedSpendingToDate - 1) * 100)
+      : 0;
+  const averageDailySpending =
+    elapsedDaysInCycle > 0 ? cycleSpendingSoFar / elapsedDaysInCycle : 0;
+  const projectedDaysLeft =
+    averageDailySpending > 0
+      ? Math.max(0, Math.round(budget.remainingBudget / averageDailySpending))
+      : Math.max(0, totalDaysInCycle - elapsedDaysInCycle + 1);
+
   const recentExpenses = [...expenses]
     .sort(
       (a, b) =>
@@ -118,6 +153,8 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
     weeklySpending,
     weeklyBudget,
     weeklyBudgetUsage,
+    spendingPaceDelta,
+    projectedDaysLeft,
     recentExpenses,
     latestInsight,
     unreadNotificationCount,
