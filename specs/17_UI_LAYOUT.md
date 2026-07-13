@@ -1240,9 +1240,15 @@ Thứ tự hiển thị:
 
 ## Pig Coin Balance Card
 
-Hiển thị:
+Nền card màu Pig Pig Highlight (#FDC9D3).
 
-- Pig Coin Balance.
+Hiển thị theo thứ tự từ trên xuống (cột trái):
+
+1. Label "Pig Coin của bạn".
+2. Pig Coin Icon (asset `icons/pig_coin.png`, hiển thị cỡ lớn, không có nền/khung bao quanh) + Pig Coin Balance (số), nằm cùng hàng.
+3. Liên kết "My Voucher" (thay cho vị trí "Lịch sử nhận coin" ở bản tham khảo — PACE MVP chưa có tính năng Lịch sử nhận coin), có mũi tên chevron, bấm vào điều hướng tới My Voucher.
+
+Cột phải: hình minh hoạ Pig Pig (asset `pig-pig/pig_default.png`), căn giữa theo chiều dọc của card.
 
 ---
 
