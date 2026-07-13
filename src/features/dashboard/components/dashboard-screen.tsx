@@ -113,8 +113,6 @@ export function DashboardScreen({
                 data.projectedDaysLeft,
               )}
               remainingBudget={formatVnd(data.budget.remainingBudget)}
-              spendingPaceDelta={data.spendingPaceDelta}
-              spendingPaceLabel={formatSpendingPace(data.spendingPaceDelta)}
               state={data.todayRemainingBudget <= 0 ? "warning" : "normal"}
               todayBudget={formatVnd(data.todayBudgetBaseline)}
               todayRemaining={formatVnd(data.todayRemainingBudget)}
@@ -309,15 +307,6 @@ function formatProjectedDaysLeft(projectedDaysLeft: number) {
   }
 
   return `Còn ${projectedDaysLeft} ngày`;
-}
-
-function formatSpendingPace(spendingPaceDelta: number) {
-  if (spendingPaceDelta === 0) {
-    return "Đúng kế hoạch";
-  }
-
-  const direction = spendingPaceDelta > 0 ? "Nhanh hơn" : "Chậm hơn";
-  return `${direction} ${Math.abs(spendingPaceDelta)}%`;
 }
 
 function getSavingGoalProgress(goal: SavingGoal) {
