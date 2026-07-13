@@ -196,28 +196,44 @@ export function checkDailyBudgetOverspend({
   amount,
   effectiveDate,
   excludeExpenseId,
+  previousAmount = 0,
   userId,
 }: {
   userId: string;
   amount: number;
   effectiveDate: string;
   excludeExpenseId?: string;
-}): { exceeds: boolean; overBy: number } {
+  /** Amount of the expense being edited, before this save (0 when creating). */
+  previousAmount?: number;
+}): {
+  exceeds: boolean;
+  currentDailyAverage: number;
+  newDailyAverage: number;
+} {
   const todayKey = getTodayKey(new Date());
   const effectiveDateKey = new Date(effectiveDate).toISOString().slice(0, 10);
+  const budget = getCurrentBudget(userId);
 
-  if (effectiveDateKey !== todayKey) {
-    return { exceeds: false, overBy: 0 };
+  if (!budget || effectiveDateKey !== todayKey) {
+    return { exceeds: false, currentDailyAverage: 0, newDailyAverage: 0 };
   }
 
   const { todayBudgetBaseline, todaysExpenseTotal } = getTodayBudgetBreakdown(
     userId,
     { excludeExpenseId },
   );
-  const projectedTotal = todaysExpenseTotal + amount;
-  const overBy = projectedTotal - todayBudgetBaseline;
+  const projectedTodayTotal = todaysExpenseTotal + amount;
+  const exceeds = projectedTodayTotal > todayBudgetBaseline;
 
-  return { exceeds: overBy > 0, overBy: Math.max(0, overBy) };
+  const daysLeftInCycle = getRemainingDaysInMonth(new Date());
+  const currentDailyAverage = budget.remainingBudget / daysLeftInCycle;
+  const projectedRemainingBudget = Math.max(
+    0,
+    budget.remainingBudget - amount + previousAmount,
+  );
+  const newDailyAverage = projectedRemainingBudget / daysLeftInCycle;
+
+  return { exceeds, currentDailyAverage, newDailyAverage };
 }
 
 export function saveExpense(expense: Expense) {
