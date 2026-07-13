@@ -88,3 +88,29 @@ User phản hồi sau khi test: thấy ô "Tốc độ chi tiêu" không cần t
 ### Không thay đổi
 
 - Rule `EXP-007` (pop-up cảnh báo vượt ngân sách hôm nay) không liên quan tới Tốc độ chi tiêu, giữ nguyên không đổi.
+
+## 2026-07-13 (5) — [PROPOSAL] Onboarding: Budget Reset Day do User tự chọn, không còn mặc định theo ngày hoàn thành Onboarding
+
+### Trạng thái
+
+`Proposed` — chờ Dương xác nhận Open Questions ở `docs/03_DELTA_SPEC.md` (DELTA-003) trước khi merge vào spec chính thức và sửa code. Chưa có thay đổi code nào ở mục này.
+
+### Lý do
+
+Hiện tại `budgetResetDay` được System tự gán bằng ngày User hoàn thành Onboarding (`new Date().getDate()`), User không được hỏi và không thể chọn ngày này. Yêu cầu mới: User phải tự nhập/chọn Budget Reset Day (ngày nhận Income hàng tháng) qua UI chọn lịch, khớp với thiết kế gốc ở `specs/13_BUSINESS WORKFLOW.md` và field `payday` ở `specs/10_DOMAIN_MODEL.md`.
+
+### Spec thay đổi (Draft, chờ Approved)
+
+- `feature-specs/21_ONBOARDING.md` — Version 1.1 → 1.2 (Status: Draft). Thêm Bước 0 “Chọn Budget Reset Day” bắt buộc trước khi xác định Scenario A/B; Scenario A/B giờ xác định bằng so sánh ngày hôm nay với Budget Reset Day vừa chọn (thay vì “ngày 1 đầu tháng dương lịch”). Cập nhật Screen Content, User Actions, System Response, Navigation, Display Rules, Validation, AC-003/004/008 và thêm AC-004a, AC-008b.
+- `specs/11_DATA_MODEL.md` — field `budgetResetDay`: bỏ mô tả “mặc định bằng ngày hoàn thành Onboarding”, ghi rõ đây là input bắt buộc từ User, thêm rule tháng thiếu ngày (dùng ngày cuối tháng).
+- `docs/03_DELTA_SPEC.md` — thêm DELTA-003 (chi tiết flow, validation, open questions).
+
+### Code thay đổi
+
+Chưa có — sẽ thực hiện sau khi Open Questions được xác nhận (dự kiến: `src/features/onboarding/components/onboarding-screen.tsx`, `src/features/onboarding/types.ts`, thêm component chọn lịch mới).
+
+### Chưa thống nhất (xem DELTA-003 để xác nhận)
+
+1. Thứ tự hỏi Budget Reset Day trong Step 2 (trước hay sau Income/Fixed Expenses).
+2. Có cần đổi công thức “số ngày còn lại trong chu kỳ” ở Dashboard/Expense (EXP-007, ô “Dự kiến hết”) sang tính theo Budget Reset Day thay vì hết tháng dương lịch hay không — nếu có sẽ cần DELTA-004 riêng.
+3. Rule tháng thiếu ngày (chọn 31 → dùng ngày cuối tháng) có đúng ý muốn không.
