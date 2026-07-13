@@ -13,6 +13,7 @@ import { createId } from "@/lib/id";
 import {
   formatVnd,
   getRemainingDaysInMonth,
+  isBudgetResetDay,
   parseCurrencyInput,
 } from "@/lib/finance/amount";
 import type {
@@ -28,8 +29,10 @@ type OnboardingScreenProps = {
 };
 
 type FinancialErrors = {
+  budgetResetDay?: string;
   monthlyIncome?: string;
   fixedExpenses?: string;
+  remainingBudget?: string;
 };
 
 type SavingGoalErrors = {
@@ -44,9 +47,11 @@ const invalidFieldsMessage =
 
 export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const [step, setStep] = useState<OnboardingStep>("welcome");
+  const [budgetResetDay, setBudgetResetDay] = useState<number | null>(null);
   const [financialInputs, setFinancialInputs] = useState({
     monthlyIncome: "",
     fixedExpenses: "",
+    remainingBudget: "",
   });
   const [savingGoalInputs, setSavingGoalInputs] = useState({
     name: "",
@@ -66,40 +71,57 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const currentStepNumber =
     step === "welcome" ? 1 : step === "financial" ? 2 : step === "saving-goal" ? 3 : 4;
 
+  const isScenarioA =
+    budgetResetDay !== null && isBudgetResetDay(budgetResetDay, now);
+
   const monthlyIncome = parseCurrencyInput(financialInputs.monthlyIncome);
   const fixedExpenses = parseCurrencyInput(financialInputs.fixedExpenses);
+  const remainingBudgetInput = parseCurrencyInput(
+    financialInputs.remainingBudget,
+  );
   const monthlyBudgetPreview =
-    Number.isFinite(monthlyIncome) &&
-    Number.isFinite(fixedExpenses)
+    Number.isFinite(monthlyIncome) && Number.isFinite(fixedExpenses)
       ? monthlyIncome - fixedExpenses
       : Number.NaN;
 
   function validateFinancialSetup() {
     const nextErrors: FinancialErrors = {};
 
-    if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
-      nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
+    if (budgetResetDay === null) {
+      nextErrors.budgetResetDay = "Vui lòng chọn một ngày.";
+      setFinancialErrors(nextErrors);
+      return false;
     }
 
-    if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
-      nextErrors.fixedExpenses = "Fixed Cost phải lớn hơn hoặc bằng 0.";
-    }
+    if (isScenarioA) {
+      if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
+        nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
+      }
 
-    if (
-      Number.isFinite(monthlyIncome) &&
-      Number.isFinite(fixedExpenses) &&
-      fixedExpenses > monthlyIncome
-    ) {
-      nextErrors.fixedExpenses =
-        "Fixed Cost không được lớn hơn Monthly Income.";
-    }
+      if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
+        nextErrors.fixedExpenses = "Fixed Cost phải lớn hơn hoặc bằng 0.";
+      }
 
-    if (
-      Number.isFinite(monthlyIncome) &&
-      Number.isFinite(fixedExpenses) &&
-      monthlyIncome - fixedExpenses <= 0
-    ) {
-      nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
+      if (
+        Number.isFinite(monthlyIncome) &&
+        Number.isFinite(fixedExpenses) &&
+        fixedExpenses > monthlyIncome
+      ) {
+        nextErrors.fixedExpenses =
+          "Fixed Cost không được lớn hơn Monthly Income.";
+      }
+
+      if (
+        Number.isFinite(monthlyIncome) &&
+        Number.isFinite(fixedExpenses) &&
+        monthlyIncome - fixedExpenses <= 0
+      ) {
+        nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
+      }
+    } else {
+      if (!Number.isFinite(remainingBudgetInput) || remainingBudgetInput <= 0) {
+        nextErrors.remainingBudget = "Giá trị phải lớn hơn 0.";
+      }
     }
 
     setFinancialErrors(nextErrors);
@@ -108,16 +130,19 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   }
 
   function continueFromFinancialSetup() {
-    if (!validateFinancialSetup()) {
+    if (!validateFinancialSetup() || budgetResetDay === null) {
       setDialogMessage(invalidFieldsMessage);
       return;
     }
 
-    const budgetAmount = monthlyIncome - fixedExpenses;
+    const budgetAmount = isScenarioA
+      ? monthlyIncome - fixedExpenses
+      : remainingBudgetInput;
 
     setFinancialData({
-      monthlyIncome,
-      fixedExpenses,
+      budgetResetDay,
+      monthlyIncome: isScenarioA ? monthlyIncome : 0,
+      fixedExpenses: isScenarioA ? fixedExpenses : 0,
       monthlyBudget: budgetAmount,
       remainingBudget: budgetAmount,
     });
@@ -157,7 +182,7 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
 
     const timestamp = new Date().toISOString();
     const userId = createId();
-    const budgetResetDay = new Date().getDate();
+    const budgetResetDay = financialData.budgetResetDay;
     const remainingDailyBudget =
       financialData.remainingBudget / getRemainingDaysInMonth(new Date());
 
@@ -288,11 +313,20 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
               ) : null}
               {step === "financial" ? (
                 <FinancialSetupStep
+                  budgetResetDay={budgetResetDay}
                   errors={financialErrors}
                   inputs={financialInputs}
+                  isScenarioA={isScenarioA}
                   monthlyBudgetPreview={monthlyBudgetPreview}
                   onChange={setFinancialInputs}
                   onContinue={continueFromFinancialSetup}
+                  onSelectBudgetResetDay={(day) => {
+                    setBudgetResetDay(day);
+                    setFinancialErrors((current) => ({
+                      ...current,
+                      budgetResetDay: undefined,
+                    }));
+                  }}
                 />
               ) : null}
               {step === "saving-goal" ? (
@@ -347,71 +381,143 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
 }
 
 function FinancialSetupStep({
+  budgetResetDay,
   errors,
   inputs,
+  isScenarioA,
   monthlyBudgetPreview,
   onChange,
   onContinue,
+  onSelectBudgetResetDay,
 }: {
+  budgetResetDay: number | null;
   errors: FinancialErrors;
-  inputs: { monthlyIncome: string; fixedExpenses: string };
+  inputs: { monthlyIncome: string; fixedExpenses: string; remainingBudget: string };
+  isScenarioA: boolean;
   monthlyBudgetPreview: number;
   onChange: (value: {
     monthlyIncome: string;
     fixedExpenses: string;
+    remainingBudget: string;
   }) => void;
   onContinue: () => void;
+  onSelectBudgetResetDay: (day: number) => void;
 }) {
   return (
     <div className="space-y-lg">
       <div>
         <h1 className="text-h2">Financial Setup</h1>
         <p className="mt-xs text-body text-pace-text-secondary">
-          Nhập Monthly Income và Fixed Cost để PACE tính budget mặc định cho
-          tháng hiện tại.
+          Bạn nhận Income (lương/trợ cấp...) vào ngày nào hàng tháng?
         </p>
       </div>
 
-      <div className="space-y-md">
-        <Input
-          error={errors.monthlyIncome}
-          inputMode="numeric"
-          label="Monthly Income"
-          leftAddon="VND"
-          onChange={(event) =>
-            onChange({ ...inputs, monthlyIncome: event.target.value })
-          }
-          placeholder="5000000"
-          value={inputs.monthlyIncome}
-        />
-        <Input
-          error={errors.fixedExpenses}
-          inputMode="numeric"
-          label="Fixed Cost"
-          leftAddon="VND"
-          onChange={(event) =>
-            onChange({ ...inputs, fixedExpenses: event.target.value })
-          }
-          placeholder="1500000"
-          value={inputs.fixedExpenses}
-        />
-      </div>
+      <DayPickerGrid
+        error={errors.budgetResetDay}
+        onSelect={onSelectBudgetResetDay}
+        selectedDay={budgetResetDay}
+      />
 
-      <Card>
-        <p className="text-caption text-pace-text-secondary">
-          Budget = Monthly Income - Fixed Cost
-        </p>
-        <p className="mt-xs text-title">
-          {Number.isFinite(monthlyBudgetPreview) && monthlyBudgetPreview > 0
-            ? formatVnd(monthlyBudgetPreview)
-            : formatVnd(0)}
-        </p>
-        <p className="mt-xs text-caption text-pace-text-secondary">
-          Budget Reset Day mặc định là ngày bạn hoàn thành onboarding.
-        </p>
-      </Card>
+      {budgetResetDay === null ? null : isScenarioA ? (
+        <div className="space-y-md">
+          <p className="text-body text-pace-text-secondary">
+            Nhập Monthly Income và Fixed Cost để PACE tính budget cho chu kỳ
+            này.
+          </p>
+          <Input
+            error={errors.monthlyIncome}
+            inputMode="numeric"
+            label="Monthly Income"
+            leftAddon="VND"
+            onChange={(event) =>
+              onChange({ ...inputs, monthlyIncome: event.target.value })
+            }
+            placeholder="5000000"
+            value={inputs.monthlyIncome}
+          />
+          <Input
+            error={errors.fixedExpenses}
+            inputMode="numeric"
+            label="Fixed Cost"
+            leftAddon="VND"
+            onChange={(event) =>
+              onChange({ ...inputs, fixedExpenses: event.target.value })
+            }
+            placeholder="1500000"
+            value={inputs.fixedExpenses}
+          />
+
+          <Card>
+            <p className="text-caption text-pace-text-secondary">
+              Budget = Monthly Income - Fixed Cost
+            </p>
+            <p className="mt-xs text-title">
+              {Number.isFinite(monthlyBudgetPreview) &&
+              monthlyBudgetPreview > 0
+                ? formatVnd(monthlyBudgetPreview)
+                : formatVnd(0)}
+            </p>
+          </Card>
+        </div>
+      ) : (
+        <div className="space-y-md">
+          <p className="text-body text-pace-text-secondary">
+            Chu kỳ hiện tại đã bắt đầu từ trước ngày {budgetResetDay}. Số
+            tiền bạn còn có thể chi tiêu tới trước lần nhận Income tiếp theo
+            là bao nhiêu?
+          </p>
+          <Input
+            error={errors.remainingBudget}
+            inputMode="numeric"
+            label="Remaining Budget"
+            leftAddon="VND"
+            onChange={(event) =>
+              onChange({ ...inputs, remainingBudget: event.target.value })
+            }
+            placeholder="3000000"
+            value={inputs.remainingBudget}
+          />
+        </div>
+      )}
 
       <Button onClick={onContinue}>Tiếp tục</Button>
+    </div>
+  );
+}
+
+/** CMP-016 Day Picker Grid — lưới chọn 1 ngày từ 1 đến 31. */
+function DayPickerGrid({
+  error,
+  onSelect,
+  selectedDay,
+}: {
+  error?: string;
+  onSelect: (day: number) => void;
+  selectedDay: number | null;
+}) {
+  const days = Array.from({ length: 31 }, (_, index) => index + 1);
+
+  return (
+    <div>
+      <div className="grid grid-cols-7 gap-xs">
+        {days.map((day) => (
+          <button
+            className={
+              selectedDay === day
+                ? "aspect-square rounded-button border border-pace-primary bg-pace-primary text-caption font-semibold text-white"
+                : "aspect-square rounded-button border border-pace-border bg-pace-surface text-caption font-semibold text-pace-text-primary"
+            }
+            key={day}
+            onClick={() => onSelect(day)}
+            type="button"
+          >
+            {day}
+          </button>
+        ))}
+      </div>
+      {error ? (
+        <p className="mt-xs text-caption text-pace-danger">{error}</p>
+      ) : null}
     </div>
   );
 }
