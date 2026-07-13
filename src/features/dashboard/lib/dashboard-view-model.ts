@@ -1,3 +1,4 @@
+import { getTodayBudgetBreakdown } from "@/features/finance/lib/finance-service";
 import {
   getElapsedDaysInMonth,
   getRemainingDaysInMonth,
@@ -137,6 +138,13 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
       ? Math.max(0, Math.round(budget.remainingBudget / averageDailySpending))
       : Math.max(0, totalDaysInCycle - elapsedDaysInCycle + 1);
 
+  // Today's allowance is derived from the shared getTodayBudgetBreakdown
+  // helper so the Dashboard display always matches the EXP-007 overspend
+  // check used on the Add/Edit Expense screen.
+  const { todayBudgetBaseline, todayRemainingBudget } = getTodayBudgetBreakdown(
+    user.id,
+  );
+
   const recentExpenses = [...expenses]
     .sort(
       (a, b) =>
@@ -155,6 +163,8 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
     weeklyBudgetUsage,
     spendingPaceDelta,
     projectedDaysLeft,
+    todayBudgetBaseline,
+    todayRemainingBudget,
     recentExpenses,
     latestInsight,
     unreadNotificationCount,
