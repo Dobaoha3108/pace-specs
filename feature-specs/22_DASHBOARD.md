@@ -167,9 +167,6 @@ Hiển thị:
 
 - Remaining Budget
 - Remaining Daily Budget
-- Budget Status
-
-Budget Status thể hiện "Tốc độ chi tiêu" — so sánh chi tiêu thực tế từ đầu chu kỳ với mức chi tiêu kế hoạch tới hiện tại, hiển thị dạng nhãn nhanh hơn/chậm hơn/đúng kế hoạch (xem công thức và layout chi tiết tại `specs/17_UI_LAYOUT.md`, mục "Budget Overview Card").
 
 ---
 
@@ -546,7 +543,6 @@ Hiển thị:
 
 - Remaining Budget.
 - Remaining Daily Budget.
-- Budget Status.
 
 Nếu Budget chưa được tạo.
 
@@ -915,7 +911,6 @@ Budget Summary luôn hiển thị:
 
 - Remaining Budget.
 - Remaining Daily Budget.
-- Budget Status.
 
 ---
 
@@ -979,6 +974,8 @@ Budget Streak luôn hiển thị:
 Không hiển thị Longest Streak.
 
 ---
+
+## AC-008
 
 ## AC-008
 
@@ -1048,6 +1045,8 @@ Click Weekly Spending Snapshot.
 Mở Financial Report.
 
 ---
+
+## AC-015
 
 ## AC-015
 
