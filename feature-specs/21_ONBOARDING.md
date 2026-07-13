@@ -1,10 +1,10 @@
 # 08. ONBOARDING
 
-Version: 1.2 (MVP, Draft — chờ xác nhận DELTA-003 trước khi chốt Final)
+Version: 1.2 (MVP, Final)
 
 Project: PACE - Personal Finance Management App
 
-Status: Draft (xem `docs/03_DELTA_SPEC.md` — DELTA-003)
+Status: Final (đã merge DELTA-003, xem `docs/03_DELTA_SPEC.md` và `docs/04_CHANGE_LOG.md`)
 
 ---
 
@@ -37,7 +37,7 @@ Sau khi hoàn thành Onboarding:
 
 ## Budget Reset Day (Ngày nhận Income hàng tháng)
 
-> Cập nhật theo DELTA-003 (`docs/03_DELTA_SPEC.md`).
+> Đã merge từ DELTA-003 (`docs/03_DELTA_SPEC.md`).
 
 Trước khi xác định Scenario, Financial Setup luôn hỏi User trước tiên:
 
@@ -155,6 +155,7 @@ Entry Screen
 - CMP-004 Secondary Button
 - CMP-014 Loading State
 - CMP-015 Confirmation Dialog
+- CMP-016 Day Picker Grid
 
 ---
 
@@ -996,6 +997,7 @@ Hiển thị nút:
 - CMP-004 Secondary Button
 - CMP-014 Loading State
 - CMP-015 Confirmation Dialog
+- CMP-016 Day Picker Grid
 
 ---
 
@@ -1245,14 +1247,14 @@ Hiện tại MVP đã thống nhất:
 
 - Budget được khởi tạo theo hai Scenario, xác định bằng cách so sánh ngày hôm nay với Budget Reset Day User tự chọn.
 - Saving Goal trong Onboarding là Optional.
-- Budget Reset Day do User tự chọn qua UI lịch trong Financial Setup (bắt buộc, không còn mặc định theo ngày hoàn thành Onboarding — xem `docs/03_DELTA_SPEC.md`, DELTA-003).
+- Budget Reset Day do User tự chọn qua UI Day Picker Grid (CMP-016) trong Financial Setup, hỏi **trước tiên** (Step 2.0, trước Income/Fixed Expenses/Remaining Budget) — bắt buộc, không còn mặc định theo ngày hoàn thành Onboarding (xem `docs/03_DELTA_SPEC.md`, DELTA-003 — Merged).
+- Tháng thiếu ngày (VD chọn 31, tháng chỉ có 28/29/30 ngày): hệ thống dùng ngày cuối tháng làm Budget Reset Day thực tế của tháng đó.
 - User có thể chỉnh sửa Budget và Budget Reset Day sau khi hoàn thành Onboarding.
 - User chỉ thực hiện Onboarding một lần.
 
-Đang chờ xác nhận (xem DELTA-003 để biết chi tiết):
+Không thuộc phạm vi của Onboarding, theo dõi riêng ở `docs/03_DELTA_SPEC.md` (DELTA-004, Proposed, chưa merge):
 
-- Thứ tự hỏi Budget Reset Day trong Step 2 (trước hay sau Income/Fixed Expenses).
-- Có cần đổi công thức "số ngày còn lại trong chu kỳ" ở Dashboard/Expense (hiện đang tính theo hết tháng dương lịch) sang tính theo "tới Budget Reset Day tiếp theo" hay không — nếu có, sẽ cần một Delta riêng (DELTA-004) vì ảnh hưởng ra ngoài phạm vi Onboarding.
+- Các công thức "số ngày còn lại trong chu kỳ" ở Dashboard/Expense (hiện tính theo hết tháng dương lịch) có nên đổi sang tính theo "tới Budget Reset Day tiếp theo" hay không — không ảnh hưởng hành vi của Onboarding, chỉ ảnh hưởng độ chính xác hiển thị ở feature khác cho User có Budget Reset Day khác ngày cuối tháng.
 
 Các nội dung sau chưa thuộc phạm vi MVP:
 
