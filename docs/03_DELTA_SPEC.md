@@ -147,7 +147,7 @@ Pop-up này **không chặn** việc tạo Expense (User vẫn có quyền tiêu
 
 ### Status
 
-Proposed — chờ Dương xác nhận các Open Question bên dưới trước khi merge vào spec chính thức và sửa code.
+Merged vào `feature-specs/21_ONBOARDING.md`, `specs/11_DATA_MODEL.md` (xem `docs/04_CHANGE_LOG.md`). Các Open Question đã được quyết định — xem mục "Quyết định" bên dưới.
 
 ### Title
 
@@ -193,19 +193,55 @@ Thứ tự hiển thị mới trong Financial Setup:
 
 High
 
-### Open Questions (cần Dương xác nhận trước khi Approve)
+### Quyết định (đã chốt, không còn Open Question)
 
-1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: đề xuất hỏi **trước** Monthly Income/Fixed Expenses (vì cần biết ngày này mới xác định được Scenario A hay B). Có đồng ý thứ tự này không, hay muốn hỏi Budget Reset Day **sau cùng**, sau khi đã nhập xong Income/Fixed Expenses/Remaining Budget?
-2. **Ảnh hưởng dây chuyền tới các công thức "số ngày còn lại trong chu kỳ"** đang dùng ở Dashboard/Expense (`getTodayBudgetBreakdown()`, ô "Dự kiến hết", rule `EXP-007`) — hiện tất cả đang tính theo "hết tháng dương lịch" (`getRemainingDaysInMonth`). Nếu Budget Reset Day không còn trùng ngày cuối tháng, các công thức này cần đổi mốc sang "tới Budget Reset Day tiếp theo" mới chính xác. Đây là thay đổi **ngoài phạm vi Onboarding**, ảnh hưởng `feature-specs/22_DASHBOARD.md`, `feature-specs/23_EXPENSE.md`, `specs/12_BUSINESS_RULES.md` (EXP-007) và nhiều file code. Đề xuất: xử lý bằng một Delta riêng (DELTA-004) sau khi Dương xác nhận muốn đổi mốc tính hay giữ nguyên "hết tháng dương lịch" cho các công thức này trong lúc chờ.
-3. **Ngày cuối tháng thiếu**: xác nhận rule đề xuất ở trên (chọn 31 → dùng ngày cuối tháng của tháng thiếu ngày) có đúng ý muốn không.
-4. **Sửa Budget Reset Day sau Onboarding**: giữ nguyên AC-009 cũ (cho phép đổi trong Budget Settings) — đúng không?
+1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: hỏi **trước tiên** (Step 2.0), trước Monthly Income/Fixed Expenses/Remaining Budget. Lý do: bắt buộc phải biết ngày này mới xác định được Scenario A hay B, nên không thể hỏi sau.
+2. **Ảnh hưởng dây chuyền tới các công thức "số ngày còn lại trong chu kỳ"** (Dashboard/Expense, `getTodayBudgetBreakdown()`, rule `EXP-007`): **giữ nguyên hành vi hiện tại** (tính theo "hết tháng dương lịch" qua `getRemainingDaysInMonth`) trong phạm vi DELTA-003 này. Đây là thay đổi ngoài phạm vi Onboarding, ảnh hưởng nhiều feature khác — theo dõi riêng ở **DELTA-004** (mục dưới đây), giữ trạng thái `Proposed`, không block việc merge DELTA-003.
+3. **Ngày cuối tháng thiếu**: xác nhận dùng ngày cuối tháng làm Reset Day thực tế khi tháng đó không có đủ số ngày User chọn (VD chọn 31, tháng chỉ có 28/29/30 ngày). Áp dụng nhất quán ở cả Onboarding lẫn các chu kỳ sau.
+4. **Sửa Budget Reset Day sau Onboarding**: giữ nguyên AC-009 cũ — User có thể đổi trong Budget Settings.
 
-### Impact nếu Approved
+### Impact (đã Merged)
 
-- Cập nhật `feature-specs/21_ONBOARDING.md` — Budget Initialization, Screen Content (Step 2), User Actions, System Response, Navigation, Display Rules, Validation, Acceptance Criteria (đã cập nhật sơ bộ trong bản nháp gửi kèm, đang chờ xác nhận Open Question #1–4 để chốt bản chính thức).
-- Cập nhật `specs/11_DATA_MODEL.md` — mô tả `budgetResetDay` (đã cập nhật: bỏ "mặc định theo ngày hoàn thành Onboarding").
-- Chưa đổi `specs/12_BUSINESS_RULES.md`, `feature-specs/22_DASHBOARD.md`, `feature-specs/23_EXPENSE.md` — chờ quyết định Open Question #2 (DELTA-004 riêng nếu cần).
-- Code cần sửa (sau khi Approved): `src/features/onboarding/components/onboarding-screen.tsx` (bỏ `new Date().getDate()`, thêm UI chọn lịch + state `budgetResetDay`), `src/features/onboarding/types.ts` (thêm field vào `FinancialSetupData`), có thể cần component lịch mới trong `src/components/ui/`.
+- Cập nhật `feature-specs/21_ONBOARDING.md` — Budget Initialization, Screen Content (Step 2), User Actions, System Response, Navigation, Display Rules, Validation, Acceptance Criteria (AC-003/004/008 cập nhật, thêm AC-004a, AC-008b). Version 1.1 → 1.2, Status: Final.
+- Cập nhật `specs/11_DATA_MODEL.md` — mô tả `budgetResetDay`: bỏ "mặc định theo ngày hoàn thành Onboarding", ghi rõ là input bắt buộc từ User + rule tháng thiếu ngày.
+- Cập nhật `specs/16_COMPONENT_LIBRARY` — thêm `CMP-016 Day Picker Grid`.
+- Không đổi `specs/12_BUSINESS_RULES.md`, `feature-specs/22_DASHBOARD.md`, `feature-specs/23_EXPENSE.md` trong Delta này — nằm trong phạm vi DELTA-004.
+- Code đã sửa: `src/features/onboarding/components/onboarding-screen.tsx` (bỏ `new Date().getDate()`, thêm UI Day Picker Grid + logic xác định Scenario A/B + branch nhập liệu theo Scenario), `src/features/onboarding/types.ts` (thêm `budgetResetDay` vào `FinancialSetupData`), `src/lib/finance/amount.ts` (thêm helper xác định Scenario + Reset Day thực tế trong tháng thiếu ngày), `src/lib/validation/business-rules.ts` (nới lỏng `assertBudgetIsValid` để hỗ trợ Scenario B).
+
+---
+
+## DELTA-004
+
+### Status
+
+Proposed — chưa merge. Nằm ngoài phạm vi yêu cầu Onboarding ban đầu, tạo ra do hệ quả của DELTA-003 (mục Open Question #2 cũ).
+
+### Title
+
+Đổi mốc tính "số ngày còn lại trong chu kỳ" ở Dashboard/Expense từ "hết tháng dương lịch" sang "tới Budget Reset Day tiếp theo"
+
+### Context / Lý do thay đổi
+
+Từ DELTA-003, `budgetResetDay` do User tự chọn và có thể khác ngày cuối tháng dương lịch. Tuy nhiên `getRemainingDaysInMonth()` (dùng trong `getTodayBudgetBreakdown()`, `checkDailyBudgetOverspend()` — rule `EXP-007`, và `recalculateBudget()`) vẫn đang tính "số ngày còn lại" theo hết tháng dương lịch, không theo Budget Reset Day. Với User có Budget Reset Day khác ngày cuối tháng, các con số "Hôm nay nên tiêu", "Dự kiến hết", cảnh báo vượt ngân sách ngày (EXP-007) sẽ sai lệch so với chu kỳ Budget thực tế của họ.
+
+### Đề xuất
+
+Thay `getRemainingDaysInMonth(date)` bằng một hàm mới `getRemainingDaysInCycle(date, budgetResetDay)`, tính số ngày từ hôm nay tới trước lần Budget Reset Day tiếp theo (dùng lại rule "tháng thiếu ngày → dùng ngày cuối tháng" đã thống nhất ở DELTA-003).
+
+### Applies To
+
+- Dashboard
+- Expense
+- Budget
+
+### Priority
+
+Medium (không chặn trải nghiệm hiện tại — công thức cũ vẫn chạy đúng cho User có Budget Reset Day trùng ngày cuối tháng; chỉ sai lệch với User chọn ngày khác).
+
+### Impact nếu Merge
+
+- `specs/12_BUSINESS_RULES.md` (rule `EXP-007`), `feature-specs/22_DASHBOARD.md`, `feature-specs/23_EXPENSE.md` — đổi mô tả mốc tính.
+- Code: `src/lib/finance/amount.ts`, `src/features/finance/lib/finance-service.ts`, `src/features/dashboard/lib/dashboard-view-model.ts`.
 
 ---
 
