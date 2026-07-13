@@ -166,7 +166,8 @@ function ExpenseForm({
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
   const [pendingOverspend, setPendingOverspend] = useState<{
     expense: Expense;
-    overBy: number;
+    currentDailyAverage: number;
+    newDailyAverage: number;
   } | null>(null);
 
   function validate() {
@@ -225,10 +226,15 @@ function ExpenseForm({
       amount,
       effectiveDate: nextExpense.completedDate ?? nextExpense.plannedDate,
       excludeExpenseId: expense?.id,
+      previousAmount: expense?.amount ?? 0,
     });
 
     if (overspend.exceeds) {
-      setPendingOverspend({ expense: nextExpense, overBy: overspend.overBy });
+      setPendingOverspend({
+        expense: nextExpense,
+        currentDailyAverage: overspend.currentDailyAverage,
+        newDailyAverage: overspend.newDailyAverage,
+      });
       return;
     }
 
@@ -298,9 +304,9 @@ function ExpenseForm({
         isOpen={Boolean(pendingOverspend)}
         message={
           pendingOverspend
-            ? `Khoản chi này sẽ vượt số tiền nên tiêu hôm nay ${formatVnd(
-                pendingOverspend.overBy,
-              )}. Bạn vẫn muốn lưu chứ?`
+            ? `Nếu bạn chi tiêu khoản này, ngân sách trung bình mỗi ngày sẽ giảm từ ${formatVnd(
+                pendingOverspend.currentDailyAverage,
+              )} xuống ${formatVnd(pendingOverspend.newDailyAverage)}.`
             : ""
         }
         onCancel={() => setPendingOverspend(null)}
