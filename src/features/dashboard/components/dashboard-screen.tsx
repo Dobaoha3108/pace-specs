@@ -113,10 +113,11 @@ export function DashboardScreen({
                 data.projectedDaysLeft,
               )}
               remainingBudget={formatVnd(data.budget.remainingBudget)}
-              remainingDailyBudget={formatVnd(data.budget.remainingDailyBudget)}
               spendingPaceDelta={data.spendingPaceDelta}
               spendingPaceLabel={formatSpendingPace(data.spendingPaceDelta)}
-              state={data.budget.remainingDailyBudget <= 0 ? "warning" : "normal"}
+              state={data.todayRemainingBudget <= 0 ? "warning" : "normal"}
+              todayBudget={formatVnd(data.todayBudgetBaseline)}
+              todayRemaining={formatVnd(data.todayRemainingBudget)}
             />
 
             <Button
