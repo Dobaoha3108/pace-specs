@@ -118,25 +118,19 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
     weeklyBudget > 0 ? Math.round((weeklySpending / weeklyBudget) * 100) : 0;
 
   const now = new Date();
-  const totalDaysInCycle = getTotalDaysInMonth(now);
   const elapsedDaysInCycle = getElapsedDaysInMonth(now);
   const cycleSpendingSoFar = expenses
     .filter((expense) => isThisMonth(getExpenseDisplayDate(expense), now))
     .reduce((total, expense) => total + expense.amount, 0);
-  const plannedSpendingToDate =
-    budget.monthlyBudget > 0
-      ? (budget.monthlyBudget / totalDaysInCycle) * elapsedDaysInCycle
-      : 0;
-  const spendingPaceDelta =
-    plannedSpendingToDate > 0
-      ? Math.round((cycleSpendingSoFar / plannedSpendingToDate - 1) * 100)
-      : 0;
   const averageDailySpending =
     elapsedDaysInCycle > 0 ? cycleSpendingSoFar / elapsedDaysInCycle : 0;
   const projectedDaysLeft =
     averageDailySpending > 0
       ? Math.max(0, Math.round(budget.remainingBudget / averageDailySpending))
-      : Math.max(0, totalDaysInCycle - elapsedDaysInCycle + 1);
+      : Math.max(
+          0,
+          getTotalDaysInMonth(now) - elapsedDaysInCycle + 1,
+        );
 
   // Today's allowance is derived from the shared getTodayBudgetBreakdown
   // helper so the Dashboard display always matches the EXP-007 overspend
@@ -161,7 +155,6 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
     weeklySpending,
     weeklyBudget,
     weeklyBudgetUsage,
-    spendingPaceDelta,
     projectedDaysLeft,
     todayBudgetBaseline,
     todayRemainingBudget,
