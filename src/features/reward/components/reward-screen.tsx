@@ -138,7 +138,7 @@ function RewardMarketplace({
              <p className="whitespace-nowrap text-[20px] font-bold text-pace-text-primary">
   Pig Coin của bạn
 </p>
-             <div className="mt-3 flex items-center gap-1">
+            <div className="mt-3 flex items-center gap-0">
   <Image
     alt="Pig Coin"
     className="h-[78px] w-[78px] shrink-0 object-contain"
@@ -147,16 +147,16 @@ function RewardMarketplace({
     width={78}
   />
 
-      <div className="translate-y-2">
-       <p className="text-[44px] font-extrabold leading-none text-pace-text-primary">
-         {formatNumber(walletBalance)}
-       </p>
+  <div className="-ml-1 translate-y-2">
+    <p className="text-[44px] font-extrabold leading-none text-pace-text-primary">
+      {formatNumber(walletBalance)}
+    </p>
 
-              <p className="mt-2 text-caption text-pace-text-secondary">
-                  Pig Coin
-                 </p>
-               </div>
-              </div>
+    <p className="mt-2 text-caption text-pace-text-secondary">
+      Pig Coin
+    </p>
+  </div>
+</div>
             </div>
           </div>
        <div className="flex h-full w-[46%] items-center justify-end overflow-visible pr-3">
