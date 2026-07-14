@@ -12,7 +12,7 @@ import { paceLocalDataSource } from "@/lib/storage/pace-storage";
 import { createId } from "@/lib/id";
 import {
   formatVnd,
-  getRemainingDaysInMonth,
+  getRemainingDaysInCycle,
   parseCurrencyInput,
 } from "@/lib/finance/amount";
 import type {
@@ -165,7 +165,8 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
     const userId = createId();
     const budgetResetDay = financialData.budgetResetDay;
     const remainingDailyBudget =
-      financialData.remainingBudget / getRemainingDaysInMonth(new Date());
+      financialData.remainingBudget /
+      getRemainingDaysInCycle(budgetResetDay, new Date());
 
     const user: User = {
       id: userId,
