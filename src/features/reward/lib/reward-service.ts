@@ -124,11 +124,28 @@ export function getCurrentRewardUser(): User | undefined {
 }
 
 export function ensureRewardSeedData(userId: string) {
-  const existingVouchers = paceLocalDataSource.vouchers.list();
+ const existingVouchers = paceLocalDataSource.vouchers.list();
 
-  if (existingVouchers.length === 0) {
-    paceLocalDataSource.vouchers.replaceAll(mockVouchers);
+const updatedVouchers = existingVouchers.map((voucher) => {
+  const voucherWithLogo = mockVouchers.find(
+    (item) => item.id === voucher.id,
+  );
+
+  if (!voucherWithLogo) {
+    return voucher;
   }
+
+  return {
+    ...voucher,
+    brandLogo: voucherWithLogo.brandLogo,
+  };
+});
+
+paceLocalDataSource.vouchers.replaceAll(
+  existingVouchers.length === 0
+    ? mockVouchers
+    : updatedVouchers,
+);
 
   const existingWallet = paceLocalDataSource
     .pigCoinWallets
