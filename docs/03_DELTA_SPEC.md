@@ -195,7 +195,7 @@ High
 
 ### Quyết định (đã chốt, không còn Open Question)
 
-1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: hỏi **trước tiên** (Step 2.0), trước Monthly Income/Fixed Expenses. Lý do: đây là thông tin đầu tiên cần thu thập trong Financial Setup. > **Cập nhật theo DELTA-006**: khái niệm Scenario A/B (xác định bằng so sánh ngày hôm nay với Budget Reset Day) đã bị **bỏ hoàn toàn** — xem DELTA-006 bên dưới. Vị trí hỏi Budget Reset Day trước tiên vẫn giữ nguyên, chỉ khác lý do: không còn để "xác định Scenario" mà chỉ đơn thuần là bước thu thập dữ liệu đầu tiên trong Financial Setup.
+1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: hỏi **trước tiên** (Step 2.0), trước Monthly Income/Fixed Expenses/Remaining Budget. Lý do: bắt buộc phải biết ngày này mới xác định được Scenario A hay B, nên không thể hỏi sau.
 2. **Ảnh hưởng dây chuyền tới các công thức "số ngày còn lại trong chu kỳ"** (Dashboard/Expense, `getTodayBudgetBreakdown()`, rule `EXP-007`): **giữ nguyên hành vi hiện tại** (tính theo "hết tháng dương lịch" qua `getRemainingDaysInMonth`) trong phạm vi DELTA-003 này. Đây là thay đổi ngoài phạm vi Onboarding, ảnh hưởng nhiều feature khác — theo dõi riêng ở **DELTA-004** (mục dưới đây), giữ trạng thái `Proposed`, không block việc merge DELTA-003.
 3. **Ngày cuối tháng thiếu**: xác nhận dùng ngày cuối tháng làm Reset Day thực tế khi tháng đó không có đủ số ngày User chọn (VD chọn 31, tháng chỉ có 28/29/30 ngày). Áp dụng nhất quán ở cả Onboarding lẫn các chu kỳ sau.
 4. **Sửa Budget Reset Day sau Onboarding**: giữ nguyên AC-009 cũ — User có thể đổi trong Budget Settings.
@@ -214,7 +214,7 @@ High
 
 ### Status
 
-Merged — thực hiện bởi DELTA-007 (xem bên dưới và `docs/04_CHANGE_LOG.md`). Công thức cuối cùng dùng trong `specs/17_UI_LAYOUT.md` ("Số ngày trong chu kỳ" / "Số ngày còn lại của chu kỳ") khác cách đặt tên hàm được đề xuất ở đây (`getRemainingDaysInCycle`) nhưng cùng bản chất: tính theo Budget Reset Day thay vì hết tháng dương lịch.
+Proposed — chưa merge. Nằm ngoài phạm vi yêu cầu Onboarding ban đầu, tạo ra do hệ quả của DELTA-003 (mục Open Question #2 cũ).
 
 ### Title
 
@@ -301,102 +301,49 @@ Medium
 
 ### Status
 
-Merged vào `feature-specs/21_ONBOARDING.md`, `specs/17_UI_LAYOUT.md` (xem `docs/04_CHANGE_LOG.md`). Thay thế/loại bỏ hoàn toàn khái niệm Scenario A/B đã đưa vào từ DELTA-003.
+Proposed
 
 ### Title
 
-Bỏ Scenario A/B trong Onboarding Financial Setup — luôn yêu cầu đủ Budget Reset Day + Monthly Income + Fixed Expenses, bất kể ngày hoàn thành Onboarding
+Cho phép User đổi Avatar và đổi Tên trong Profile
 
 ### Related Screen
 
-Onboarding (Financial Setup)
+Profile
 
 ### Context / Lý do thay đổi
 
-DELTA-003 đưa ra 2 kịch bản: nếu ngày hôm nay đúng bằng Budget Reset Day vừa chọn thì hỏi Monthly Income + Fixed Expenses (Scenario A); nếu khác thì chỉ hỏi Remaining Budget (Scenario B), hoãn Monthly Income/Fixed Expenses tới chu kỳ sau. Dương phản hồi sau khi test bản deploy: ngày hoàn thành Onboarding không quan trọng, và không muốn nhánh Scenario B nữa — muốn Financial Setup **luôn** thu thập đủ cả 3 thông tin ngay từ đầu, để có dữ liệu Monthly Income/Fixed Expenses đầy đủ ngay từ chu kỳ đầu tiên thay vì phải đợi tới chu kỳ sau.
+`feature-specs/29_PROFILE.md` mục "21. Open Questions" hiện liệt kê rõ **"Đổi Avatar" thuộc danh sách "chưa thuộc phạm vi MVP"**, và mục "22. Future Enhancements" liệt kê "Upload Avatar" là cải tiến cho phiên bản sau. User Name hiện tại cũng là field chỉ hiển thị (`displayName`), không có flow Edit nào trong "10. User Flow". User giờ muốn đưa 2 tính năng này vào MVP.
 
-### New Flow — Financial Setup (Step 2 của Onboarding)
+### Vấn đề cần làm rõ trước khi code (Open Questions — cần bạn xác nhận)
 
-Chỉ còn **một luồng duy nhất**, áp dụng cho mọi User bất kể Onboarding vào ngày nào trong tháng:
+**1. Đổi tên (đơn giản, ít rủi ro)**
 
-1. Chọn Budget Reset Day (Day Picker Grid, CMP-016, 1–31) — bắt buộc, hiển thị đầu tiên.
-2. Nhập Monthly Income — bắt buộc.
-3. Nhập Fixed Expenses — bắt buộc.
-4. System tính `Budget = Monthly Income - Fixed Expenses`, dùng làm Budget cho chu kỳ hiện tại (chu kỳ đầu tiên, dù có thể là chu kỳ rút gọn nếu hôm nay chưa tới Budget Reset Day).
+Đề xuất: thêm nút "Edit" cạnh tên trong User Information Card → mở form đổi tên đơn giản (1 Input, validate không rỗng) → Save cập nhật field `displayName` đã có sẵn trong `User`. Không có vướng mắc kỹ thuật, có thể code ngay sau khi bạn xác nhận.
 
-Không còn bước hỏi "Remaining Budget" trong Onboarding.
+**2. Đổi Avatar (cần bạn chọn 1 trong 2 phương án, do PACE MVP không có backend/API thật)**
 
-### Validation mới
+- **Phương án A — Upload ảnh từ thiết bị**: User chọn file ảnh từ máy, ảnh được đọc và lưu dạng Base64 Data URL trực tiếp trong Local Storage (field `avatar` đã có sẵn trong type `User`, hiện chưa dùng). 
+  - Ưu điểm: đúng nghĩa "đổi avatar" tự do như hầu hết app.
+  - Nhược điểm: Local Storage có giới hạn dung lượng (thường ~5–10MB/domain tuỳ trình duyệt); nếu User chọn ảnh gốc quá lớn cần resize/nén trước khi lưu (client-side, không cần backend) để tránh lỗi lưu trữ.
+- **Phương án B — Chọn từ danh sách Avatar có sẵn (preset)**: User chọn 1 trong nhiều mẫu avatar dựng sẵn. 
+  - Ưu điểm: nhẹ, không lo giới hạn dung lượng, nhất quán với nguyên tắc "ưu tiên dùng asset có sẵn" của dự án.
+  - Nhược điểm: **hiện repo chưa có sẵn bộ ảnh avatar mẫu nào trong `assets/`** — bạn cần cung cấp bộ ảnh trước (đề xuất 6-8 mẫu), hoặc mình tạo bằng Visualizer (ảnh minh hoạ đơn giản, không phải ảnh thật).
 
-- Budget Reset Day: giữ nguyên như DELTA-003 (Required, 1–31, chỉ chọn qua Day Picker Grid).
-- Monthly Income: Required, số, > 0 — áp dụng cho **mọi** User, không phân biệt ngày Onboarding.
-- Fixed Expenses: Required, số, ≥ 0, không lớn hơn Monthly Income — áp dụng cho **mọi** User.
-- Bỏ hẳn trường/validation "Remaining Budget" khỏi Onboarding.
-
-### Applies To
-
-- Onboarding
-- Budget
-
-### Priority
-
-High
-
-### Impact (đã Merged)
-
-- `feature-specs/21_ONBOARDING.md` — Version 1.2 → 1.3 (Status: Final). Bỏ toàn bộ mục "Scenario A" / "Scenario B" (Budget Initialization, Screen Content, User Actions, System Response, Navigation, Display Rules, Validation). AC-003/004/004a/005/006 viết lại thành luồng đơn (không còn phân biệt Scenario); AC-004 (Remaining Budget) và AC-006 bị xoá vì không còn áp dụng.
-- `specs/17_UI_LAYOUT.md` — mục "Financial Setup" (Onboarding Step 2): bỏ Scenario A/B, còn một layout duy nhất (Day Picker Grid + Monthly Income + Fixed Expense + Preview Card).
-- Không đổi `specs/11_DATA_MODEL.md` — field `monthlyIncome`, `fixedExpenses`, `budgetResetDay` không đổi kiểu/ý nghĩa, chỉ đổi cách Onboarding thu thập chúng (luôn hỏi, không còn hoãn).
-- Code đã sửa: `src/features/onboarding/components/onboarding-screen.tsx` (bỏ toàn bộ logic `isScenarioA`/nhánh Remaining Budget, luôn validate + hiển thị Monthly Income/Fixed Expenses), `src/features/onboarding/types.ts` không đổi (field `remainingBudget` trong `FinancialSetupData` vẫn giữ, dùng làm giá trị Budget ban đầu = Monthly Income − Fixed Expenses).
-- Không ảnh hưởng `src/lib/validation/business-rules.ts` (`assertBudgetIsValid`) — logic nới lỏng cho Scenario B ở DELTA-003 giờ không còn đường nào gọi tới nhánh `monthlyIncome === 0` từ Onboarding nữa, nhưng vẫn giữ nguyên trong code vì không gây hại (an toàn dự phòng, không phải dead code nguy hiểm).
-
----
-
-## DELTA-007
-
-### Status
-
-Merged vào `specs/17_UI_LAYOUT.md`, `specs/12_BUSINESS_RULES.md` (STR-004, STR-005 mới), `feature-specs/22_DASHBOARD.md` (xem `docs/04_CHANGE_LOG.md`). Theo quy trình mới đã thống nhất với Dương (requirement mới → viết spec chính xác → merge thẳng vào spec chính thức, không cần dừng lại chờ duyệt), delta này được viết và merge trực tiếp trong cùng một lượt.
-
-### Title
-
-Dashboard: Sửa layout "Hôm nay nên tiêu", đổi công thức "Dự kiến hết" theo Budget Reset Day, và định nghĩa lại Budget Streak Flame + Reward
-
-### Related Screen
-
-Dashboard
-
-### Context / Lý do thay đổi
-
-Ba thay đổi Dương yêu cầu:
-
-1. Ô "Hôm nay nên tiêu" đang hiển thị số tiền còn lại và baseline tách thành 2 dòng riêng (số còn lại đậm ở trên, "/ baseline" nhỏ ở dưới — xem Change Log mục 2026-07-13 (2)). Yêu cầu mới: đưa cả 2 số về **chung một dòng**.
-2. Ô "Dự kiến hết" trước đây tính theo tốc độ chi tiêu (`Remaining Budget / tốc độ chi tiêu trung bình`) và dùng mốc "hết tháng dương lịch" cho các phép tính số ngày liên quan (đây chính là nội dung còn treo của DELTA-004). Yêu cầu mới: đổi hẳn cách tính — "Dự kiến hết trong XX ngày" = tổng số ngày của chu kỳ Budget hiện tại = Ngày nhận Income (Budget Reset Day) của chu kỳ kế tiếp trừ ngày nhận Income của chu kỳ hiện tại, luôn nằm trong khoảng 28–31 ngày tuỳ tháng. Nhân tiện việc này cũng giải quyết luôn DELTA-004 (đổi toàn bộ mốc tính "số ngày còn lại của chu kỳ" từ lịch dương sang theo Budget Reset Day).
-3. Budget Streak Card hiện chỉ mô tả chung chung "Streak Flame" và phần thưởng theo "chính sách Reward hiện hành" (STR-004 cũ), chưa từng định nghĩa cụ thể. Yêu cầu mới: cụ thể hoá — 7 icon ngọn lửa (1 icon/ngày trong chuỗi 7 ngày), ngày hoàn thành → icon hiện màu, ngày chưa hoàn thành → icon dạng bóng/outline không màu; đủ 7/7 icon màu → thưởng chính xác **35 Pig Coin**.
-
-### Thay đổi đã Merge
-
-- `specs/17_UI_LAYOUT.md` — mục "Budget Overview Card": Ô 1 ghi rõ hiển thị chung 1 dòng; Ô 2 đổi công thức "Dự kiến hết" sang tổng số ngày chu kỳ (theo Budget Reset Day); thêm định nghĩa "Số ngày trong chu kỳ" và cập nhật lại "Số ngày còn lại của chu kỳ" (dùng cho baseline + EXP-007) sang tính theo Budget Reset Day thay vì hết tháng dương lịch. Mục "Budget Streak Card": mô tả rõ 7 icon ngọn lửa, trạng thái màu/không màu.
-- `specs/12_BUSINESS_RULES.md` — `STR-004` ghi rõ phần thưởng là 35 Pig Coin (thay vì "chính sách Reward hiện hành" chung chung); thêm rule mới `STR-005` (Budget Streak Flame Display) định nghĩa quy tắc hiển thị 7 icon.
-- `feature-specs/22_DASHBOARD.md` — 3 vị trí mô tả Budget Streak (Section 5, Display Rules, AC-007) cập nhật theo flame/reward mới.
+Mình đề xuất **Phương án A** (upload từ thiết bị, có resize/nén trước khi lưu) vì không phụ thuộc việc bạn phải chuẩn bị thêm asset, và đúng kỳ vọng thông thường của tính năng "đổi avatar". Bạn xác nhận chọn phương án nào.
 
 ### Applies To
 
-- Dashboard
-- Budget Streak
-- Budget
+- Profile
 
 ### Priority
 
-High
+Medium
 
-### Impact — Code cần sửa (thực hiện khi triển khai, theo spec đã chốt ở trên)
+### Impact nếu Merge
 
-- `src/lib/finance/amount.ts` — thay `getRemainingDaysInMonth`/công thức tốc độ chi tiêu bằng hàm tính theo Budget Reset Day: `getCycleLengthDays(budgetResetDay, referenceDate)` (chu kỳ hiện tại, dùng cho "Dự kiến hết") và `getRemainingDaysInCycle(budgetResetDay, today)` (dùng cho baseline "Số tiền được tiêu hôm nay" + `EXP-007`).
-- `src/features/finance/lib/finance-service.ts` — `getTodayBudgetBreakdown()`, `checkDailyBudgetOverspend()` dùng `getRemainingDaysInCycle` thay cho `getRemainingDaysInMonth`.
-- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` đổi sang trả về `getCycleLengthDays(...)` thay vì công thức tốc độ chi tiêu; bỏ các biến trung gian không còn dùng.
-- `src/components/finance/budget-summary-card.tsx` — Ô "Hôm nay nên tiêu": đổi layout `secondaryValue` sang hiển thị inline cùng dòng với `value` (hiện đang tách dòng qua CSS component `BudgetInfoBox`). Budget Streak Card: đổi từ hiển thị text/số streak đơn sang render dải 7 icon ngọn lửa (màu/outline) dựa trên vị trí ngày trong chu kỳ 7 ngày hiện tại.
-- Cần field/logic runtime mới để xác định trạng thái từng ngày trong 7 ngày Streak hiện tại (đã hoàn thành hay chưa) — tính từ lịch sử Expense theo ngày, không cần thêm field lưu trữ mới trong `pace_mvp_state` (derived data, tương tự nguyên tắc RPT-001).
-- `src/features/finance/lib/finance-service.ts` (hoặc nơi xử lý Budget Streak hiện có) — khi đạt đủ 7/7 ngày, cộng chính xác 35 Pig Coin vào Pig Coin Wallet (thay cho logic "chính sách Reward hiện hành" chưa rõ ràng trước đó).
+- `feature-specs/29_PROFILE.md` — cập nhật mục "21. Open Questions" (bỏ "Đổi Avatar" khỏi danh sách ngoài phạm vi MVP), thêm flow "Edit Avatar" và "Edit Name" vào mục "10. User Flow".
+- `technical-specs/30_Local Storage.md` — ghi chú field `avatar` (nếu chọn Phương án A) sẽ chứa Base64 Data URL, có giới hạn kích thước.
+- Code: `src/features/profile/components/profile-screen.tsx` (thêm form Edit Name, Edit Avatar), `src/features/profile/lib/profile-service.ts` (hàm cập nhật `displayName`/`avatar`).
 
 ---
