@@ -10,6 +10,7 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { formatVnd, parseCurrencyInput } from "@/lib/finance/amount";
+import { formatShortDisplayId } from "@/lib/id";
 import {
   loadProfileViewModel,
   setLocalPushEnabled,
@@ -138,7 +139,9 @@ function ProfileOverview({
             <UserRound aria-hidden className="size-8" />
           </div>
           <div className="min-w-0">
-            <p className="text-caption text-pace-text-secondary">{userId}</p>
+            <p className="text-caption text-pace-text-secondary">
+              PACE{formatShortDisplayId(userId)}
+            </p>
             <h1 className="truncate text-title">{userName}</h1>
             <p className="mt-xs text-caption text-pace-text-secondary">
               Student · Joined {formatDate(joinedDate)}
