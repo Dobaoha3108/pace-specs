@@ -220,3 +220,18 @@ Bug implementation — rule `SVG-007` (đã có sẵn trong spec từ trước) 
 ### Ghi chú — cần bạn xác nhận thêm
 
 "Delete Saving Goal" là tính năng **hoàn toàn mới**, chưa từng có trong spec — đã tách thành `DELTA-005` trong `docs/03_DELTA_SPEC.md` (Proposed), có 2 phương án đề xuất kèm câu hỏi cần bạn xác nhận trước khi code, để tránh làm sai ý hoặc gây rủi ro mất tiền/mất Goal không thể khôi phục.
+
+## 2026-07-14 (2) — Tăng mạnh kích thước mascot và pig coin icon (vẫn còn nhỏ sau lần sửa trước)
+
+### Lý do
+
+User phản hồi sau khi deploy: dù đã áp dụng lần sửa trước (h-[133px]/h-[50px] cố định, đã build/verify đúng trong CSS), mascot và icon nhìn vẫn nhỏ so với mong đợi. Không phải bug lần này — tăng số đo lớn hơn hẳn theo phản hồi trực tiếp.
+
+### Code thay đổi
+
+- `src/features/reward/components/reward-screen.tsx`:
+  - Card: `h-[200px]` → `h-[235px]`.
+  - Mascot Pig Pig: `h-[133px] w-[133px]` → `h-[190px] w-[190px]` (~81% chiều cao card, tăng đáng kể so với 2/3 trước đó).
+  - Pig Coin icon: `h-[50px] w-[50px]` → `h-[58px] w-[58px]`.
+  - Cột trái/phải: `58%/42%` → `54%/46%` (nhường thêm không gian ngang cho mascot).
+  - Đã tính toán để mascot 190px vẫn nằm gọn trong vùng nội dung card sau khi trừ padding (235px − 40px padding = 195px available, mascot 190px vừa khít, không bị cắt bởi `overflow-hidden`).
