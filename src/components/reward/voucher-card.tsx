@@ -73,7 +73,7 @@ export function VoucherCard({
 
   <Image
     alt="Pig Coin"
-    className="-ml-3 h-[60px] w-[60px] max-w-none shrink-0 object-contain"
+    className="-ml-2 h-[60px] w-[60px] max-w-none shrink-0 object-contain"
     height={60}
     src="/assets/icons/pig_coin.png"
     width={60}
