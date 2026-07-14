@@ -51,7 +51,9 @@ export function VoucherCard({
             {pigCoinCost}
           </span>
         </div>
-        <h2 className="mt-xs line-clamp-2 text-body font-semibold">{title}</h2>
+        <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-5 text-[#777777]">
+  {title}
+</h2>
         <div className="mt-xs flex items-center justify-between gap-sm">
           <p className="text-caption text-pace-text-secondary">
             Exp: {expiredDate}
