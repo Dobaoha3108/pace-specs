@@ -167,3 +167,20 @@ User phản hồi chi tiết sau khi test bản redesign trước: tiêu đề/s
   - Số Pig Coin: `text-[44px] font-extrabold` thay vì `text-h2` (24px). Thêm dòng label phụ "Pig Coin" màu xám bên dưới.
   - Mascot Pig Pig: tăng từ 96px lên 150px (~65-75% chiều cao card), dùng `object-contain` để không bị bóp méo/thu nhỏ.
   - Đổi layout từ `justify-between` (chia tuỳ nội dung) sang 2 cột cố định tỉ lệ `w-[58%]` / `w-[42%]`.
+
+## 2026-07-13 (8) — Chỉnh chính xác tỉ lệ mascot heo và pig coin icon theo chiều cao card
+
+### Lý do
+
+User yêu cầu tỉ lệ cụ thể hơn: mascot cao 2/3 card (căn giữa đều 2 mép), pig coin icon cao 1/4 card (xấp xỉ chiều cao chữ số đầu của số Pig Coin).
+
+### Spec thay đổi
+
+- `specs/17_UI_LAYOUT.md` — Pig Coin Balance Card: đổi "chiều cao tối thiểu ~190px" thành "chiều cao cố định 200px" (cần cố định để các tỉ lệ phân số dưới đây tính được chính xác); pig_coin icon quy định rõ = 1/4 chiều cao card (50px); mascot quy định rõ = 2/3 chiều cao card, căn giữa đều 2 mép trên dưới.
+
+### Code thay đổi
+
+- `src/features/reward/components/reward-screen.tsx`:
+  - Card đổi từ `min-h-[190px]` sang `h-[200px]` (cố định) — cần thiết để các class tỉ lệ (`h-2/3`) bên dưới tính đúng theo phần trăm chiều cao thật của card.
+  - Pig Coin icon: `height={44}` → `height={50}` (đúng 1/4 của 200px).
+  - Mascot Pig Pig: đổi từ chiều cao cố định `max-h-[150px]` sang class tỉ lệ `h-2/3` (luôn đúng 2/3 chiều cao card dù card có đổi kích thước sau này), vẫn giữ `object-contain` để không méo hình.
