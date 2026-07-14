@@ -13,7 +13,6 @@ import { createId } from "@/lib/id";
 import {
   formatVnd,
   getRemainingDaysInMonth,
-  isBudgetResetDay,
   parseCurrencyInput,
 } from "@/lib/finance/amount";
 import type {
@@ -32,7 +31,6 @@ type FinancialErrors = {
   budgetResetDay?: string;
   monthlyIncome?: string;
   fixedExpenses?: string;
-  remainingBudget?: string;
 };
 
 type SavingGoalErrors = {
@@ -51,7 +49,6 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const [financialInputs, setFinancialInputs] = useState({
     monthlyIncome: "",
     fixedExpenses: "",
-    remainingBudget: "",
   });
   const [savingGoalInputs, setSavingGoalInputs] = useState({
     name: "",
@@ -71,14 +68,8 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const currentStepNumber =
     step === "welcome" ? 1 : step === "financial" ? 2 : step === "saving-goal" ? 3 : 4;
 
-  const isScenarioA =
-    budgetResetDay !== null && isBudgetResetDay(budgetResetDay, now);
-
   const monthlyIncome = parseCurrencyInput(financialInputs.monthlyIncome);
   const fixedExpenses = parseCurrencyInput(financialInputs.fixedExpenses);
-  const remainingBudgetInput = parseCurrencyInput(
-    financialInputs.remainingBudget,
-  );
   const monthlyBudgetPreview =
     Number.isFinite(monthlyIncome) && Number.isFinite(fixedExpenses)
       ? monthlyIncome - fixedExpenses
@@ -89,39 +80,31 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
 
     if (budgetResetDay === null) {
       nextErrors.budgetResetDay = "Vui lòng chọn một ngày.";
-      setFinancialErrors(nextErrors);
-      return false;
     }
 
-    if (isScenarioA) {
-      if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
-        nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
-      }
+    if (!Number.isFinite(monthlyIncome) || monthlyIncome <= 0) {
+      nextErrors.monthlyIncome = "Giá trị phải lớn hơn 0.";
+    }
 
-      if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
-        nextErrors.fixedExpenses = "Fixed Cost phải lớn hơn hoặc bằng 0.";
-      }
+    if (!Number.isFinite(fixedExpenses) || fixedExpenses < 0) {
+      nextErrors.fixedExpenses = "Fixed Cost phải lớn hơn hoặc bằng 0.";
+    }
 
-      if (
-        Number.isFinite(monthlyIncome) &&
-        Number.isFinite(fixedExpenses) &&
-        fixedExpenses > monthlyIncome
-      ) {
-        nextErrors.fixedExpenses =
-          "Fixed Cost không được lớn hơn Monthly Income.";
-      }
+    if (
+      Number.isFinite(monthlyIncome) &&
+      Number.isFinite(fixedExpenses) &&
+      fixedExpenses > monthlyIncome
+    ) {
+      nextErrors.fixedExpenses =
+        "Fixed Cost không được lớn hơn Monthly Income.";
+    }
 
-      if (
-        Number.isFinite(monthlyIncome) &&
-        Number.isFinite(fixedExpenses) &&
-        monthlyIncome - fixedExpenses <= 0
-      ) {
-        nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
-      }
-    } else {
-      if (!Number.isFinite(remainingBudgetInput) || remainingBudgetInput <= 0) {
-        nextErrors.remainingBudget = "Giá trị phải lớn hơn 0.";
-      }
+    if (
+      Number.isFinite(monthlyIncome) &&
+      Number.isFinite(fixedExpenses) &&
+      monthlyIncome - fixedExpenses <= 0
+    ) {
+      nextErrors.fixedExpenses = "Budget phải lớn hơn 0.";
     }
 
     setFinancialErrors(nextErrors);
@@ -135,14 +118,12 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
       return;
     }
 
-    const budgetAmount = isScenarioA
-      ? monthlyIncome - fixedExpenses
-      : remainingBudgetInput;
+    const budgetAmount = monthlyIncome - fixedExpenses;
 
     setFinancialData({
       budgetResetDay,
-      monthlyIncome: isScenarioA ? monthlyIncome : 0,
-      fixedExpenses: isScenarioA ? fixedExpenses : 0,
+      monthlyIncome,
+      fixedExpenses,
       monthlyBudget: budgetAmount,
       remainingBudget: budgetAmount,
     });
@@ -316,7 +297,6 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
                   budgetResetDay={budgetResetDay}
                   errors={financialErrors}
                   inputs={financialInputs}
-                  isScenarioA={isScenarioA}
                   monthlyBudgetPreview={monthlyBudgetPreview}
                   onChange={setFinancialInputs}
                   onContinue={continueFromFinancialSetup}
@@ -384,7 +364,6 @@ function FinancialSetupStep({
   budgetResetDay,
   errors,
   inputs,
-  isScenarioA,
   monthlyBudgetPreview,
   onChange,
   onContinue,
@@ -392,13 +371,11 @@ function FinancialSetupStep({
 }: {
   budgetResetDay: number | null;
   errors: FinancialErrors;
-  inputs: { monthlyIncome: string; fixedExpenses: string; remainingBudget: string };
-  isScenarioA: boolean;
+  inputs: { monthlyIncome: string; fixedExpenses: string };
   monthlyBudgetPreview: number;
   onChange: (value: {
     monthlyIncome: string;
     fixedExpenses: string;
-    remainingBudget: string;
   }) => void;
   onContinue: () => void;
   onSelectBudgetResetDay: (day: number) => void;
@@ -418,67 +395,46 @@ function FinancialSetupStep({
         selectedDay={budgetResetDay}
       />
 
-      {budgetResetDay === null ? null : isScenarioA ? (
-        <div className="space-y-md">
-          <p className="text-body text-pace-text-secondary">
-            Nhập Monthly Income và Fixed Cost để PACE tính budget cho chu kỳ
-            này.
-          </p>
-          <Input
-            error={errors.monthlyIncome}
-            inputMode="numeric"
-            label="Monthly Income"
-            leftAddon="VND"
-            onChange={(event) =>
-              onChange({ ...inputs, monthlyIncome: event.target.value })
-            }
-            placeholder="5000000"
-            value={inputs.monthlyIncome}
-          />
-          <Input
-            error={errors.fixedExpenses}
-            inputMode="numeric"
-            label="Fixed Cost"
-            leftAddon="VND"
-            onChange={(event) =>
-              onChange({ ...inputs, fixedExpenses: event.target.value })
-            }
-            placeholder="1500000"
-            value={inputs.fixedExpenses}
-          />
+      <div className="space-y-md">
+        <p className="text-body text-pace-text-secondary">
+          Nhập Monthly Income và Fixed Cost để PACE tính budget cho chu kỳ
+          này.
+        </p>
+        <Input
+          error={errors.monthlyIncome}
+          inputMode="numeric"
+          label="Monthly Income"
+          leftAddon="VND"
+          onChange={(event) =>
+            onChange({ ...inputs, monthlyIncome: event.target.value })
+          }
+          placeholder="5000000"
+          value={inputs.monthlyIncome}
+        />
+        <Input
+          error={errors.fixedExpenses}
+          inputMode="numeric"
+          label="Fixed Cost"
+          leftAddon="VND"
+          onChange={(event) =>
+            onChange({ ...inputs, fixedExpenses: event.target.value })
+          }
+          placeholder="1500000"
+          value={inputs.fixedExpenses}
+        />
 
-          <Card>
-            <p className="text-caption text-pace-text-secondary">
-              Budget = Monthly Income - Fixed Cost
-            </p>
-            <p className="mt-xs text-title">
-              {Number.isFinite(monthlyBudgetPreview) &&
-              monthlyBudgetPreview > 0
-                ? formatVnd(monthlyBudgetPreview)
-                : formatVnd(0)}
-            </p>
-          </Card>
-        </div>
-      ) : (
-        <div className="space-y-md">
-          <p className="text-body text-pace-text-secondary">
-            Chu kỳ hiện tại đã bắt đầu từ trước ngày {budgetResetDay}. Số
-            tiền bạn còn có thể chi tiêu tới trước lần nhận Income tiếp theo
-            là bao nhiêu?
+        <Card>
+          <p className="text-caption text-pace-text-secondary">
+            Budget = Monthly Income - Fixed Cost
           </p>
-          <Input
-            error={errors.remainingBudget}
-            inputMode="numeric"
-            label="Remaining Budget"
-            leftAddon="VND"
-            onChange={(event) =>
-              onChange({ ...inputs, remainingBudget: event.target.value })
-            }
-            placeholder="3000000"
-            value={inputs.remainingBudget}
-          />
-        </div>
-      )}
+          <p className="mt-xs text-title">
+            {Number.isFinite(monthlyBudgetPreview) &&
+            monthlyBudgetPreview > 0
+              ? formatVnd(monthlyBudgetPreview)
+              : formatVnd(0)}
+          </p>
+        </Card>
+      </div>
 
       <Button onClick={onContinue}>Tiếp tục</Button>
     </div>
