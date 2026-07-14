@@ -82,7 +82,7 @@ export function VoucherCard({
 
     {status === "Active" ? (
   <button
-  className="-mt-3 whitespace-nowrap rounded-full border-2 border-[#B96363] bg-[#FFC3C3] px-4 py-2 text-[16px] font-bold leading-none text-[#B96363]"
+  className="-mt-2 whitespace-nowrap rounded-full border-2 border-[#B96363] bg-[#FFC3C3] px-4 py-2 text-[16px] font-bold leading-none text-[#B96363]"
         onClick={(event) => {
           event.stopPropagation();
           onClick?.();
