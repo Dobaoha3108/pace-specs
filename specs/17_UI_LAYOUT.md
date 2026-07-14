@@ -579,19 +579,21 @@ Hiển thị theo thứ tự:
    - Giá trị: Remaining Budget / Monthly Budget.
    - Progress Bar thể hiện tỉ lệ đã dùng / Monthly Budget.
 2. Info Row — 2 ô nằm ngang, chia đều:
-   - Ô 1 — Hôm nay nên tiêu: hiển thị dạng phân số "Số tiền còn lại hôm nay / Số tiền được tiêu hôm nay" (ví dụ: hôm nay được tiêu 50.000đ, đã chi 30.000đ → hiển thị "20.000 đ / 50.000 đ"). "Số tiền được tiêu hôm nay" (baseline) được tính cố định cho ngày hôm nay, không giảm khi User chi tiêu trong ngày; chỉ phần "còn lại" giảm dần.
-   - Ô 2 — Dự kiến hết: hiển thị số ngày dự kiến Remaining Budget về 0, tính theo tốc độ chi tiêu trung bình những ngày đã qua trong chu kỳ.
+   - Ô 1 — Hôm nay nên tiêu: hiển thị dạng phân số "Số tiền còn lại hôm nay / Số tiền được tiêu hôm nay", **hai giá trị này luôn nằm chung một dòng** (không xuống dòng, không tách thành 2 dòng riêng biệt) — ví dụ hôm nay được tiêu 100.000đ, đã chi 20.000đ → hiển thị chung một dòng dạng "80.000đ / 100.000đ" (số còn lại hiển thị nổi bật hơn, số baseline theo sau trên cùng dòng, ngăn cách bằng "/"). "Số tiền được tiêu hôm nay" (baseline) được tính cố định cho ngày hôm nay, không giảm khi User chi tiêu trong ngày; chỉ phần "còn lại" giảm dần.
+   - Ô 2 — Dự kiến hết: hiển thị "Dự kiến hết trong XX ngày", trong đó XX = **tổng số ngày của chu kỳ Budget hiện tại** (xem công thức "Số ngày trong chu kỳ" bên dưới). Đây là số ngày cố định trong suốt chu kỳ (không đổi mỗi khi User chi tiêu), không còn tính theo tốc độ chi tiêu trung bình như bản cũ.
 3. Edit Budget Button.
 
-"Số tiền được tiêu hôm nay", "Số tiền còn lại hôm nay" và "Dự kiến hết" đều là derived data, tính runtime từ Expense hiện có, không lưu thành field mới trong Local Storage — tương tự nguyên tắc áp dụng cho Financial Report (RPT-001).
+"Số tiền được tiêu hôm nay", "Số tiền còn lại hôm nay" và "Dự kiến hết" đều là derived data, tính runtime, không lưu thành field mới trong Local Storage — tương tự nguyên tắc áp dụng cho Financial Report (RPT-001).
 
-Công thức:
+Công thức (đã cập nhật theo Budget Reset Day — thay cho mốc "hết tháng dương lịch" cũ, giải quyết DELTA-004):
 
-- Số tiền được tiêu hôm nay (baseline, cố định trong ngày) = (Remaining Budget hiện tại + Tổng chi tiêu đã phát sinh hôm nay) / Số ngày còn lại của chu kỳ.
+- **Số ngày trong chu kỳ** = Ngày của lần Budget Reset Day **kế tiếp** − Ngày của lần Budget Reset Day đánh dấu **đầu chu kỳ hiện tại**, tính theo lịch dương thực tế. Nếu một trong hai tháng liên quan không có đủ số ngày bằng `budgetResetDay` (ví dụ chọn ngày 31 nhưng tháng chỉ có 28/29/30 ngày), dùng ngày cuối cùng của tháng đó làm mốc thực tế (áp dụng đúng rule đã thống nhất ở `specs/11_DATA_MODEL.md`/DELTA-003). Vì vậy giá trị này luôn nằm trong khoảng **28–31 ngày**, tuỳ tháng.
+- **Số ngày còn lại của chu kỳ** (dùng cho công thức baseline bên dưới) = Ngày của lần Budget Reset Day kế tiếp − Ngày hôm nay (cùng rule tháng thiếu ngày như trên). Thay thế hoàn toàn cách tính cũ dựa theo "hết tháng dương lịch" (`getRemainingDaysInMonth`).
+- Số tiền được tiêu hôm nay (baseline, cố định trong ngày) = (Remaining Budget hiện tại + Tổng chi tiêu đã phát sinh hôm nay) / Số ngày còn lại của chu kỳ (theo định nghĩa mới ở trên).
 - Số tiền còn lại hôm nay = Số tiền được tiêu hôm nay − Tổng chi tiêu đã phát sinh hôm nay (tối thiểu 0).
-- Dự kiến hết (số ngày) = Remaining Budget / (Tổng chi tiêu thực tế từ đầu chu kỳ / Số ngày đã trôi qua).
+- Dự kiến hết (XX ngày) = Số ngày trong chu kỳ (theo định nghĩa ở trên). Không còn phụ thuộc vào Remaining Budget hay tốc độ chi tiêu thực tế.
 
-Ngưỡng cảnh báo vượt ngân sách hôm nay (EXP-007) dùng chung công thức "Số tiền được tiêu hôm nay" ở trên làm mốc so sánh, đảm bảo số hiển thị trên Dashboard khớp với điều kiện kích hoạt pop-up cảnh báo.
+Ngưỡng cảnh báo vượt ngân sách hôm nay (EXP-007) dùng chung công thức "Số tiền được tiêu hôm nay" ở trên làm mốc so sánh, đảm bảo số hiển thị trên Dashboard khớp với điều kiện kích hoạt pop-up cảnh báo. Vì "Số ngày còn lại của chu kỳ" nay tính theo Budget Reset Day, ngưỡng EXP-007 cũng tự động theo đúng chu kỳ thực tế của User (không còn lệch với User có Budget Reset Day khác ngày cuối tháng).
 
 Card chiếm toàn bộ chiều ngang khả dụng.
 
@@ -601,8 +603,11 @@ Card chiếm toàn bộ chiều ngang khả dụng.
 
 Hiển thị:
 
-- Current Streak.
-- Streak Flame.
+- Current Streak (số ngày streak hiện tại, dạng số).
+- Streak Flame — dải **7 icon ngọn lửa**, mỗi icon tương ứng với 1 ngày trong chuỗi 7 ngày của Budget Streak hiện tại (ngày 1 → 7):
+  - Ngày đã hoàn thành (đạt điều kiện STR-001 — tổng chi tiêu trong ngày ≤ Remaining Daily Budget hiện tại của ngày đó): icon ngọn lửa **hiện đầy đủ màu**.
+  - Ngày chưa hoàn thành (chưa tới ngày đó, hoặc ngày đó đã qua nhưng không đạt điều kiện): icon ngọn lửa hiển thị dạng **bóng/outline (không màu)**, cùng hình dáng icon nhưng không tô màu.
+  - Khi đủ cả 7/7 icon hiện màu, hệ thống trigger Budget Streak Reward (xem `specs/12_BUSINESS_RULES.md`, rule STR-004/STR-005).
 
 Không hiển thị Longest Streak.
 
