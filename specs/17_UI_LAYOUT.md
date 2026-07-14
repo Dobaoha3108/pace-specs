@@ -443,18 +443,14 @@ Primary Button đặt ở cuối màn hình.
 
 ### Financial Setup
 
-Layout phụ thuộc vào Scenario hiện tại.
-
----
-
-### Scenario A
-
-Nếu User bắt đầu sử dụng ứng dụng vào ngày đầu tiên của tháng.
+> Cập nhật theo DELTA-006 (`docs/03_DELTA_SPEC.md`) — bỏ khái niệm Scenario A/B, luôn hiển thị đủ 3 trường bất kể ngày Onboarding là ngày nào.
 
 Hiển thị từ trên xuống dưới:
 
 - Progress Indicator.
 - Screen Title.
+- Câu hỏi + Day Picker Grid (CMP-016) để chọn Budget Reset Day (1–31).
+- Description ngắn ("Nhập Monthly Income và Fixed Cost để PACE tính budget cho chu kỳ này.").
 - Monthly Income Input.
 - Fixed Expense Input.
 - Monthly Budget Preview Card.
@@ -463,21 +459,6 @@ Hiển thị từ trên xuống dưới:
 Monthly Budget Preview Card hiển thị:
 
 Monthly Income − Fixed Expense.
-
----
-
-### Scenario B
-
-Nếu User bắt đầu sử dụng ứng dụng từ ngày thứ hai của tháng trở đi.
-
-Hiển thị từ trên xuống dưới:
-
-- Progress Indicator.
-- Screen Title.
-- Description.
-- Remaining Budget Input.
-- Budget Preview Card.
-- Primary Button "Tiếp tục".
 
 ---
 
@@ -1240,16 +1221,9 @@ Thứ tự hiển thị:
 
 ## Pig Coin Balance Card
 
-Nền card màu #FFE6EA. Chiều cao cố định 200px.
+Hiển thị:
 
-Layout 2 cột rõ ràng:
-
-- Cột trái (~58% chiều ngang):
-  1. Label "Pig Coin của bạn" — chữ đen đậm (font-weight 700), font-size 20px (text-title + font-bold).
-  2. Pig Coin Icon (asset `icons/pig_coin.png`, không nền/khung bao quanh) — chiều cao bằng 1/4 chiều cao card (50px) + Pig Coin Balance (số) nằm cùng hàng — số có font-size 44px, font-weight 800 (extrabold).
-  3. Label phụ nhỏ màu xám "Pig Coin" ngay dưới số.
-  4. Liên kết "My Voucher" (thay cho vị trí "Lịch sử nhận coin" ở bản tham khảo — PACE MVP chưa có tính năng Lịch sử nhận coin), có mũi tên chevron, bấm vào điều hướng tới My Voucher. Nằm ở đáy cột trái.
-- Cột phải (~42% chiều ngang): hình minh hoạ Pig Pig full-body (asset `pig-pig/pig_default.png`), chiều cao bằng 2/3 chiều cao card, căn giữa theo chiều dọc (cách đều mép trên và dưới), không bị giới hạn/thu nhỏ bởi max-width/max-height của container cha.
+- Pig Coin Balance.
 
 ---
 
