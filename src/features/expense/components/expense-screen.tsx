@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Edit, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { BottomNav } from "@/components/app/bottom-nav";
@@ -42,7 +43,16 @@ type ExpenseFormState = {
 };
 
 type ExpenseFormErrors = Partial<Record<keyof ExpenseFormState, string>>;
-
+const categoryIconMap: Record<string, string> = {
+  Food: "/assets/category/food.png",
+  Transportation: "/assets/category/transportation.png",
+  Shopping: "/assets/category/shopping.png",
+  Entertainment: "/assets/category/entertainment.png",
+  Education: "/assets/category/education.png",
+  Health: "/assets/category/health.png",
+  Bills: "/assets/category/bills.png",
+  Other: "/assets/category/other.png",
+};
 export function ExpenseScreen({
   mode,
   onBack,
@@ -252,16 +262,56 @@ function ExpenseForm({
         placeholder="65000"
         value={form.amount}
       />
-      <FormSelect
-        error={errors.categoryId}
-        label="Category"
-        onChange={(categoryId) => setForm({ ...form, categoryId })}
-        options={categories.map((category) => ({
-          label: category.name,
-          value: category.id,
-        }))}
-        value={form.categoryId}
-      />
+      <div>
+  <p className="mb-3 text-sm font-semibold text-pace-text-primary">
+    Category
+  </p>
+
+  <div className="grid grid-cols-4 gap-3">
+    {categories.map((category) => {
+      const isSelected = form.categoryId === category.id;
+
+      return (
+        <button
+          className={`flex min-w-0 flex-col items-center justify-center rounded-2xl border-2 px-1 py-3 transition ${
+            isSelected
+              ? "border-pace-primary bg-blue-50"
+              : "border-gray-200 bg-white"
+          }`}
+          key={category.id}
+          onClick={() =>
+            setForm({
+              ...form,
+              categoryId: category.id,
+            })
+          }
+          type="button"
+        >
+          <Image
+            alt={category.name}
+            className="h-10 w-10 object-contain"
+            height={40}
+            src={
+              categoryIconMap[category.name] ??
+              "/assets/category/other.png"
+            }
+            width={40}
+          />
+
+          <span className="mt-2 w-full truncate text-center text-xs font-semibold text-pace-text-primary">
+            {category.name}
+          </span>
+        </button>
+      );
+    })}
+  </div>
+
+  {errors.categoryId ? (
+    <p className="mt-2 text-sm text-red-500">
+      {errors.categoryId}
+    </p>
+  ) : null}
+</div>
       <Input
         label="Note"
         onChange={(event) => setForm({ ...form, note: event.target.value })}
