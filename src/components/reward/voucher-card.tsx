@@ -71,13 +71,13 @@ export function VoucherCard({
       {pigCoinCost}
     </span>
 
-    <Image
-      alt="Pig Coin"
-      className="h-[30px] w-[30px] shrink-0 object-contain"
-      height={30}
-      src="/assets/icons/pig_coin.png"
-      width={30}
-    />
+   <Image
+  alt="Pig Coin"
+  className="h-[60px] w-[60px] max-w-none shrink-0 object-contain"
+  height={60}
+  src="/assets/icons/pig_coin.png"
+  width={60}
+/>
   </div>
 
     {status === "Active" ? (
