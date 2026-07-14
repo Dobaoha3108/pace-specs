@@ -299,6 +299,23 @@ function SavingGoalDetail({
     onChanged();
   }
 
+  function cancelWithdrawRequest() {
+    const {
+      withdrawAvailableAt,
+      withdrawRequestedAmount,
+      withdrawRequestedAt,
+      ...restGoal
+    } = goal;
+    void withdrawAvailableAt;
+    void withdrawRequestedAmount;
+    void withdrawRequestedAt;
+    saveGoal({
+      ...restGoal,
+      updatedAt: new Date().toISOString(),
+    });
+    onChanged();
+  }
+
   return (
     <div className="space-y-lg">
       <SavingGoalCard
@@ -350,13 +367,18 @@ function SavingGoalDetail({
         </div>
       ) : null}
       {isActive && hasPendingWithdraw ? (
-        <Card>
-          <p className="text-body font-semibold">Withdraw request is pending</p>
-          <p className="mt-xs text-caption text-pace-text-secondary">
-            Commitment mode will release this amount after the 2-hour waiting
-            period.
-          </p>
-        </Card>
+        <div className="space-y-md">
+          <Card>
+            <p className="text-body font-semibold">Withdraw request is pending</p>
+            <p className="mt-xs text-caption text-pace-text-secondary">
+              Commitment mode will release this amount after the 2-hour waiting
+              period.
+            </p>
+          </Card>
+          <Button onClick={cancelWithdrawRequest} variant="secondary">
+            Cancel Withdraw Request
+          </Button>
+        </div>
       ) : null}
       {isCancelling ? (
         <Button onClick={undoCancel} variant="secondary">
