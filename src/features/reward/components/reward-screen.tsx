@@ -131,9 +131,9 @@ function RewardMarketplace({
 }) {
   return (
     <div className="space-y-lg">
-      <Card className="relative h-[200px] overflow-hidden bg-[#FFE6EA]">
+      <Card className="relative h-[235px] overflow-hidden bg-[#FFE6EA]">
         <div className="flex h-full items-stretch gap-md">
-          <div className="flex w-[58%] flex-col justify-between gap-sm py-xs">
+          <div className="flex w-[54%] flex-col justify-between gap-sm py-xs">
             <div className="space-y-sm">
               <p className="text-title font-bold text-pace-text-primary">
                 Pig Coin của bạn
@@ -141,10 +141,10 @@ function RewardMarketplace({
               <div className="flex items-center gap-sm">
                 <Image
                   alt="Pig Coin"
-                  className="h-[50px] w-[50px]"
-                  height={50}
+                  className="h-[58px] w-[58px]"
+                  height={58}
                   src="/assets/icons/pig_coin.png"
-                  width={50}
+                  width={58}
                 />
                 <div>
                   <p className="text-[44px] font-extrabold leading-none text-pace-text-primary">
@@ -165,13 +165,13 @@ function RewardMarketplace({
               <ChevronRight aria-hidden className="size-4" />
             </button>
           </div>
-          <div className="flex h-full w-[42%] items-center justify-center">
+          <div className="flex h-full w-[46%] items-center justify-center">
             <Image
               alt="Pig Pig"
-              className="h-[133px] w-[133px] object-contain"
-              height={133}
+              className="h-[190px] w-[190px] object-contain"
+              height={190}
               src="/assets/pig-pig/pig_default.png"
-              width={133}
+              width={190}
             />
           </div>
         </div>
