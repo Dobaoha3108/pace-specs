@@ -65,7 +65,7 @@ export function VoucherCard({
   </div>
 
   {/* Cột số coin và nút đổi bên phải */}
-  <div className="flex shrink-0 flex-col items-center justify-center gap-3">
+  <div className="flex shrink-0 flex-col items-center justify-center gap-2">
  <div className="flex items-center gap-0">
   <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
     {pigCoinCost}
