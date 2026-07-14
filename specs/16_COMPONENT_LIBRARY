@@ -1642,4 +1642,45 @@ Use Components
 
 ---
 
+## CMP-017 Category Pie Chart
+
+### Mô tả
+
+Biểu đồ tròn (Pie Chart) hiển thị phân bổ chi tiêu theo Category. Mỗi Category có một màu cố định, nhất quán trong toàn ứng dụng. Đi kèm Legend: chấm màu + tên Category + phần trăm.
+
+### Sử dụng tại
+
+- Financial Report — Category Analysis (Weekly Report và Monthly Report).
+
+### Props / Data đầu vào
+
+- Danh sách Category kèm: màu, Total Spending, Percentage.
+- Tổng chi tiêu (để hiển thị ở tâm biểu đồ).
+
+### Trạng thái
+
+- Có dữ liệu: hiển thị đầy đủ slice + legend.
+- Không có dữ liệu (Total Spending = 0 toàn bộ): ẩn component, không hiển thị biểu đồ rỗng.
+
+---
+
+## CMP-018 Weekly Comparison Bar Chart
+
+### Mô tả
+
+Biểu đồ cột so sánh Total Spending giữa các tuần trong một tháng. Mỗi cột đại diện một tuần, mỗi cột một màu riêng biệt (khác bảng màu của CMP-017).
+
+### Sử dụng tại
+
+- Financial Report — Weekly Spending Comparison (chỉ khi Time Filter = This Month).
+
+### Props / Data đầu vào
+
+- Danh sách tuần trong tháng, mỗi tuần gồm: nhãn (Tuần 1, Tuần 2, ...), Total Spending, màu.
+
+### Trạng thái
+
+- Có dữ liệu: hiển thị cột cho mọi tuần trong tháng (kể cả tuần Total Spending = 0, hiển thị cột chiều cao tối thiểu).
+- Không áp dụng (Time Filter = This Week): component không được render.
+
 # End of Document
