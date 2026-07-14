@@ -42,57 +42,63 @@ export function VoucherCard({
           <Gift aria-hidden className="size-7 text-pace-primary" />
         )}
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-sm">
-          <p className="truncate text-[18px] font-bold text-black">
-        {brandName}
-            </p>
-         <div className="flex shrink-0 items-center gap-1">
-  <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
-    {pigCoinCost}
-  </span>
+     <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] gap-x-3 self-stretch">
+  {/* Phần nội dung ở giữa */}
+  <div className="flex min-w-0 flex-col">
+    <p className="truncate text-[18px] font-bold text-black">
+      {brandName}
+    </p>
 
-  <Image
-    alt="Pig Coin"
-    className="h-7 w-7 object-contain"
-    height={28}
-    src="/assets/icons/pig_coin.png"
-    width={28}
-  />
-</div>
-        </div>
-        <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-5 text-[#777777]">
-  {title}
-</h2>
-        <div className="mt-xs flex items-center justify-between gap-sm">
-          <p className="text-caption text-pace-text-secondary">
-            Exp: {expiredDate}
-          </p>
-        {status === "Active" ? (
-  <button
-    className="shrink-0 rounded-full border-2 border-[#B96363] bg-[#FFC3C3] px-4 py-1.5 text-[16px] font-bold leading-none text-[#B96363]"
-    onClick={(event) => {
-      event.stopPropagation();
-      onClick?.();
-    }}
-    type="button"
-  >
-    Đổi ngay
-  </button>
-) : (
-  <p
-    className={cn(
-      "text-caption font-semibold",
-      status === "Redeemed" && "text-pace-primary",
-      status === "OutOfStock" && "text-pace-warning",
-      status === "Expired" && "text-pace-danger",
+    <h2 className="mt-1 line-clamp-2 break-words pr-1 text-[14px] font-semibold leading-5 text-[#777777]">
+      {title}
+    </h2>
+
+    <p className="mt-auto pt-2 text-[13px] text-pace-text-secondary">
+      Exp: {expiredDate}
+    </p>
+  </div>
+
+  {/* Cột số coin và nút đổi bên phải */}
+  <div className="flex shrink-0 flex-col items-center justify-center gap-3">
+    <div className="flex items-center gap-1">
+      <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
+        {pigCoinCost}
+      </span>
+
+      <Image
+        alt="Pig Coin"
+        className="h-[30px] w-[30px] shrink-0 object-contain"
+        height={30}
+        src="/assets/icons/pig_coin.png"
+        width={30}
+      />
+    </div>
+
+    {status === "Active" ? (
+      <button
+        className="whitespace-nowrap rounded-full border-2 border-[#B96363] bg-[#FFC3C3] px-4 py-2 text-[16px] font-bold leading-none text-[#B96363]"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClick?.();
+        }}
+        type="button"
+      >
+        Đổi ngay
+      </button>
+    ) : (
+      <p
+        className={cn(
+          "text-caption font-semibold",
+          status === "Redeemed" && "text-pace-primary",
+          status === "OutOfStock" && "text-pace-warning",
+          status === "Expired" && "text-pace-danger",
+        )}
+      >
+        {status}
+      </p>
     )}
-  >
-    {status}
-  </p>
-)}
-        </div>
-      </div>
+  </div>
+</div>
     </Card>
   );
 }
