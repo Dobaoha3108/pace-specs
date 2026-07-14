@@ -302,13 +302,14 @@ Dương yêu cầu 3 thay đổi cho Dashboard:
 
 ### Code thay đổi
 
-Chưa thực hiện ở lượt này (Dương chỉ yêu cầu cập nhật spec/doc lần này để tự copy lên GitHub). Khi triển khai code, cần sửa (đã ghi chi tiết trong DELTA-007):
+Đã thực hiện và build/typecheck sạch lỗi (`npx tsc --noEmit` + `npx next build`):
 
-- `src/lib/finance/amount.ts` — thêm `getCycleLengthDays()` và `getRemainingDaysInCycle()` tính theo `budgetResetDay`, thay cho `getRemainingDaysInMonth()`.
-- `src/features/finance/lib/finance-service.ts` — `getTodayBudgetBreakdown()`, `checkDailyBudgetOverspend()` dùng hàm mới.
-- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` trả về số ngày chu kỳ cố định thay vì tính theo tốc độ chi tiêu.
-- `src/components/finance/budget-summary-card.tsx` — Ô "Hôm nay nên tiêu" hiển thị inline cùng dòng; Budget Streak Card render 7 icon ngọn lửa (màu/outline) thay cho hiển thị hiện tại.
-- Logic cộng 35 Pig Coin khi đủ 7/7 ngọn lửa (nơi xử lý Budget Streak trong `finance-service.ts`).
+- `src/lib/finance/amount.ts` — thêm `getPreviousBudgetResetDate()`, `getRemainingDaysInCycle()` và `getCycleLengthDays()`, tính theo `budgetResetDay` (dùng rule tháng thiếu ngày đã có sẵn qua `resolveBudgetResetDayForMonth`/`getNextBudgetResetDate`).
+- `src/features/finance/lib/finance-service.ts` — `recalculateBudget()`, `getTodayBudgetBreakdown()`, `checkDailyBudgetOverspend()` đổi từ `getRemainingDaysInMonth()` sang `getRemainingDaysInCycle(budget.budgetResetDay, ...)`. Thêm `awardBudgetStreakReward()` — cộng đúng 35 Pig Coin vào Pig Coin Wallet khi `evaluateBudgetStreak()` xác nhận đủ 7/7 ngày hợp lệ, sau đó reset `currentStreak` về 0 (bắt đầu chu kỳ 7 ngày flame kế tiếp) — theo STR-004/STR-005.
+- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` đổi hẳn sang `getCycleLengthDays(budget.budgetResetDay, now)` (không còn tính theo tốc độ chi tiêu); bỏ các biến/hàm chỉ phục vụ công thức cũ (`isThisMonth`, `elapsedDaysInCycle`, `cycleSpendingSoFar`, `averageDailySpending`); `weeklyBudget` cũng đổi sang `getRemainingDaysInCycle`.
+- `src/features/onboarding/components/onboarding-screen.tsx` — `remainingDailyBudget` khởi tạo lúc hoàn thành Onboarding đổi sang `getRemainingDaysInCycle(budgetResetDay, ...)` thay vì tính theo hết tháng dương lịch, đồng bộ với Dashboard/Expense ngay từ đầu.
+- `src/components/finance/budget-summary-card.tsx` — Ô "Hôm nay nên tiêu": `value` và `secondaryValue` giờ render trong cùng một dòng (`<span>` inline), không còn tách 2 dòng.
+- `src/components/finance/budget-streak-card.tsx` — bỏ thanh Progress, đổi sang render dải 7 icon `Flame`: tô màu (`fill-pace-warning`) cho ngày đã hoàn thành, dạng outline không tô màu cho ngày chưa hoàn thành; `rewardHint` cập nhật nội dung "Đủ 7 ngọn lửa nhận 35 Pig Coin."
 
 ### Không thay đổi
 
