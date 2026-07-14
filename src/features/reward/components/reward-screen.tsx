@@ -135,9 +135,9 @@ function RewardMarketplace({
         <div className="flex h-full items-stretch gap-md">
           <div className="flex w-[54%] flex-col justify-between gap-sm py-xs">
             <div className="space-y-sm">
-              <p className="text-title font-bold text-pace-text-primary">
-                Pig Coin của bạn
-              </p>
+             <p className="whitespace-nowrap text-[20px] font-bold text-pace-text-primary">
+  Pig Coin của bạn
+</p>
               <div className="flex items-center gap-sm">
                 <Image
                   alt="Pig Coin"
