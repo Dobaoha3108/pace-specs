@@ -355,3 +355,27 @@ Merge trực tiếp từ requirement mới của Dương theo quy trình chính 
 - Pig Pig response engine.
 - Nội dung của 20 Suggested Questions.
 - Navigation và Bottom Navigation.
+
+## 2026-07-14 (5) — Financial Report: Category Analysis dạng Pie Chart + Weekly Spending Comparison (Monthly Report)
+
+### Lý do
+
+User yêu cầu: Weekly Report hiển thị Category Analysis bằng biểu đồ tròn (mỗi Category một màu); Monthly Report có thêm biểu đồ cột so sánh chi tiêu giữa các tuần trong tháng (mỗi tuần một màu), các thông số khác vẫn giữ dạng ô thông số (Statistic Card) như hiện có.
+
+### Spec thay đổi
+
+- `feature-specs/25_REPORT.md` — Version 1.1 → 1.2. Section 2 "Category Analysis" đổi từ danh sách thanh phần trăm sang Pie Chart + Legend (mỗi Category một màu cố định). Thêm Section 3 mới "Weekly Spending Comparison" (chỉ hiển thị khi Time Filter = This Month, dạng Bar Chart, mỗi tuần một màu riêng). Renumber Transaction History Preview (Section 3 → 4) và Summary (Section 4 → 5). Cập nhật Screen Content, System Response, Display Rules, Screen States, Related Specification (thêm CMP-017, CMP-018), Acceptance Criteria (cập nhật AC-004, thêm AC-004a, AC-004b).
+- `specs/16_COMPONENT_LIBRARY.md` — thêm `CMP-017 Category Pie Chart` và `CMP-018 Weekly Comparison Bar Chart` (nội dung soạn sẵn tại `specs/16_COMPONENT_LIBRARY_ADDITION.md`, cần dán thủ công vào cuối file vì chưa có bản đầy đủ của `specs/16_COMPONENT_LIBRARY.md` để merge trực tiếp).
+
+### Code thay đổi
+
+- `src/features/report/lib/report-service.ts` — thêm `color` (cố định theo Category) vào `ReportCategorySummary`; thêm type `ReportWeeklyBreakdown` và hàm `buildWeeklyBreakdown()` (chia Expense trong tháng thành các tuần dương lịch bắt đầu Thứ Hai); thêm field `weeklyBreakdown` vào `ReportViewModel`.
+- `src/components/finance/category-pie-chart.tsx` (mới) — component CMP-017, vẽ bằng CSS `conic-gradient` (không thêm thư viện chart ngoài) kèm Legend.
+- `src/components/finance/weekly-comparison-chart.tsx` (mới) — component CMP-018, bar chart thuần CSS/flex, mỗi cột một màu riêng từ `WEEK_COLOR_PALETTE`.
+- `src/features/report/components/report-screen.tsx` — thay `CategoryAnalysis` (danh sách thanh phần trăm) bằng `CategoryPieChart`; thêm `WeeklyComparisonChart`, chỉ render khi `period === "month"`.
+
+### Không thay đổi
+
+- `specs/11_DATA_MODEL.md` — không thêm field lưu trữ mới; màu Category và Weekly Breakdown là derived data, tính runtime, cùng nguyên tắc RPT-001.
+- Không đổi Spending Overview, Transaction History Preview, Summary — chỉ đổi hình thức hiển thị của Category Analysis và thêm mới Weekly Spending Comparison.
+- Không thêm dependency mới vào `package.json` — cả hai biểu đồ tự vẽ bằng CSS/SVG thuần để không ảnh hưởng tới bước `pnpm install --frozen-lockfile` khi deploy.
