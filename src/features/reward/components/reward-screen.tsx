@@ -157,13 +157,13 @@ function RewardMarketplace({
               </div>
             </div>
           </div>
-         <div className="flex h-full w-[46%] items-center justify-end overflow-visible">
+         <div className="flex h-full w-[46%] items-end justify-end pr-4 overflow-visible">
   <Image
     alt="Pig Pig"
-    className="h-[230px] w-[230px] max-w-none translate-x-4 object-contain"
-    height={230}
+    className="h-[220px] w-[220px] max-w-none object-contain"
+    height={220}
     src="/assets/pig-pig/pig_default.png"
-    width={230}
+    width={220}
   />
 </div>
         </div>
