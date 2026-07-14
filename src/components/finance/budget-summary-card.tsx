@@ -118,12 +118,12 @@ function BudgetInfoBox({
         )}
       >
         {value}
+        {secondaryValue ? (
+          <span className="ml-1 text-[10px] font-normal text-pace-text-secondary">
+            {secondaryValue}
+          </span>
+        ) : null}
       </p>
-      {secondaryValue ? (
-        <p className="text-[10px] leading-tight text-pace-text-secondary">
-          {secondaryValue}
-        </p>
-      ) : null}
     </div>
   );
 }
