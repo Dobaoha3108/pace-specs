@@ -1,4 +1,4 @@
-import { getRemainingDaysInMonth } from "@/lib/finance/amount";
+import { getRemainingDaysInCycle } from "@/lib/finance/amount";
 import { createId } from "@/lib/id";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
 import type {
@@ -83,7 +83,9 @@ export function recalculateBudget(userId: string): Budget {
   const updatedBudget = {
     ...budget,
     remainingBudget,
-    remainingDailyBudget: remainingBudget / getRemainingDaysInMonth(new Date()),
+    remainingDailyBudget:
+      remainingBudget /
+      getRemainingDaysInCycle(budget.budgetResetDay, new Date()),
     updatedAt: new Date().toISOString(),
   };
 
@@ -178,7 +180,10 @@ export function getTodayBudgetBreakdown(
   }
 
   const todaysExpenseTotal = getTodaysExpenseTotal(userId, options);
-  const daysLeftInCycle = getRemainingDaysInMonth(new Date());
+  const daysLeftInCycle = getRemainingDaysInCycle(
+    budget.budgetResetDay,
+    new Date(),
+  );
   // Baseline is derived as if today's expenses hadn't happened yet, so it
   // stays fixed for the day while remainingBudget (and thus this baseline's
   // numerator) only moves once the day rolls over.
@@ -225,7 +230,10 @@ export function checkDailyBudgetOverspend({
   const projectedTodayTotal = todaysExpenseTotal + amount;
   const exceeds = projectedTodayTotal > todayBudgetBaseline;
 
-  const daysLeftInCycle = getRemainingDaysInMonth(new Date());
+  const daysLeftInCycle = getRemainingDaysInCycle(
+    budget.budgetResetDay,
+    new Date(),
+  );
   const currentDailyAverage = budget.remainingBudget / daysLeftInCycle;
   const projectedRemainingBudget = Math.max(
     0,
@@ -308,27 +316,62 @@ function evaluateBudgetStreak(userId: string, budget: Budget) {
     updatedAt: now,
   };
   const alreadyQualifiedToday = currentStreak.lastQualifiedDate === todayKey;
-  const nextStreak =
-    todaysExpenseTotal > 0 && todaysExpenseTotal <= budget.remainingDailyBudget
-      ? {
-          ...currentStreak,
-          currentStreak: alreadyQualifiedToday
-            ? currentStreak.currentStreak
-            : currentStreak.currentStreak + 1,
-          noExpenseDays: 0,
-          lastQualifiedDate: todayKey,
-          updatedAt: now,
-        }
-      : todaysExpenseTotal > budget.remainingDailyBudget
-        ? {
-            ...currentStreak,
-            currentStreak: 0,
-            noExpenseDays: 0,
-            updatedAt: now,
-          }
-        : currentStreak;
+  const qualifiesToday =
+    todaysExpenseTotal > 0 && todaysExpenseTotal <= budget.remainingDailyBudget;
+  const overspentToday = todaysExpenseTotal > budget.remainingDailyBudget;
+
+  let nextStreak = currentStreak;
+
+  if (qualifiesToday) {
+    const incrementedStreak = alreadyQualifiedToday
+      ? currentStreak.currentStreak
+      : currentStreak.currentStreak + 1;
+    // Chuỗi 7 ngọn lửa (STR-005): đủ 7/7 ngày hợp lệ liên tiếp thì nhận
+    // thưởng (STR-004) và reset chuỗi flame về vị trí 1 cho chu kỳ kế tiếp.
+    const reachedFullFlameCycle = !alreadyQualifiedToday && incrementedStreak >= 7;
+
+    nextStreak = {
+      ...currentStreak,
+      currentStreak: reachedFullFlameCycle ? 0 : incrementedStreak,
+      noExpenseDays: 0,
+      lastQualifiedDate: todayKey,
+      updatedAt: now,
+    };
+
+    if (reachedFullFlameCycle) {
+      awardBudgetStreakReward(userId);
+    }
+  } else if (overspentToday) {
+    nextStreak = {
+      ...currentStreak,
+      currentStreak: 0,
+      noExpenseDays: 0,
+      updatedAt: now,
+    };
+  }
 
   paceLocalDataSource.budgetStreaks.upsert(nextStreak);
+}
+
+const BUDGET_STREAK_REWARD_PIG_COIN = 35;
+
+/** STR-004: đủ 7/7 ngọn lửa Budget Streak → cộng 35 Pig Coin, cộng một lần cho mỗi mốc hợp lệ. */
+function awardBudgetStreakReward(userId: string) {
+  const wallet = paceLocalDataSource
+    .pigCoinWallets
+    .list()
+    .find((item) => item.userId === userId);
+
+  if (!wallet) {
+    return;
+  }
+
+  paceLocalDataSource.pigCoinWallets.upsert({
+    ...wallet,
+    balance: wallet.balance + BUDGET_STREAK_REWARD_PIG_COIN,
+    totalEarned: wallet.totalEarned + BUDGET_STREAK_REWARD_PIG_COIN,
+    updatedAt: new Date().toISOString(),
+  });
 }
 
 function generatePigPigInsight(
