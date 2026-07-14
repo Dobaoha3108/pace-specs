@@ -47,9 +47,19 @@ export function VoucherCard({
           <p className="truncate text-[18px] font-bold text-black">
         {brandName}
             </p>
-          <span className="rounded-button bg-pace-secondary px-sm py-xs text-caption text-pace-text-primary">
-            {pigCoinCost}
-          </span>
+         <div className="flex shrink-0 items-center gap-1">
+  <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
+    {pigCoinCost}
+  </span>
+
+  <Image
+    alt="Pig Coin"
+    className="h-7 w-7 object-contain"
+    height={28}
+    src="/assets/icons/pig_coin.png"
+    width={28}
+  />
+</div>
         </div>
         <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-5 text-[#777777]">
   {title}
