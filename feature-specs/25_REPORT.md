@@ -31,8 +31,9 @@ Financial Report không trực tiếp quản lý Saving Goal, Reward Marketplace
 Financial Report giúp User:
 
 - Xem tổng quan chi tiêu.
-- Hiểu tiền đã được chi vào đâu.
+- Hiểu tiền đã được chi vào đâu, thông qua biểu đồ trực quan theo Category.
 - Theo dõi mức sử dụng Budget.
+- So sánh chi tiêu giữa các tuần trong tháng (Monthly Report).
 - Xem lịch sử giao dịch gần nhất.
 - Truy cập Expense History đầy đủ.
 - Phát hiện xu hướng chi tiêu theo tuần và theo tháng.
@@ -44,7 +45,8 @@ Financial Report giúp User:
 Financial Report chịu trách nhiệm:
 
 - Hiển thị Spending Overview.
-- Hiển thị Category Analysis.
+- Hiển thị Category Analysis dưới dạng biểu đồ tròn (Pie Chart), mỗi Category một màu riêng biệt.
+- Hiển thị Weekly Spending Comparison dưới dạng biểu đồ cột (chỉ khi Time Filter = This Month), mỗi tuần một màu riêng biệt.
 - Hiển thị Transaction History Preview.
 - Điều hướng tới Expense History.
 - Điều hướng tới Expense Detail.
@@ -73,7 +75,7 @@ Financial Report
 
 Business Goal
 
-Giúp User hiểu tình hình chi tiêu dựa trên dữ liệu Budget và Expense.
+Giúp User hiểu tình hình chi tiêu dựa trên dữ liệu Budget và Expense, thông qua các số liệu tổng quan và biểu đồ trực quan.
 
 ---
 
@@ -119,6 +121,8 @@ Tab Report luôn ở trạng thái Selected khi User đang ở màn hình này.
 - CMP-008 Statistic Card
 - CMP-013 Empty State
 - CMP-014 Loading State
+- CMP-017 Category Pie Chart (mới — xem Section 18)
+- CMP-018 Weekly Comparison Bar Chart (mới — xem Section 18)
 
 ---
 
@@ -133,7 +137,7 @@ Tab Report luôn ở trạng thái Selected khi User đang ở màn hình này.
 
 # 8. Report Sections
 
-Financial Report bao gồm bốn section chính.
+Financial Report bao gồm năm section chính.
 
 Financial Report hỗ trợ hai chế độ hiển thị:
 
@@ -168,17 +172,39 @@ Khoảng thời gian được hỗ trợ:
 
 ### Category Analysis
 
-Hiển thị phân bổ chi tiêu theo Category trong khoảng thời gian được chọn.
+Hiển thị phân bổ chi tiêu theo Category trong khoảng thời gian được chọn, dưới dạng **biểu đồ tròn (Pie Chart)**.
 
-Bao gồm:
+Quy tắc hiển thị:
 
-- Category Name.
-- Total Spending by Category.
-- Percentage of Total Spending.
+- Mỗi Category tương ứng với đúng một màu, cố định và nhất quán xuyên suốt toàn bộ ứng dụng (không đổi màu khi User chuyển Time Filter hoặc Category Filter).
+- Mỗi lát cắt (slice) trên Pie Chart có kích thước tỉ lệ với phần trăm chi tiêu của Category đó trên tổng chi tiêu trong khoảng thời gian đang chọn.
+- Đi kèm Pie Chart là danh sách chú thích (Legend), mỗi dòng gồm: chấm màu tương ứng, tên Category, phần trăm.
+- Áp dụng cho cả Weekly Report và Monthly Report — khác biệt duy nhất là khoảng thời gian dữ liệu (tuần hiện tại hoặc tháng hiện tại).
+
+Category Analysis vẫn giữ nguyên nội dung dữ liệu như trước (Category Name, Total Spending by Category, Percentage of Total Spending) — chỉ đổi hình thức hiển thị từ danh sách thanh phần trăm sang Pie Chart + Legend.
 
 ---
 
 ## Section 3
+
+### Weekly Spending Comparison (chỉ hiển thị khi Time Filter = This Month)
+
+Hiển thị **biểu đồ cột (Bar Chart)** so sánh tổng chi tiêu giữa các tuần trong tháng đang chọn.
+
+Quy tắc hiển thị:
+
+- Mỗi cột tương ứng với một tuần trong tháng (Tuần 1, Tuần 2, ...), chia theo tuần dương lịch bắt đầu từ Thứ Hai.
+- Mỗi cột một màu riêng biệt, khác với màu dùng cho Category Analysis (để tránh gây nhầm lẫn giữa hai loại biểu đồ).
+- Chiều cao cột tỉ lệ với tổng chi tiêu (Total Spending) của tuần đó.
+- Giá trị chi tiêu của từng tuần hiển thị dạng số phía trên mỗi cột.
+- Áp dụng Category Filter hiện tại giống như Category Analysis (nếu User đang lọc theo một Category cụ thể, biểu đồ chỉ tính chi tiêu của Category đó).
+- Section này **không hiển thị** khi Time Filter = This Week (vì không có nhiều hơn một tuần để so sánh).
+
+Các thông số tổng quan khác (Total Spending, Budget Usage, Remaining Budget...) tiếp tục được hiển thị ở Section 1 (Spending Overview) và Section 5 (Summary) dưới dạng ô thông số (Statistic Card) như hiện tại — không lặp lại trong biểu đồ cột này.
+
+---
+
+## Section 4
 
 ### Transaction History Preview
 
@@ -194,7 +220,7 @@ Expense History.
 
 ---
 
-## Section 4
+## Section 5
 
 ### Summary
 
@@ -250,7 +276,11 @@ System tổng hợp dữ liệu từ Budget và Expense.
 
 ↓
 
-Render Financial Report.
+System tính màu cố định cho từng Category.
+
+↓
+
+Render Financial Report (bao gồm Category Pie Chart).
 
 ---
 
@@ -267,6 +297,14 @@ System tính toán lại dữ liệu Report theo khoảng thời gian đã chọ
 
 ↓
 
+Nếu chuyển sang This Month.
+
+↓
+
+System tính thêm dữ liệu Weekly Spending Comparison (chia theo tuần trong tháng).
+
+↓
+
 Render Financial Report.
 
 ---
@@ -278,6 +316,10 @@ User chọn Category Filter.
 ↓
 
 System lọc dữ liệu theo Category trong khoảng thời gian hiện tại.
+
+↓
+
+System tính lại Category Pie Chart và Weekly Spending Comparison (nếu đang ở Monthly Report) theo Category đã lọc.
 
 ↓
 
@@ -335,7 +377,7 @@ Save
 
 ↓
 
-Financial Report tự động Refresh.
+Financial Report tự động Refresh (bao gồm Pie Chart và Weekly Comparison Chart).
 
 ---
 
@@ -374,9 +416,19 @@ Hiển thị:
 
 Hiển thị:
 
-- Category List.
-- Category Spending Amount.
-- Category Spending Percentage.
+- Pie Chart, mỗi Category một màu.
+- Legend: chấm màu + Category Name + Spending Percentage.
+- (Giữ nguyên dữ liệu) Category Spending Amount — hiển thị khi User cần xem chi tiết (trong Legend hoặc khi tương tác với slice).
+
+---
+
+## Weekly Spending Comparison (chỉ khi Time Filter = This Month)
+
+Hiển thị:
+
+- Bar Chart, mỗi cột là một tuần trong tháng, mỗi cột một màu riêng.
+- Giá trị Total Spending của từng tuần hiển thị phía trên cột.
+- Nhãn tuần (Tuần 1, Tuần 2, ...) hiển thị phía dưới cột.
 
 ---
 
@@ -446,6 +498,8 @@ User có thể:
 - Xem Financial Report.
 - Chuyển đổi giữa Weekly Report và Monthly Report.
 - Thay đổi Category Filter.
+- Xem Category Analysis dưới dạng Pie Chart.
+- Xem Weekly Spending Comparison dưới dạng Bar Chart (khi ở Monthly Report).
 - Xem Transaction History Preview.
 - Chọn View All.
 - Xem Expense Detail.
@@ -475,7 +529,7 @@ This Week.
 
 ↓
 
-System tổng hợp dữ liệu.
+System tổng hợp dữ liệu và tính màu cố định cho từng Category.
 
 ↓
 
@@ -495,7 +549,8 @@ User chuyển đổi giữa:
 System tính toán lại:
 
 - Spending Overview.
-- Category Analysis.
+- Category Analysis (Pie Chart).
+- Weekly Spending Comparison (chỉ khi chuyển sang This Month; ẩn hoàn toàn khi ở This Week).
 - Transaction History Preview.
 - Summary theo khoảng thời gian được chọn.
 
@@ -531,7 +586,7 @@ System lọc Expense theo Category trong khoảng thời gian hiện tại.
 
 ↓
 
-Refresh toàn bộ Financial Report.
+Refresh toàn bộ Financial Report, bao gồm Pie Chart và Weekly Comparison Chart (nếu đang hiển thị).
 
 ---
 
@@ -571,7 +626,7 @@ Financial Report tự động tính toán lại dữ liệu.
 
 ↓
 
-Refresh Report.
+Refresh Report (bao gồm Pie Chart và Weekly Comparison Chart).
 
 ---
 
@@ -680,13 +735,27 @@ Tất cả dữ liệu được tính theo Time Filter hiện tại.
 
 ## Category Analysis
 
-Hiển thị theo Category.
+Hiển thị dưới dạng Pie Chart.
 
-Mặc định sắp xếp:
+Mỗi Category có một màu cố định, không đổi giữa các lần render, không đổi khi chuyển Time Filter hoặc Category Filter.
 
-Category có tổng chi tiêu cao nhất hiển thị trước.
+Chỉ hiển thị trong Pie Chart các Category có Total Spending > 0 trong khoảng thời gian đang chọn (Category không phát sinh chi tiêu không có slice).
 
 Dữ liệu được tính theo Time Filter hiện tại.
+
+---
+
+## Weekly Spending Comparison
+
+Chỉ hiển thị khi Time Filter = This Month.
+
+Không hiển thị khi Time Filter = This Week.
+
+Số lượng cột bằng số tuần dương lịch (bắt đầu Thứ Hai) giao với tháng đang chọn (thường 4-6 tuần, tuỳ tháng).
+
+Mỗi cột một màu riêng, khác bảng màu dùng cho Category Analysis.
+
+Nếu một tuần không có Expense nào, cột của tuần đó vẫn hiển thị với chiều cao tối thiểu (giá trị 0), không ẩn cột.
 
 ---
 
@@ -773,7 +842,7 @@ Mặc định:
 
 All Categories.
 
-Category Filter luôn hoạt động trên Time Filter hiện tại.
+Category Filter luôn hoạt động trên Time Filter hiện tại, ảnh hưởng tới cả Category Analysis và Weekly Spending Comparison.
 
 Ví dụ:
 
@@ -799,7 +868,7 @@ Nếu Filter không có dữ liệu.
 
 ↓
 
-Hiển thị Empty State.
+Hiển thị Empty State (Category Analysis và Weekly Spending Comparison không hiển thị biểu đồ trống, ẩn hoàn toàn section nếu không có dữ liệu).
 
 ---
 
@@ -822,8 +891,15 @@ Hiển thị Empty State.
 
 ## Category Analysis
 
-- Empty.
+- Empty (không có Expense nào trong khoảng thời gian/Category đang lọc → ẩn Pie Chart, không hiển thị biểu đồ rỗng).
 - Normal.
+
+---
+
+## Weekly Spending Comparison
+
+- Ẩn (Time Filter = This Week, hoặc không có dữ liệu tháng).
+- Normal (Time Filter = This Month).
 
 ---
 
@@ -939,6 +1015,8 @@ Button:
 - ExpenseCategory
 - DashboardSummary
 
+Category color (Category Analysis) và Weekly Spending Comparison là **derived data**, tính runtime từ Category list và Expense hiện có — không lưu thành field mới trong `pace_mvp_state`, cùng nguyên tắc đã áp dụng cho Financial Report nói chung (RPT-001).
+
 ---
 
 ## Business Rules
@@ -952,6 +1030,8 @@ Button:
 - BGT-002
 - BGT-003
 
+- RPT-001
+
 ---
 
 ## UI Components
@@ -963,6 +1043,8 @@ Button:
 - CMP-008 Statistic Card
 - CMP-013 Empty State
 - CMP-014 Loading State
+- **CMP-017 Category Pie Chart** (mới): biểu đồ tròn hiển thị phân bổ chi tiêu theo Category, mỗi Category một màu cố định, kèm Legend (chấm màu + tên + phần trăm). Dùng trong Category Analysis (Weekly và Monthly Report).
+- **CMP-018 Weekly Comparison Bar Chart** (mới): biểu đồ cột so sánh Total Spending giữa các tuần trong tháng, mỗi cột một màu riêng. Chỉ dùng trong Monthly Report.
 
 ---
 
@@ -987,6 +1069,8 @@ Financial Report luôn hiển thị:
 - Transaction History Preview.
 - Summary.
 
+Weekly Spending Comparison chỉ hiển thị khi Time Filter = This Month (xem AC-004b).
+
 ---
 
 ## AC-003
@@ -1004,13 +1088,30 @@ Dữ liệu được tính theo Time Filter hiện tại.
 
 ## AC-004
 
-Category Analysis hiển thị:
+Category Analysis hiển thị dưới dạng **Pie Chart**:
 
-- Category Name.
-- Spending Amount.
-- Spending Percentage.
+- Mỗi Category một màu cố định, nhất quán.
+- Mỗi slice tỉ lệ với phần trăm chi tiêu của Category đó.
+- Legend hiển thị: chấm màu, Category Name, Spending Percentage.
 
-Sắp xếp theo tổng chi tiêu giảm dần.
+Áp dụng cho cả Weekly Report và Monthly Report.
+
+---
+
+## AC-004a
+
+Category không có chi tiêu (Total Spending = 0) trong khoảng thời gian/Category Filter đang chọn thì không xuất hiện trong Pie Chart và Legend.
+
+---
+
+## AC-004b
+
+Khi Time Filter = This Month, Financial Report hiển thị thêm **Weekly Spending Comparison** dạng Bar Chart:
+
+- Số cột = số tuần dương lịch (bắt đầu Thứ Hai) giao với tháng đang chọn.
+- Mỗi cột một màu riêng biệt, khác bảng màu của Category Analysis.
+- Chiều cao cột tỉ lệ với Total Spending của tuần đó, giá trị hiển thị phía trên cột.
+- Khi Time Filter = This Week, section này không hiển thị.
 
 ---
 
@@ -1049,7 +1150,7 @@ Sau khi Expense được cập nhật.
 
 ↓
 
-Financial Report tự động Refresh.
+Financial Report tự động Refresh (bao gồm Pie Chart và Weekly Comparison Chart).
 
 ---
 
@@ -1091,6 +1192,8 @@ Financial Report hỗ trợ:
 ### Category Filter
 
 All Categories.
+
+Category Filter ảnh hưởng tới Category Analysis và Weekly Spending Comparison.
 
 ---
 
@@ -1147,6 +1250,8 @@ Toàn bộ dữ liệu được tổng hợp từ:
 - Expense.
 - Expense Category.
 
+Category color và Weekly Spending Comparison là derived data, không lưu trữ.
+
 ---
 
 ## AC-015
@@ -1189,6 +1294,8 @@ Hiện tại MVP đã thống nhất:
   - Monthly Report.
 - Time Filter mặc định là:
   - This Week.
+- Category Analysis hiển thị dưới dạng Pie Chart, mỗi Category một màu cố định.
+- Monthly Report có thêm Weekly Spending Comparison dạng Bar Chart, mỗi tuần một màu riêng.
 - Transaction History Preview hiển thị tối đa ba Expense gần nhất.
 - Expense History thuộc Report Module.
 - Dashboard chỉ hiển thị Weekly Spending Snapshot.
@@ -1200,6 +1307,7 @@ Các nội dung sau chưa thuộc phạm vi MVP:
 - So sánh với kỳ trước.
 - Xu hướng chi tiêu nhiều tháng.
 - Dự báo chi tiêu.
+- Tương tác chạm vào từng slice của Pie Chart để lọc (chỉ hiển thị, chưa hỗ trợ tương tác lọc qua biểu đồ ở MVP này).
 - Export PDF.
 - Export Excel.
 - Chia sẻ báo cáo.
@@ -1214,6 +1322,7 @@ Các cải tiến có thể bổ sung trong các phiên bản tiếp theo:
 - AI dự báo ngân sách cuối tháng.
 - So sánh theo tháng hoặc quý.
 - Báo cáo theo nhiều khoảng thời gian.
+- Cho phép chạm vào slice/cột biểu đồ để lọc nhanh Transaction History.
 - Xuất báo cáo PDF.
 - Xuất báo cáo Excel.
 - Chia sẻ báo cáo.
