@@ -557,14 +557,42 @@ Budget Streak Reward
 
 ### Description
 
-Khi User đạt Budget Streak 7 ngày liên tiếp, hệ thống sẽ kiểm tra điều kiện nhận Pig Coin theo chính sách Reward hiện hành.
+Khi User đạt Budget Streak **đủ 7 ngày liên tiếp** (7/7 ngọn lửa hiện màu — xem STR-005), hệ thống cộng **35 Pig Coin** vào Pig Coin Wallet của User.
 
-Pig Coin chỉ được cộng một lần cho mỗi mốc Streak hợp lệ.
+Pig Coin chỉ được cộng một lần cho mỗi mốc Streak hợp lệ (đủ 7 ngày). Sau khi cộng thưởng, chuỗi 7 ngọn lửa reset về trạng thái ban đầu (không màu) để bắt đầu tính chu kỳ Streak 7 ngày tiếp theo, Current Streak (số ngày, hiển thị dạng số) tiếp tục tăng liên tục nếu User không bị reset theo STR-003.
 
 ### Applies To
 
 - Budget Streak
 - Pig Coin Wallet
+
+### Priority
+
+High
+
+---
+
+## STR-005
+
+### Title
+
+Budget Streak Flame Display
+
+### Description
+
+Budget Streak Card hiển thị 7 icon ngọn lửa, mỗi icon đại diện cho 1 ngày trong chu kỳ 7 ngày hiện tại của Budget Streak (vị trí 1 đến 7, reset về vị trí 1 sau mỗi lần đủ 7 ngày và nhận thưởng theo STR-004, hoặc sau khi Streak bị reset theo STR-003).
+
+Quy tắc hiển thị từng icon:
+
+- Ngày đã đạt điều kiện STR-001 (tổng chi tiêu trong ngày đó ≤ Remaining Daily Budget hiện tại của ngày đó): icon ngọn lửa ở vị trí tương ứng hiện **đầy đủ màu**.
+- Ngày chưa tới, hoặc ngày đã qua nhưng không đạt điều kiện STR-001: icon ngọn lửa ở vị trí tương ứng hiển thị dạng **bóng/outline, không màu** (cùng hình dạng icon, chỉ khác màu sắc).
+
+Khi Budget Streak bị reset (STR-003), toàn bộ 7 icon quay về trạng thái không màu và vị trí đếm bắt đầu lại từ 1.
+
+### Applies To
+
+- Budget Streak
+- Dashboard
 
 ### Priority
 
