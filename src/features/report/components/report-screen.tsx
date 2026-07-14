@@ -6,12 +6,13 @@ import { AppHeader } from "@/components/app/app-header";
 import { BottomNav } from "@/components/app/bottom-nav";
 import { MobileFrame } from "@/components/app/mobile-frame";
 import { StatisticCard } from "@/components/finance/statistic-card";
+import { CategoryPieChart } from "@/components/finance/category-pie-chart";
+import { WeeklyComparisonChart } from "@/components/finance/weekly-comparison-chart";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatVnd } from "@/lib/finance/amount";
 import {
   loadReportViewModel,
-  type ReportCategorySummary,
   type ReportPeriod,
 } from "@/features/report/lib/report-service";
 import type { DashboardNavigationTarget } from "@/features/dashboard/types";
@@ -92,7 +93,24 @@ export function ReportScreen({ onBack, onNavigate }: ReportScreenProps) {
               />
             </section>
 
-            <CategoryAnalysis summaries={viewModel.categorySummaries} />
+            {viewModel.categorySummaries.length === 0 ? (
+              <section className="space-y-md">
+                <h2 className="text-subtitle">Category Analysis</h2>
+                <EmptyState
+                  description="Không có khoản chi Completed trong bộ lọc hiện tại."
+                  title="No Category Data"
+                />
+              </section>
+            ) : (
+              <CategoryPieChart
+                summaries={viewModel.categorySummaries}
+                totalSpending={viewModel.totalSpending}
+              />
+            )}
+
+            {period === "month" ? (
+              <WeeklyComparisonChart weeks={viewModel.weeklyBreakdown} />
+            ) : null}
 
             <TransactionPreview
               categories={viewModel.categories}
@@ -172,50 +190,6 @@ function ReportFilters({
           ))}
         </select>
       </label>
-    </section>
-  );
-}
-
-function CategoryAnalysis({
-  summaries,
-}: {
-  summaries: ReportCategorySummary[];
-}) {
-  return (
-    <section className="space-y-md">
-      <h2 className="text-subtitle">Category Analysis</h2>
-      {summaries.length === 0 ? (
-        <EmptyState
-          description="Không có khoản chi Completed trong bộ lọc hiện tại."
-          title="No Category Data"
-        />
-      ) : (
-        <div className="space-y-md">
-          {summaries.map((summary) => (
-            <Card key={summary.category.id}>
-              <div className="flex items-center justify-between gap-md">
-                <div>
-                  <p className="text-body font-semibold">
-                    {summary.category.name}
-                  </p>
-                  <p className="mt-xs text-caption text-pace-text-secondary">
-                    {summary.percentage}% of spending
-                  </p>
-                </div>
-                <p className="text-body font-semibold">
-                  {formatVnd(summary.totalSpending)}
-                </p>
-              </div>
-              <div className="mt-md h-2 overflow-hidden rounded-full bg-pace-border">
-                <div
-                  className="h-full rounded-full bg-pace-primary"
-                  style={{ width: `${summary.percentage}%` }}
-                />
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
     </section>
   );
 }
