@@ -68,17 +68,29 @@ export function VoucherCard({
           <p className="text-caption text-pace-text-secondary">
             Exp: {expiredDate}
           </p>
-          <p
-            className={cn(
-              "text-caption",
-              status === "Active" && "text-pace-success",
-              status === "Redeemed" && "text-pace-primary",
-              status === "OutOfStock" && "text-pace-warning",
-              status === "Expired" && "text-pace-danger",
-            )}
-          >
-            {status}
-          </p>
+        {status === "Active" ? (
+  <button
+    className="shrink-0 rounded-full border-2 border-[#B96363] bg-[#FFC3C3] px-4 py-1.5 text-[16px] font-bold leading-none text-[#B96363]"
+    onClick={(event) => {
+      event.stopPropagation();
+      onClick?.();
+    }}
+    type="button"
+  >
+    Đổi ngay
+  </button>
+) : (
+  <p
+    className={cn(
+      "text-caption font-semibold",
+      status === "Redeemed" && "text-pace-primary",
+      status === "OutOfStock" && "text-pace-warning",
+      status === "Expired" && "text-pace-danger",
+    )}
+  >
+    {status}
+  </p>
+)}
         </div>
       </div>
     </Card>
