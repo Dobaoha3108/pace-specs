@@ -1240,16 +1240,16 @@ Thứ tự hiển thị:
 
 ## Pig Coin Balance Card
 
-Nền card màu #FFE6EA. Chiều cao tối thiểu ~190px.
+Nền card màu #FFE6EA. Chiều cao cố định 200px.
 
 Layout 2 cột rõ ràng:
 
 - Cột trái (~58% chiều ngang):
   1. Label "Pig Coin của bạn" — chữ đen đậm (font-weight 700), font-size 20px (text-title + font-bold).
-  2. Pig Coin Icon (asset `icons/pig_coin.png`, cỡ lớn, không nền/khung bao quanh) + Pig Coin Balance (số) nằm cùng hàng — số có font-size 44px, font-weight 800 (extrabold).
+  2. Pig Coin Icon (asset `icons/pig_coin.png`, không nền/khung bao quanh) — chiều cao bằng 1/4 chiều cao card (50px) + Pig Coin Balance (số) nằm cùng hàng — số có font-size 44px, font-weight 800 (extrabold).
   3. Label phụ nhỏ màu xám "Pig Coin" ngay dưới số.
   4. Liên kết "My Voucher" (thay cho vị trí "Lịch sử nhận coin" ở bản tham khảo — PACE MVP chưa có tính năng Lịch sử nhận coin), có mũi tên chevron, bấm vào điều hướng tới My Voucher. Nằm ở đáy cột trái.
-- Cột phải (~42% chiều ngang): hình minh hoạ Pig Pig full-body (asset `pig-pig/pig_default.png`), chiếm khoảng 65-75% chiều cao card (~150px), căn giữa theo chiều dọc, không bị giới hạn/thu nhỏ bởi max-width/max-height của container cha.
+- Cột phải (~42% chiều ngang): hình minh hoạ Pig Pig full-body (asset `pig-pig/pig_default.png`), chiều cao bằng 2/3 chiều cao card, căn giữa theo chiều dọc (cách đều mép trên và dưới), không bị giới hạn/thu nhỏ bởi max-width/max-height của container cha.
 
 ---
 
