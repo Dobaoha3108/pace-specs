@@ -44,9 +44,9 @@ export function VoucherCard({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-sm">
-          <p className="truncate text-caption text-pace-text-secondary">
-            {brandName}
-          </p>
+          <p className="truncate text-[18px] font-bold text-black">
+        {brandName}
+            </p>
           <span className="rounded-button bg-pace-secondary px-sm py-xs text-caption text-pace-text-primary">
             {pigCoinCost}
           </span>
