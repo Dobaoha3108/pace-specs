@@ -131,7 +131,7 @@ function RewardMarketplace({
 }) {
   return (
     <div className="space-y-lg">
-      <Card className="relative h-[235px] overflow-hidden bg-[#FFE6EA]">
+      <Card className="relative h-[180px] overflow-hidden bg-[#FFE6EA]">
         <div className="flex h-full items-stretch gap-md">
           <div className="flex w-[54%] flex-col justify-between gap-sm py-xs">
             <div className="space-y-sm">
@@ -159,7 +159,7 @@ function RewardMarketplace({
               </div>
             </div>
           </div>
-         <div className="flex h-full w-[46%] items-end justify-end pr-4 overflow-visible">
+         <div className="flex h-full w-[46%] items-end justify-end overflow-visible pb-4 pr-4">
   <Image
     alt="Pig Pig"
     className="h-[220px] w-[220px] max-w-none object-contain"
