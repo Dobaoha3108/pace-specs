@@ -181,7 +181,7 @@ MVP sử dụng Mock User Data.
 
 User ID
 
-PACE000001
+PACE000001 (hiển thị rút gọn còn 8 chữ số phía sau prefix "PACE", dẫn xuất runtime từ id thật của User, không lưu thành field mới, không ảnh hưởng dữ liệu liên kết khác)
 
 ---
 
