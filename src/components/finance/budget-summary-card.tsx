@@ -58,7 +58,7 @@ export function BudgetSummaryCard({
           </span>
         </p>
         <Progress
-    className="mt-md bg-white/25 [&>div]:bg-[#00FF00]"
+ className="mt-md bg-white/25 [&>div]:!bg-[#00FF00]"
           max={100}
           value={budgetProgress}
         />
