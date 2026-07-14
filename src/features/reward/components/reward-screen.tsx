@@ -156,14 +156,6 @@ function RewardMarketplace({
                 </div>
               </div>
             </div>
-            <button
-              className="flex items-center gap-xs text-caption font-medium text-pace-text-primary"
-              onClick={onMyVoucher}
-              type="button"
-            >
-              My Voucher
-              <ChevronRight aria-hidden className="size-4" />
-            </button>
           </div>
           <div className="flex h-full w-[46%] items-center justify-center">
             <Image
