@@ -204,3 +204,19 @@ Dùng **class Tailwind cụ thể** (`h-[Npx] w-[Npx]`) thay vì chỉ dựa và
 - `src/features/reward/components/reward-screen.tsx`:
   - Pig Coin icon: thêm `className="h-[50px] w-[50px]"`.
   - Mascot Pig Pig: đổi từ `h-2/3 w-auto` (tương đối, không đáng tin cậy qua chuỗi flex nhiều lớp) sang `h-[133px] w-[133px]` (cố định, đúng bằng 2/3 của card 200px).
+
+## 2026-07-14 — Bug fix: thiếu nút huỷ yêu cầu Withdraw trong màn hình chờ 2 giờ (Commitment)
+
+### Phân loại
+
+Bug implementation — rule `SVG-007` (đã có sẵn trong spec từ trước) quy định rõ: "Trong thời gian chờ: ... User có thể hủy yêu cầu Withdraw", nhưng code chỉ hiển thị thông báo "Withdraw request is pending" mà không có nút thao tác nào để huỷ.
+
+(Màn hình chờ 12 giờ Cancel Saving Goal đã có sẵn nút "Undo Cancel" đúng theo SVG-009 — không có lỗi.)
+
+### Code thay đổi
+
+- `src/features/saving-goal/components/saving-goal-screen.tsx` — thêm hàm `cancelWithdrawRequest()` (xoá các field `withdrawRequestedAmount`, `withdrawRequestedAt`, `withdrawAvailableAt`, Goal trở lại trạng thái bình thường không có pending withdraw) và nút "Cancel Withdraw Request" trong màn hình chờ 2 giờ.
+
+### Ghi chú — cần bạn xác nhận thêm
+
+"Delete Saving Goal" là tính năng **hoàn toàn mới**, chưa từng có trong spec — đã tách thành `DELTA-005` trong `docs/03_DELTA_SPEC.md` (Proposed), có 2 phương án đề xuất kèm câu hỏi cần bạn xác nhận trước khi code, để tránh làm sai ý hoặc gây rủi ro mất tiền/mất Goal không thể khôi phục.
