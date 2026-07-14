@@ -226,9 +226,9 @@ View All
 
 Hiển thị:
 
-- Current Streak
-- Progress to 7-day Reward
-- Pig Coin Reward Hint
+- Current Streak (số ngày, dạng số).
+- Streak Flame — dải 7 icon ngọn lửa, icon hiện màu cho mỗi ngày đã hoàn thành trong chuỗi 7 ngày hiện tại, icon dạng bóng/outline không màu cho ngày chưa hoàn thành (xem `specs/12_BUSINESS_RULES.md` — STR-005).
+- Pig Coin Reward Hint — nhắc User đủ 7/7 ngọn lửa sẽ nhận 35 Pig Coin (STR-004).
 
 ---
 
@@ -628,8 +628,8 @@ Luôn hiển thị.
 Bao gồm:
 
 - Current Streak.
-- Progress to 7-day Reward.
-- Pig Coin Reward Hint.
+- Streak Flame — 7 icon ngọn lửa, hiện màu/không màu theo từng ngày (xem STR-005).
+- Pig Coin Reward Hint — đủ 7/7 ngọn lửa nhận 35 Pig Coin (STR-004).
 
 ---
 
@@ -968,8 +968,8 @@ Không cho phép:
 Budget Streak luôn hiển thị:
 
 - Current Streak.
-- Progress tới mốc nhận Pig Coin.
-- Pig Coin Reward Hint.
+- Streak Flame — 7 icon ngọn lửa, hiện màu cho ngày đã hoàn thành, dạng bóng/outline không màu cho ngày chưa hoàn thành (STR-005).
+- Pig Coin Reward Hint — đủ 7/7 ngọn lửa nhận 35 Pig Coin (STR-004).
 
 Không hiển thị Longest Streak.
 
