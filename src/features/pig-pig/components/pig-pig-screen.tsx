@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Clock3, Send } from "lucide-react";
+
 import { AppHeader } from "@/components/app/app-header";
 import { BottomNav } from "@/components/app/bottom-nav";
 import { MobileFrame } from "@/components/app/mobile-frame";
@@ -10,7 +11,6 @@ import { ChatBubble } from "@/components/ai/chat-bubble";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Input } from "@/components/ui/input";
 import {
   getPigPigResponse,
   listChatHistory,
@@ -97,6 +97,7 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
         isLoading: true,
       },
     ]);
+
     setInputValue("");
     setInputError(undefined);
     setIsThinking(true);
@@ -106,6 +107,7 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
       const responseTime = new Date().toISOString();
 
       saveChatTurn(context.user.id, trimmedMessage, response);
+
       setMessages((currentMessages) => [
         ...currentMessages.filter((item) => !item.isLoading),
         {
@@ -115,6 +117,7 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
           createdAt: responseTime,
         },
       ]);
+
       setIsThinking(false);
       refresh();
     }, 650);
@@ -125,12 +128,14 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
       <MobileFrame>
         <div className="flex h-full flex-col bg-pace-background">
           <AppHeader onBack={onBack} showBackButton title="Pig Pig Chat" />
+
           <div className="flex flex-1 items-center px-md pb-[104px]">
             <EmptyState
               description="Please finish onboarding before chatting with Pig Pig."
               title="No Financial Data"
             />
           </div>
+
           <BottomNav activeItem="pig-pig" onNavigate={onNavigate} />
         </div>
       </MobileFrame>
@@ -145,6 +150,7 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
           showBackButton
           title={mode === "history" ? "Chat History" : "Pig Pig Chat"}
         />
+
         {mode === "history" ? (
           <PigPigHistory
             history={history}
@@ -165,6 +171,7 @@ export function PigPigScreen({ mode, onBack, onNavigate }: PigPigScreenProps) {
             onSuggestion={sendMessage}
           />
         )}
+
         <BottomNav activeItem="pig-pig" onNavigate={onNavigate} />
       </div>
     </MobileFrame>
@@ -195,6 +202,7 @@ function PigPigChat({
       <div className="flex-1 overflow-y-auto px-md pb-[188px] pt-md">
         <div className="space-y-lg">
           <PigPigHero onHistory={onHistory} />
+
           <div className="space-y-md">
             {messages.map((message) => (
               <ChatBubble
@@ -206,27 +214,47 @@ function PigPigChat({
               />
             ))}
           </div>
+
           <SuggestionChips disabled={isThinking} onSelect={onSuggestion} />
         </div>
       </div>
+
       <div className="absolute inset-x-0 bottom-[84px] border-t border-pace-border bg-pace-surface px-md py-sm">
         <div className="flex items-start gap-sm">
-          <Input
-            error={inputError}
-            label="Message"
-            onChange={(event) => onInputChange(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                onSend();
-              }
-            }}
-            placeholder="Hỏi Pig Pig về tài chính của bạn..."
-            value={inputValue}
-          />
+          <div className="min-w-0 flex-1">
+            <div
+              className={`flex h-14 items-center rounded-input bg-pace-background px-md ring-1 ring-transparent transition duration-micro focus-within:bg-pace-surface focus-within:ring-pace-primary ${
+                inputError
+                  ? "ring-pace-danger focus-within:ring-pace-danger"
+                  : ""
+              }`}
+            >
+              <input
+                aria-invalid={Boolean(inputError)}
+                aria-label="Nhập tin nhắn cho Pig Pig"
+                className="min-w-0 flex-1 bg-transparent text-body text-pace-text-primary outline-none placeholder:text-pace-text-secondary"
+                onChange={(event) => onInputChange(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    onSend();
+                  }
+                }}
+                placeholder="Hỏi Pig Pig về tài chính của bạn..."
+                value={inputValue}
+              />
+            </div>
+
+            {inputError ? (
+              <p className="mt-xs text-caption text-pace-danger">
+                {inputError}
+              </p>
+            ) : null}
+          </div>
+
           <button
             aria-label="Send message"
-            className="mt-0 flex size-14 shrink-0 items-center justify-center rounded-button bg-pace-primary text-white shadow-floating disabled:opacity-50"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-button bg-pace-primary text-white shadow-floating disabled:opacity-50"
             disabled={isThinking}
             onClick={onSend}
             type="button"
@@ -252,12 +280,14 @@ function PigPigHero({ onHistory }: { onHistory: () => void }) {
             src={pigPigAssetPath}
           />
         </div>
+
         <div className="min-w-0 flex-1">
           <p className="text-caption text-pace-text-secondary">
             Rule-based Mock AI
           </p>
           <h1 className="text-title">Pig Pig</h1>
         </div>
+
         <button
           aria-label="View chat history"
           className="flex size-11 shrink-0 items-center justify-center rounded-button bg-pace-background text-pace-primary"
@@ -278,11 +308,15 @@ function SuggestionChips({
   disabled: boolean;
   onSelect: (question: string) => void;
 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const visibleQuestions = suggestedQuestions.slice(0, isExpanded ? 20 : 3);
+
   return (
     <section className="space-y-md">
       <h2 className="text-subtitle">Suggested Questions</h2>
+
       <div className="flex flex-wrap gap-sm">
-        {suggestedQuestions.slice(0, 20).map((question) => (
+        {visibleQuestions.map((question) => (
           <button
             className="rounded-full bg-pace-surface px-md py-sm text-caption text-pace-primary shadow-card disabled:opacity-50"
             disabled={disabled}
@@ -294,6 +328,17 @@ function SuggestionChips({
           </button>
         ))}
       </div>
+
+      {suggestedQuestions.length > 3 ? (
+        <button
+          aria-expanded={isExpanded}
+          className="w-full text-center text-caption font-semibold text-pace-primary"
+          onClick={() => setIsExpanded((current) => !current)}
+          type="button"
+        >
+          {isExpanded ? "View less" : "View all"}
+        </button>
+      ) : null}
     </section>
   );
 }
@@ -329,6 +374,7 @@ function PigPigHistory({
                   src={pigPigThinkingAssetPath}
                 />
               </div>
+
               <div>
                 <p className="text-caption text-pace-text-secondary">
                   Local history
@@ -337,9 +383,11 @@ function PigPigHistory({
               </div>
             </div>
           </Card>
+
           {groupedHistory.map((group) => (
             <section className="space-y-md" key={group.label}>
               <h2 className="text-subtitle">{group.label}</h2>
+
               {group.items.map((item) => (
                 <Card key={item.id}>
                   <p className="text-caption text-pace-text-secondary">
@@ -355,6 +403,7 @@ function PigPigHistory({
               ))}
             </section>
           ))}
+
           <Button onClick={onBackToChat} variant="secondary">
             Chat với Pig Pig
           </Button>
@@ -368,6 +417,7 @@ function groupHistory(history: ChatHistory[]) {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
+
   const groups = [
     { label: "Hôm nay", items: [] as ChatHistory[] },
     { label: "Hôm qua", items: [] as ChatHistory[] },
