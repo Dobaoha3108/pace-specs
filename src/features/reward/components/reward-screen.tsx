@@ -162,7 +162,7 @@ function RewardMarketplace({
      <div className="flex h-full w-[44%] items-center justify-center">
   <Image
     alt="Pig Pig"
-    className="h-[170px] w-[170px] object-contain"
+    className="h-[210px] w-[210px] object-contain"
     height={170}
     src="/assets/pig-pig/pig_default.png"
     width={170}
