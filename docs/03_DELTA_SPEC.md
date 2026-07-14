@@ -214,7 +214,7 @@ High
 
 ### Status
 
-Proposed — chưa merge. Nằm ngoài phạm vi yêu cầu Onboarding ban đầu, tạo ra do hệ quả của DELTA-003 (mục Open Question #2 cũ).
+Merged — thực hiện bởi DELTA-007 (xem bên dưới và `docs/04_CHANGE_LOG.md`). Công thức cuối cùng dùng trong `specs/17_UI_LAYOUT.md` ("Số ngày trong chu kỳ" / "Số ngày còn lại của chu kỳ") khác cách đặt tên hàm được đề xuất ở đây (`getRemainingDaysInCycle`) nhưng cùng bản chất: tính theo Budget Reset Day thay vì hết tháng dương lịch.
 
 ### Title
 
@@ -349,5 +349,54 @@ High
 - Không đổi `specs/11_DATA_MODEL.md` — field `monthlyIncome`, `fixedExpenses`, `budgetResetDay` không đổi kiểu/ý nghĩa, chỉ đổi cách Onboarding thu thập chúng (luôn hỏi, không còn hoãn).
 - Code đã sửa: `src/features/onboarding/components/onboarding-screen.tsx` (bỏ toàn bộ logic `isScenarioA`/nhánh Remaining Budget, luôn validate + hiển thị Monthly Income/Fixed Expenses), `src/features/onboarding/types.ts` không đổi (field `remainingBudget` trong `FinancialSetupData` vẫn giữ, dùng làm giá trị Budget ban đầu = Monthly Income − Fixed Expenses).
 - Không ảnh hưởng `src/lib/validation/business-rules.ts` (`assertBudgetIsValid`) — logic nới lỏng cho Scenario B ở DELTA-003 giờ không còn đường nào gọi tới nhánh `monthlyIncome === 0` từ Onboarding nữa, nhưng vẫn giữ nguyên trong code vì không gây hại (an toàn dự phòng, không phải dead code nguy hiểm).
+
+---
+
+## DELTA-007
+
+### Status
+
+Merged vào `specs/17_UI_LAYOUT.md`, `specs/12_BUSINESS_RULES.md` (STR-004, STR-005 mới), `feature-specs/22_DASHBOARD.md` (xem `docs/04_CHANGE_LOG.md`). Theo quy trình mới đã thống nhất với Dương (requirement mới → viết spec chính xác → merge thẳng vào spec chính thức, không cần dừng lại chờ duyệt), delta này được viết và merge trực tiếp trong cùng một lượt.
+
+### Title
+
+Dashboard: Sửa layout "Hôm nay nên tiêu", đổi công thức "Dự kiến hết" theo Budget Reset Day, và định nghĩa lại Budget Streak Flame + Reward
+
+### Related Screen
+
+Dashboard
+
+### Context / Lý do thay đổi
+
+Ba thay đổi Dương yêu cầu:
+
+1. Ô "Hôm nay nên tiêu" đang hiển thị số tiền còn lại và baseline tách thành 2 dòng riêng (số còn lại đậm ở trên, "/ baseline" nhỏ ở dưới — xem Change Log mục 2026-07-13 (2)). Yêu cầu mới: đưa cả 2 số về **chung một dòng**.
+2. Ô "Dự kiến hết" trước đây tính theo tốc độ chi tiêu (`Remaining Budget / tốc độ chi tiêu trung bình`) và dùng mốc "hết tháng dương lịch" cho các phép tính số ngày liên quan (đây chính là nội dung còn treo của DELTA-004). Yêu cầu mới: đổi hẳn cách tính — "Dự kiến hết trong XX ngày" = tổng số ngày của chu kỳ Budget hiện tại = Ngày nhận Income (Budget Reset Day) của chu kỳ kế tiếp trừ ngày nhận Income của chu kỳ hiện tại, luôn nằm trong khoảng 28–31 ngày tuỳ tháng. Nhân tiện việc này cũng giải quyết luôn DELTA-004 (đổi toàn bộ mốc tính "số ngày còn lại của chu kỳ" từ lịch dương sang theo Budget Reset Day).
+3. Budget Streak Card hiện chỉ mô tả chung chung "Streak Flame" và phần thưởng theo "chính sách Reward hiện hành" (STR-004 cũ), chưa từng định nghĩa cụ thể. Yêu cầu mới: cụ thể hoá — 7 icon ngọn lửa (1 icon/ngày trong chuỗi 7 ngày), ngày hoàn thành → icon hiện màu, ngày chưa hoàn thành → icon dạng bóng/outline không màu; đủ 7/7 icon màu → thưởng chính xác **35 Pig Coin**.
+
+### Thay đổi đã Merge
+
+- `specs/17_UI_LAYOUT.md` — mục "Budget Overview Card": Ô 1 ghi rõ hiển thị chung 1 dòng; Ô 2 đổi công thức "Dự kiến hết" sang tổng số ngày chu kỳ (theo Budget Reset Day); thêm định nghĩa "Số ngày trong chu kỳ" và cập nhật lại "Số ngày còn lại của chu kỳ" (dùng cho baseline + EXP-007) sang tính theo Budget Reset Day thay vì hết tháng dương lịch. Mục "Budget Streak Card": mô tả rõ 7 icon ngọn lửa, trạng thái màu/không màu.
+- `specs/12_BUSINESS_RULES.md` — `STR-004` ghi rõ phần thưởng là 35 Pig Coin (thay vì "chính sách Reward hiện hành" chung chung); thêm rule mới `STR-005` (Budget Streak Flame Display) định nghĩa quy tắc hiển thị 7 icon.
+- `feature-specs/22_DASHBOARD.md` — 3 vị trí mô tả Budget Streak (Section 5, Display Rules, AC-007) cập nhật theo flame/reward mới.
+
+### Applies To
+
+- Dashboard
+- Budget Streak
+- Budget
+
+### Priority
+
+High
+
+### Impact — Code cần sửa (thực hiện khi triển khai, theo spec đã chốt ở trên)
+
+- `src/lib/finance/amount.ts` — thay `getRemainingDaysInMonth`/công thức tốc độ chi tiêu bằng hàm tính theo Budget Reset Day: `getCycleLengthDays(budgetResetDay, referenceDate)` (chu kỳ hiện tại, dùng cho "Dự kiến hết") và `getRemainingDaysInCycle(budgetResetDay, today)` (dùng cho baseline "Số tiền được tiêu hôm nay" + `EXP-007`).
+- `src/features/finance/lib/finance-service.ts` — `getTodayBudgetBreakdown()`, `checkDailyBudgetOverspend()` dùng `getRemainingDaysInCycle` thay cho `getRemainingDaysInMonth`.
+- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` đổi sang trả về `getCycleLengthDays(...)` thay vì công thức tốc độ chi tiêu; bỏ các biến trung gian không còn dùng.
+- `src/components/finance/budget-summary-card.tsx` — Ô "Hôm nay nên tiêu": đổi layout `secondaryValue` sang hiển thị inline cùng dòng với `value` (hiện đang tách dòng qua CSS component `BudgetInfoBox`). Budget Streak Card: đổi từ hiển thị text/số streak đơn sang render dải 7 icon ngọn lửa (màu/outline) dựa trên vị trí ngày trong chu kỳ 7 ngày hiện tại.
+- Cần field/logic runtime mới để xác định trạng thái từng ngày trong 7 ngày Streak hiện tại (đã hoàn thành hay chưa) — tính từ lịch sử Expense theo ngày, không cần thêm field lưu trữ mới trong `pace_mvp_state` (derived data, tương tự nguyên tắc RPT-001).
+- `src/features/finance/lib/finance-service.ts` (hoặc nơi xử lý Budget Streak hiện có) — khi đạt đủ 7/7 ngày, cộng chính xác 35 Pig Coin vào Pig Coin Wallet (thay cho logic "chính sách Reward hiện hành" chưa rõ ràng trước đó).
 
 ---
