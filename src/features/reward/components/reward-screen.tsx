@@ -163,9 +163,9 @@ function RewardMarketplace({
   <Image
     alt="Pig Pig"
     className="h-[210px] w-[210px] object-contain"
-    height={170}
+    height={210}
     src="/assets/pig-pig/pig_default.png"
-    width={170}
+    width={210}
   />
 </div>
         </div>
