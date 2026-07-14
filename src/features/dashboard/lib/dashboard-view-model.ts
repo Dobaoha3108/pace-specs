@@ -1,8 +1,7 @@
 import { getTodayBudgetBreakdown } from "@/features/finance/lib/finance-service";
 import {
-  getElapsedDaysInMonth,
-  getRemainingDaysInMonth,
-  getTotalDaysInMonth,
+  getCycleLengthDays,
+  getRemainingDaysInCycle,
 } from "@/lib/finance/amount";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
 import type { BudgetStreak, Expense, PigPigInsight } from "@/types/finance";
@@ -20,15 +19,6 @@ function isThisWeek(dateValue: string, now = new Date()) {
   endOfWeek.setDate(startOfWeek.getDate() + 7);
 
   return date >= startOfWeek && date < endOfWeek;
-}
-
-function isThisMonth(dateValue: string, now = new Date()) {
-  const date = new Date(dateValue);
-
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth()
-  );
 }
 
 function getExpenseDisplayDate(expense: Expense) {
@@ -112,25 +102,16 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
   );
   const weeklyBudget = budget.remainingDailyBudget * Math.min(
     7,
-    getRemainingDaysInMonth(new Date()),
+    getRemainingDaysInCycle(budget.budgetResetDay, new Date()),
   );
   const weeklyBudgetUsage =
     weeklyBudget > 0 ? Math.round((weeklySpending / weeklyBudget) * 100) : 0;
 
   const now = new Date();
-  const elapsedDaysInCycle = getElapsedDaysInMonth(now);
-  const cycleSpendingSoFar = expenses
-    .filter((expense) => isThisMonth(getExpenseDisplayDate(expense), now))
-    .reduce((total, expense) => total + expense.amount, 0);
-  const averageDailySpending =
-    elapsedDaysInCycle > 0 ? cycleSpendingSoFar / elapsedDaysInCycle : 0;
-  const projectedDaysLeft =
-    averageDailySpending > 0
-      ? Math.max(0, Math.round(budget.remainingBudget / averageDailySpending))
-      : Math.max(
-          0,
-          getTotalDaysInMonth(now) - elapsedDaysInCycle + 1,
-        );
+  // "Dự kiến hết trong XX ngày" (specs/17_UI_LAYOUT.md, DELTA-007): XX = tổng
+  // số ngày của chu kỳ Budget hiện tại, tính theo Budget Reset Day (không còn
+  // phụ thuộc tốc độ chi tiêu như công thức cũ).
+  const projectedDaysLeft = getCycleLengthDays(budget.budgetResetDay, now);
 
   // Today's allowance is derived from the shared getTodayBudgetBreakdown
   // helper so the Dashboard display always matches the EXP-007 overspend
