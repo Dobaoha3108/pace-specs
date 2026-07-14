@@ -195,7 +195,7 @@ High
 
 ### Quyết định (đã chốt, không còn Open Question)
 
-1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: hỏi **trước tiên** (Step 2.0), trước Monthly Income/Fixed Expenses/Remaining Budget. Lý do: bắt buộc phải biết ngày này mới xác định được Scenario A hay B, nên không thể hỏi sau.
+1. **Vị trí câu hỏi Budget Reset Day trong Step 2**: hỏi **trước tiên** (Step 2.0), trước Monthly Income/Fixed Expenses. Lý do: đây là thông tin đầu tiên cần thu thập trong Financial Setup. > **Cập nhật theo DELTA-006**: khái niệm Scenario A/B (xác định bằng so sánh ngày hôm nay với Budget Reset Day) đã bị **bỏ hoàn toàn** — xem DELTA-006 bên dưới. Vị trí hỏi Budget Reset Day trước tiên vẫn giữ nguyên, chỉ khác lý do: không còn để "xác định Scenario" mà chỉ đơn thuần là bước thu thập dữ liệu đầu tiên trong Financial Setup.
 2. **Ảnh hưởng dây chuyền tới các công thức "số ngày còn lại trong chu kỳ"** (Dashboard/Expense, `getTodayBudgetBreakdown()`, rule `EXP-007`): **giữ nguyên hành vi hiện tại** (tính theo "hết tháng dương lịch" qua `getRemainingDaysInMonth`) trong phạm vi DELTA-003 này. Đây là thay đổi ngoài phạm vi Onboarding, ảnh hưởng nhiều feature khác — theo dõi riêng ở **DELTA-004** (mục dưới đây), giữ trạng thái `Proposed`, không block việc merge DELTA-003.
 3. **Ngày cuối tháng thiếu**: xác nhận dùng ngày cuối tháng làm Reset Day thực tế khi tháng đó không có đủ số ngày User chọn (VD chọn 31, tháng chỉ có 28/29/30 ngày). Áp dụng nhất quán ở cả Onboarding lẫn các chu kỳ sau.
 4. **Sửa Budget Reset Day sau Onboarding**: giữ nguyên AC-009 cũ — User có thể đổi trong Budget Settings.
@@ -294,5 +294,60 @@ Medium
 - `specs/12_BUSINESS_RULES.md` — thêm rule mới (SVG-011: Delete Saving Goal, chỉ áp dụng Completed/Cancelled, xoá vĩnh viễn, không hoàn tác).
 - `specs/17_UI_LAYOUT.md` — thêm nút Delete vào layout Saving Goal History item.
 - Code: `src/features/saving-goal/components/saving-goal-screen.tsx`, `src/features/finance/lib/finance-service.ts` (hàm xoá Saving Goal khỏi Local Storage).
+
+---
+
+## DELTA-006
+
+### Status
+
+Merged vào `feature-specs/21_ONBOARDING.md`, `specs/17_UI_LAYOUT.md` (xem `docs/04_CHANGE_LOG.md`). Thay thế/loại bỏ hoàn toàn khái niệm Scenario A/B đã đưa vào từ DELTA-003.
+
+### Title
+
+Bỏ Scenario A/B trong Onboarding Financial Setup — luôn yêu cầu đủ Budget Reset Day + Monthly Income + Fixed Expenses, bất kể ngày hoàn thành Onboarding
+
+### Related Screen
+
+Onboarding (Financial Setup)
+
+### Context / Lý do thay đổi
+
+DELTA-003 đưa ra 2 kịch bản: nếu ngày hôm nay đúng bằng Budget Reset Day vừa chọn thì hỏi Monthly Income + Fixed Expenses (Scenario A); nếu khác thì chỉ hỏi Remaining Budget (Scenario B), hoãn Monthly Income/Fixed Expenses tới chu kỳ sau. Dương phản hồi sau khi test bản deploy: ngày hoàn thành Onboarding không quan trọng, và không muốn nhánh Scenario B nữa — muốn Financial Setup **luôn** thu thập đủ cả 3 thông tin ngay từ đầu, để có dữ liệu Monthly Income/Fixed Expenses đầy đủ ngay từ chu kỳ đầu tiên thay vì phải đợi tới chu kỳ sau.
+
+### New Flow — Financial Setup (Step 2 của Onboarding)
+
+Chỉ còn **một luồng duy nhất**, áp dụng cho mọi User bất kể Onboarding vào ngày nào trong tháng:
+
+1. Chọn Budget Reset Day (Day Picker Grid, CMP-016, 1–31) — bắt buộc, hiển thị đầu tiên.
+2. Nhập Monthly Income — bắt buộc.
+3. Nhập Fixed Expenses — bắt buộc.
+4. System tính `Budget = Monthly Income - Fixed Expenses`, dùng làm Budget cho chu kỳ hiện tại (chu kỳ đầu tiên, dù có thể là chu kỳ rút gọn nếu hôm nay chưa tới Budget Reset Day).
+
+Không còn bước hỏi "Remaining Budget" trong Onboarding.
+
+### Validation mới
+
+- Budget Reset Day: giữ nguyên như DELTA-003 (Required, 1–31, chỉ chọn qua Day Picker Grid).
+- Monthly Income: Required, số, > 0 — áp dụng cho **mọi** User, không phân biệt ngày Onboarding.
+- Fixed Expenses: Required, số, ≥ 0, không lớn hơn Monthly Income — áp dụng cho **mọi** User.
+- Bỏ hẳn trường/validation "Remaining Budget" khỏi Onboarding.
+
+### Applies To
+
+- Onboarding
+- Budget
+
+### Priority
+
+High
+
+### Impact (đã Merged)
+
+- `feature-specs/21_ONBOARDING.md` — Version 1.2 → 1.3 (Status: Final). Bỏ toàn bộ mục "Scenario A" / "Scenario B" (Budget Initialization, Screen Content, User Actions, System Response, Navigation, Display Rules, Validation). AC-003/004/004a/005/006 viết lại thành luồng đơn (không còn phân biệt Scenario); AC-004 (Remaining Budget) và AC-006 bị xoá vì không còn áp dụng.
+- `specs/17_UI_LAYOUT.md` — mục "Financial Setup" (Onboarding Step 2): bỏ Scenario A/B, còn một layout duy nhất (Day Picker Grid + Monthly Income + Fixed Expense + Preview Card).
+- Không đổi `specs/11_DATA_MODEL.md` — field `monthlyIncome`, `fixedExpenses`, `budgetResetDay` không đổi kiểu/ý nghĩa, chỉ đổi cách Onboarding thu thập chúng (luôn hỏi, không còn hoãn).
+- Code đã sửa: `src/features/onboarding/components/onboarding-screen.tsx` (bỏ toàn bộ logic `isScenarioA`/nhánh Remaining Budget, luôn validate + hiển thị Monthly Income/Fixed Expenses), `src/features/onboarding/types.ts` không đổi (field `remainingBudget` trong `FinancialSetupData` vẫn giữ, dùng làm giá trị Budget ban đầu = Monthly Income − Fixed Expenses).
+- Không ảnh hưởng `src/lib/validation/business-rules.ts` (`assertBudgetIsValid`) — logic nới lỏng cho Scenario B ở DELTA-003 giờ không còn đường nào gọi tới nhánh `monthlyIncome === 0` từ Onboarding nữa, nhưng vẫn giữ nguyên trong code vì không gây hại (an toàn dự phòng, không phải dead code nguy hiểm).
 
 ---
