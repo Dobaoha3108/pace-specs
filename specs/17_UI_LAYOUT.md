@@ -1392,28 +1392,80 @@ Chat Area cuộn theo chiều dọc.
 
 ## Suggestion Questions
 
-Hiển thị:
+Hiển thị theo trạng thái thu gọn/mở rộng:
 
-20 câu hỏi mẫu.
+### Trạng thái mặc định — Collapsed
+
+- Chỉ hiển thị 03 Suggested Questions đầu tiên.
+- Ngay bên dưới danh sách hiển thị Text Button: **"View all"**.
+- Không render 17 Suggested Questions còn lại trong trạng thái mặc định.
+
+### Trạng thái mở rộng — Expanded
+
+User chọn **"View all"**.
 
 ↓
 
-User chọn.
+- Hiển thị tối đa 20 Suggested Questions/FAQ.
+- Text Button đổi thành **"View less"**.
+- User vẫn có thể chọn bất kỳ Suggested Question nào trong danh sách mở rộng.
+
+User chọn **"View less"**.
 
 ↓
 
-Tự động điền vào ô nhập.
+- Thu gọn lại còn 03 Suggested Questions đầu tiên.
+- Text Button trở lại **"View all"**.
+
+### Interaction Rules
+
+User chọn Suggested Question.
+
+↓
+
+Gửi trực tiếp câu hỏi đã chọn vào Chat Flow.
+
+Việc mở rộng hoặc thu gọn Suggested Questions:
+
+- Không xoá Chat History.
+- Không thay đổi nội dung đang nhập trong Chat Input.
+- Không tự động gửi câu hỏi.
+- Không điều hướng sang màn hình khác.
 
 ---
 
 ## Chat Input Area
 
-Hiển thị:
+Luôn cố định phía trên Bottom Navigation.
+
+Hiển thị trên cùng một hàng ngang:
 
 - Text Input.
-- Send Button.
+- Send Button dạng icon.
 
-Luôn cố định phía trên Bottom Navigation.
+### Text Input
+
+- Chiếm toàn bộ chiều rộng còn lại của hàng.
+- Chiều cao cố định: **56 px** (`h-14`).
+- Không hiển thị Label hoặc chữ **"Message"** phía trên Input.
+- Có thể hiển thị Placeholder: **"Hỏi Pig Pig về tài chính của bạn..."**.
+- Nhấn Enter gửi tin nhắn.
+- Khi lỗi nhập trống, Error Message hiển thị bên dưới Text Input.
+
+### Send Button
+
+- Dạng Button vuông.
+- Kích thước cố định: **56 × 56 px** (`h-14 w-14`).
+- Chỉ hiển thị Send Icon, không hiển thị Text Label.
+- Căn giữa theo chiều dọc với khung Text Input.
+- Disabled trong thời gian Pig Pig đang xử lý câu trả lời.
+
+### Alignment Rules
+
+- Text Input và Send Button phải có cùng chiều cao 56 px.
+- Hai khung phải bắt đầu tại cùng một vị trí theo trục dọc.
+- Không để Label của Input làm Send Button bị cao hoặc thấp hơn Input.
+- Error Message chỉ mở rộng khu vực bên dưới Input, không làm thay đổi vị trí trên cùng của Send Button.
 
 ---
 
