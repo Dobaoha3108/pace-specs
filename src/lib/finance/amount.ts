@@ -83,3 +83,73 @@ export function getNextBudgetResetDate(
     resolvedNextMonth,
   );
 }
+
+/**
+ * Returns the most recent occurrence (on or before `date`) of `budgetResetDay`
+ * — i.e. the start date of the Budget cycle that `date` currently falls in.
+ */
+export function getPreviousBudgetResetDate(
+  budgetResetDay: number,
+  date: Date,
+): Date {
+  const resolvedThisMonth = resolveBudgetResetDayForMonth(budgetResetDay, date);
+
+  if (date.getDate() >= resolvedThisMonth) {
+    return new Date(date.getFullYear(), date.getMonth(), resolvedThisMonth);
+  }
+
+  const previousMonthDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+  const resolvedPreviousMonth = resolveBudgetResetDayForMonth(
+    budgetResetDay,
+    previousMonthDate,
+  );
+
+  return new Date(
+    previousMonthDate.getFullYear(),
+    previousMonthDate.getMonth(),
+    resolvedPreviousMonth,
+  );
+}
+
+function diffInCalendarDays(later: Date, earlier: Date): number {
+  const laterUtc = Date.UTC(
+    later.getFullYear(),
+    later.getMonth(),
+    later.getDate(),
+  );
+  const earlierUtc = Date.UTC(
+    earlier.getFullYear(),
+    earlier.getMonth(),
+    earlier.getDate(),
+  );
+
+  return Math.round((laterUtc - earlierUtc) / (1000 * 60 * 60 * 24));
+}
+
+/**
+ * Số ngày còn lại của chu kỳ Budget hiện tại, tính từ `date` (bao gồm hôm nay)
+ * tới trước lần Budget Reset Day tiếp theo. Thay thế `getRemainingDaysInMonth`
+ * (DELTA-004/DELTA-007) — dùng cho baseline "Số tiền được tiêu hôm nay" và
+ * ngưỡng cảnh báo EXP-007.
+ */
+export function getRemainingDaysInCycle(
+  budgetResetDay: number,
+  date: Date,
+): number {
+  const nextResetDate = getNextBudgetResetDate(budgetResetDay, date);
+
+  return Math.max(1, diffInCalendarDays(nextResetDate, date));
+}
+
+/**
+ * Tổng số ngày của chu kỳ Budget hiện tại (từ Budget Reset Day bắt đầu chu kỳ
+ * tới Budget Reset Day kế tiếp). Luôn nằm trong khoảng 28–31 ngày tuỳ tháng.
+ * Dùng cho ô "Dự kiến hết trong XX ngày" trên Dashboard (specs/17_UI_LAYOUT.md,
+ * DELTA-007) — thay cho công thức tốc độ chi tiêu cũ.
+ */
+export function getCycleLengthDays(budgetResetDay: number, date: Date): number {
+  const previousResetDate = getPreviousBudgetResetDate(budgetResetDay, date);
+  const nextResetDate = getNextBudgetResetDate(budgetResetDay, previousResetDate);
+
+  return Math.max(1, diffInCalendarDays(nextResetDate, previousResetDate));
+}
