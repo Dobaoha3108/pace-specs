@@ -1,10 +1,10 @@
 # 08. ONBOARDING
 
-Version: 1.2 (MVP, Final)
+Version: 1.3 (MVP, Final)
 
 Project: PACE - Personal Finance Management App
 
-Status: Final (đã merge DELTA-003, xem `docs/03_DELTA_SPEC.md` và `docs/04_CHANGE_LOG.md`)
+Status: Final (đã merge DELTA-003 và DELTA-006, xem `docs/03_DELTA_SPEC.md` và `docs/04_CHANGE_LOG.md`)
 
 ---
 
@@ -37,9 +37,9 @@ Sau khi hoàn thành Onboarding:
 
 ## Budget Reset Day (Ngày nhận Income hàng tháng)
 
-> Đã merge từ DELTA-003 (`docs/03_DELTA_SPEC.md`).
+> Đã merge từ DELTA-003 và DELTA-006 (`docs/03_DELTA_SPEC.md`).
 
-Trước khi xác định Scenario, Financial Setup luôn hỏi User trước tiên:
+Financial Setup luôn hỏi User trước tiên:
 
 "Bạn nhận Income (lương/trợ cấp...) vào ngày nào hàng tháng?"
 
@@ -47,24 +47,19 @@ User chọn một ngày từ **1 đến 31** thông qua UI chọn lịch (calend
 
 Nếu tháng hiện tại không có đủ số ngày đó (ví dụ chọn 31 nhưng tháng chỉ có 28/29/30 ngày), hệ thống dùng ngày cuối cùng của tháng đó làm Budget Reset Day thực tế trong tháng thiếu ngày.
 
-Sau khi có Budget Reset Day, System so sánh **ngày hôm nay** với **Budget Reset Day vừa chọn** để xác định Scenario.
+Budget Reset Day chỉ được **lưu lại** để xác định thời điểm chu kỳ Budget tiếp theo bắt đầu (khi nào PACE nhắc User cập nhật Monthly Income/Fixed Expenses cho chu kỳ mới). Ngày này **không** ảnh hưởng tới các trường cần nhập trong Financial Setup — dù Onboarding vào ngày nào, User vẫn luôn nhập đủ Monthly Income và Fixed Expenses ngay từ đầu (xem DELTA-006).
 
 ---
 
 ## Budget Initialization
 
-PACE hỗ trợ hai kịch bản khởi tạo Budget.
+> Đã merge từ DELTA-006 (`docs/03_DELTA_SPEC.md`) — bỏ khái niệm Scenario A/B, chỉ còn một luồng duy nhất.
 
-### Scenario A
+Dù User hoàn thành Onboarding vào ngày nào trong tháng, Financial Setup luôn yêu cầu User nhập đủ:
 
-Ngày hôm nay **đúng bằng** Budget Reset Day User vừa chọn (User bắt đầu sử dụng ứng dụng đúng vào ngày bắt đầu chu kỳ mới).
-
-↓
-
-Financial Setup yêu cầu User nhập:
-
-- Monthly Income
-- Fixed Expenses
+- Budget Reset Day (xem mục trên).
+- Monthly Income.
+- Fixed Expenses.
 
 ↓
 
@@ -74,42 +69,11 @@ Budget = Monthly Income - Fixed Expenses
 
 ↓
 
-Budget này sẽ được sử dụng làm Budget mặc định cho chu kỳ hiện tại.
+Budget này được sử dụng làm Budget cho chu kỳ hiện tại (có thể là chu kỳ rút gọn nếu hôm nay chưa tới Budget Reset Day — nhưng User vẫn nhập đủ Monthly Income/Fixed Expenses ngay từ đầu, không phải đợi tới chu kỳ sau).
 
 ↓
 
-Ở các chu kỳ tiếp theo, User chỉ cần cập nhật Monthly Income nếu có thay đổi.
-
----
-
-### Scenario B
-
-Ngày hôm nay **khác** Budget Reset Day User vừa chọn (chu kỳ hiện tại đã bắt đầu từ trước, User cài đặt/setup app giữa chừng chu kỳ).
-
-↓
-
-Financial Setup yêu cầu User nhập:
-
-"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
-
-↓
-
-Giá trị này được sử dụng làm Budget của chu kỳ đầu tiên (chu kỳ rút gọn, tính từ hôm nay tới trước lần Budget Reset Day tiếp theo).
-
-↓
-
-Đến đúng Budget Reset Day của chu kỳ tiếp theo.
-
-↓
-
-Hệ thống yêu cầu User nhập:
-
-- Monthly Income
-- Fixed Expenses
-
-↓
-
-System tự động tính Budget hàng tháng từ thời điểm đó.
+Ở các chu kỳ tiếp theo (khi tới Budget Reset Day), User chỉ cần cập nhật Monthly Income/Fixed Expenses nếu có thay đổi.
 
 ---
 
@@ -232,21 +196,11 @@ Hiển thị:
 
 User phải chọn một ngày mới được đi tiếp.
 
-↓
-
-Hệ thống dùng lựa chọn này để xác định Scenario A hay B (so sánh với ngày hôm nay).
-
 ---
 
-Hệ thống tự xác định Scenario dựa trên so sánh **ngày hôm nay** với **Budget Reset Day User vừa chọn**.
+### Step 2.1 — Nhập Monthly Income & Fixed Expenses (bắt buộc, mọi User)
 
----
-
-### Scenario A
-
-Nếu ngày hôm nay đúng bằng Budget Reset Day vừa chọn.
-
-↓
+> Đã merge từ DELTA-006 — áp dụng bất kể ngày hôm nay là ngày nào so với Budget Reset Day vừa chọn.
 
 Hiển thị:
 
@@ -264,26 +218,6 @@ Budget = Monthly Income - Fixed Expenses
 Hiển thị:
 
 "Bạn sẽ có XXX để chi tiêu trong chu kỳ này."
-
----
-
-### Scenario B
-
-Nếu ngày hôm nay khác Budget Reset Day vừa chọn.
-
-↓
-
-Hiển thị:
-
-"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
-
-↓
-
-User chỉ cần nhập một giá trị.
-
-↓
-
-Giá trị này được sử dụng làm Budget của chu kỳ đầu tiên (chu kỳ rút gọn).
 
 ---
 
@@ -351,28 +285,11 @@ Bắt đầu sử dụng
 
 ## Financial Setup
 
-### Bước 0 (bắt buộc, mọi Scenario)
-
-User chọn:
+User chọn/nhập (bắt buộc với mọi User, không phân biệt ngày Onboarding):
 
 - Budget Reset Day (ngày nhận Income hàng tháng), qua UI chọn lịch.
-
----
-
-### Scenario A
-
-User nhập:
-
-- Monthly Income
-- Fixed Expenses
-
----
-
-### Scenario B
-
-User nhập:
-
-- Remaining Budget của chu kỳ hiện tại.
+- Monthly Income.
+- Fixed Expenses.
 
 ---
 
@@ -411,7 +328,7 @@ Open Financial Setup.
 
 ## Financial Setup
 
-System yêu cầu User chọn Budget Reset Day trước tiên (Bước 0).
+System yêu cầu User chọn Budget Reset Day trước tiên.
 
 ↓
 
@@ -419,11 +336,7 @@ Validate Budget Reset Day (Required, 1–31).
 
 ↓
 
-Nếu hợp lệ, System xác định Scenario hiện tại bằng cách so sánh ngày hôm nay với Budget Reset Day vừa chọn.
-
----
-
-### Scenario A
+Nếu hợp lệ, hiển thị tiếp Monthly Income và Fixed Expenses (bắt buộc, mọi User).
 
 ↓
 
@@ -441,26 +354,6 @@ Nếu hợp lệ.
 System tính:
 
 Budget = Monthly Income - Fixed Expenses
-
-↓
-
-Khởi tạo Budget.
-
-↓
-
-Open Create First Saving Goal.
-
----
-
-### Scenario B
-
-↓
-
-Validate Remaining Budget.
-
-↓
-
-Nếu hợp lệ.
 
 ↓
 
@@ -542,7 +435,7 @@ Không cho đi tiếp, hiển thị Validation Error ngay tại UI chọn lịch
 
 ---
 
-Validation thành công (đã chọn Budget Reset Day + các trường theo Scenario hợp lệ).
+Validation thành công (đã chọn Budget Reset Day + Monthly Income + Fixed Expenses hợp lệ).
 
 ↓
 
@@ -618,13 +511,9 @@ Hiển thị đầu tiên, bắt buộc với mọi User: UI chọn lịch để
 
 ↓
 
-Sau khi đã chọn Budget Reset Day, hệ thống tự động xác định Scenario dựa trên so sánh ngày hôm nay với Budget Reset Day vừa chọn (không còn dựa trên "ngày đầu tháng dương lịch" như trước).
+Sau khi đã chọn Budget Reset Day, luôn hiển thị Monthly Income và Fixed Expenses — bắt buộc nhập với **mọi** User, không phân biệt ngày Onboarding là ngày nào (đã merge DELTA-006, bỏ khái niệm Scenario A/B).
 
----
-
-### Scenario A
-
-(Ngày hôm nay đúng bằng Budget Reset Day vừa chọn)
+↓
 
 Hiển thị:
 
@@ -645,25 +534,12 @@ Hiển thị:
 
 ---
 
-### Scenario B
-
-(Ngày hôm nay khác Budget Reset Day vừa chọn)
-
-Hiển thị:
-
-"Số tiền bạn còn có thể chi tiêu tới trước [Budget Reset Day tiếp theo]."
-
-↓
-
-User chỉ nhập Remaining Budget.
-
----
-
 Sau khi hoàn thành Onboarding.
 
 ↓
 
 Budget Reset Day đã lưu chính là ngày User tự chọn ở Bước 0 của Financial Setup — **không** còn lấy theo ngày hoàn thành Onboarding.
+
 
 Ví dụ:
 
@@ -727,7 +603,7 @@ Không hiển thị dữ liệu tài chính.
 
 # 13. Validation
 
-## Budget Reset Day (mọi Scenario)
+## Budget Reset Day
 
 - Required.
 - Chỉ chọn qua UI lịch (calendar/day-picker), không cho nhập tay tự do.
@@ -736,7 +612,9 @@ Không hiển thị dữ liệu tài chính.
 
 ---
 
-## Scenario A
+## Monthly Income & Fixed Expenses
+
+> Đã merge từ DELTA-006 — áp dụng cho **mọi** User, không phân biệt ngày Onboarding.
 
 Monthly Income
 
@@ -760,16 +638,6 @@ Budget
 Được System tự động tính.
 
 Budget phải lớn hơn 0.
-
----
-
-## Scenario B
-
-Remaining Budget
-
-- Required.
-- Chỉ cho phép nhập số.
-- Phải lớn hơn 0.
 
 ---
 
@@ -1025,11 +893,9 @@ Hệ thống chuyển sang Financial Setup.
 
 ## AC-003
 
-Nếu ngày hôm nay đúng bằng Budget Reset Day User vừa chọn ở Bước 0.
+> Cập nhật theo DELTA-006 — bỏ khái niệm Scenario A/B.
 
-↓
-
-Financial Setup hiển thị:
+Sau khi User chọn Budget Reset Day ở Bước 0, Financial Setup **luôn** hiển thị (bất kể ngày hôm nay là ngày nào so với Budget Reset Day vừa chọn):
 
 - Monthly Income.
 - Fixed Expenses.
@@ -1044,19 +910,13 @@ Budget = Monthly Income - Fixed Expenses.
 
 ## AC-004
 
-Nếu ngày hôm nay khác Budget Reset Day User vừa chọn ở Bước 0.
-
-↓
-
-Financial Setup chỉ yêu cầu User nhập:
-
-Remaining Budget của chu kỳ hiện tại.
+> **Đã bỏ (DELTA-006).** Trước đây AC-004 mô tả "Scenario B": nếu ngày hôm nay khác Budget Reset Day, Financial Setup chỉ yêu cầu nhập Remaining Budget. Hành vi này không còn tồn tại — mọi User đều theo AC-003.
 
 ---
 
 ## AC-004a
 
-Financial Setup luôn yêu cầu User chọn Budget Reset Day (qua UI lịch, 1–31) **trước khi** xác định Scenario A hay B.
+Financial Setup luôn yêu cầu User chọn Budget Reset Day (qua UI lịch, 1–31) **trước tiên**, trước khi hiển thị Monthly Income/Fixed Expenses.
 
 ↓
 
@@ -1072,11 +932,13 @@ Fixed Expenses phải lớn hơn hoặc bằng 0.
 
 Fixed Expenses không được lớn hơn Monthly Income.
 
+Áp dụng cho **mọi** User (không phân biệt ngày Onboarding).
+
 ---
 
 ## AC-006
 
-Remaining Budget phải lớn hơn 0.
+> **Đã bỏ (DELTA-006).** Trường "Remaining Budget" không còn tồn tại trong Onboarding.
 
 ---
 
@@ -1245,9 +1107,9 @@ Bottom Navigation bắt đầu hiển thị.
 
 Hiện tại MVP đã thống nhất:
 
-- Budget được khởi tạo theo hai Scenario, xác định bằng cách so sánh ngày hôm nay với Budget Reset Day User tự chọn.
+- Financial Setup luôn yêu cầu User nhập đủ 3 thông tin — Budget Reset Day, Monthly Income, Fixed Expenses — bất kể Onboarding vào ngày nào trong tháng. Không còn khái niệm Scenario A/B (đã bỏ theo DELTA-006, xem `docs/03_DELTA_SPEC.md` — thay thế cách tiếp cận cũ ở DELTA-003).
 - Saving Goal trong Onboarding là Optional.
-- Budget Reset Day do User tự chọn qua UI Day Picker Grid (CMP-016) trong Financial Setup, hỏi **trước tiên** (Step 2.0, trước Income/Fixed Expenses/Remaining Budget) — bắt buộc, không còn mặc định theo ngày hoàn thành Onboarding (xem `docs/03_DELTA_SPEC.md`, DELTA-003 — Merged).
+- Budget Reset Day do User tự chọn qua UI Day Picker Grid (CMP-016) trong Financial Setup, hỏi **trước tiên** (Step 2.0, trước Monthly Income/Fixed Expenses) — bắt buộc, không còn mặc định theo ngày hoàn thành Onboarding (xem `docs/03_DELTA_SPEC.md`, DELTA-003 — Merged).
 - Tháng thiếu ngày (VD chọn 31, tháng chỉ có 28/29/30 ngày): hệ thống dùng ngày cuối tháng làm Budget Reset Day thực tế của tháng đó.
 - User có thể chỉnh sửa Budget và Budget Reset Day sau khi hoàn thành Onboarding.
 - User chỉ thực hiện Onboarding một lần.
