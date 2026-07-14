@@ -245,3 +245,54 @@ Medium (không chặn trải nghiệm hiện tại — công thức cũ vẫn ch
 
 ---
 
+## DELTA-005
+
+### Status
+
+Proposed
+
+### Title
+
+Delete Saving Goal
+
+### Related Screen
+
+Saving Goal Detail
+
+### Context / Lý do thay đổi
+
+Hiện Saving Goal Detail chỉ có 3 hành động cho một Active Saving Goal: Deposit, Withdraw, Edit — cộng thêm Request Cancel (đưa Goal vào trạng thái Cancelling, chờ 12 giờ, tiền trả lại Remaining Budget — theo SVG-008/SVG-010). User muốn bổ sung thêm hành động **Delete Saving Goal**, hiện chưa có trong spec ở bất kỳ tài liệu nào.
+
+### Vấn đề cần làm rõ trước khi code (Open Questions — cần bạn xác nhận)
+
+Delete khác Cancel như thế nào? Đề xuất 2 phương án, bạn chọn 1:
+
+**Phương án A — Delete chỉ áp dụng cho Saving Goal đã Completed/Cancelled (trong Saving Goal History)**
+- Dùng khi User muốn dọn dẹp lịch sử, xoá vĩnh viễn 1 mục khỏi Saving Goal History.
+- Không ảnh hưởng Budget (vì Completed/Cancelled đã xử lý xong tiền từ trước).
+- Không cần thời gian chờ, xoá ngay sau khi xác nhận (Confirmation Dialog).
+- Không áp dụng cho Saving Goal đang Active/Cancelling.
+
+**Phương án B — Delete là một lối tắt khác cho Active Saving Goal, khác Cancel**
+- Ví dụ: Cancel = phải chờ 12 giờ (có thể Undo); Delete = xoá ngay lập tức, không chờ, không Undo được.
+- Cần làm rõ: tiền trong Current Amount xử lý ra sao (trả lại Remaining Budget ngay, hay mất luôn)?
+- Rủi ro: dễ nhầm lẫn với Cancel, User có thể xoá nhầm mất tiền/mất Goal vĩnh viễn không có cách khôi phục.
+
+Mình đề xuất **Phương án A** (an toàn hơn, không xung đột với luồng Cancel đã có, đúng tinh thần "Delete = dọn dẹp lịch sử" phổ biến trong các app tài chính). Bạn xác nhận chọn phương án nào, hoặc mô tả lại nếu ý bạn khác 2 phương án trên.
+
+### Applies To
+
+- Saving Goal
+
+### Priority
+
+Medium
+
+### Impact nếu Merge (theo Phương án A)
+
+- `feature-specs/24_SAVING_GOAL.md` — thêm mục Delete Saving Goal vào Saving Goal History flow.
+- `specs/12_BUSINESS_RULES.md` — thêm rule mới (SVG-011: Delete Saving Goal, chỉ áp dụng Completed/Cancelled, xoá vĩnh viễn, không hoàn tác).
+- `specs/17_UI_LAYOUT.md` — thêm nút Delete vào layout Saving Goal History item.
+- Code: `src/features/saving-goal/components/saving-goal-screen.tsx`, `src/features/finance/lib/finance-service.ts` (hàm xoá Saving Goal khỏi Local Storage).
+
+---
