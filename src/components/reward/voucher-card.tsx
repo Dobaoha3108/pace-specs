@@ -65,20 +65,20 @@ export function VoucherCard({
   </div>
 
   {/* Cột số coin và nút đổi bên phải */}
-  <div className="flex shrink-0 flex-col items-center justify-center gap-3">
-    <div className="flex items-center gap-1">
-      <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
-        {pigCoinCost}
-      </span>
+  <div className="flex shrink-0 flex-col items-center justify-center gap-1.5">
+  <div className="flex items-center gap-1">
+    <span className="text-[22px] font-extrabold leading-none text-[#F21383]">
+      {pigCoinCost}
+    </span>
 
-      <Image
-        alt="Pig Coin"
-        className="h-[30px] w-[30px] shrink-0 object-contain"
-        height={30}
-        src="/assets/icons/pig_coin.png"
-        width={30}
-      />
-    </div>
+    <Image
+      alt="Pig Coin"
+      className="h-[90px] w-[90px] shrink-0 object-contain"
+      height={90}
+      src="/assets/icons/pig_coin.png"
+      width={90}
+    />
+  </div>
 
     {status === "Active" ? (
       <button
