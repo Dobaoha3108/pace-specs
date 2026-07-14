@@ -148,3 +148,22 @@ Bản sửa trước (icon/logo asset) chưa đúng ý — User muốn redesign 
 ### Không thay đổi
 
 - Nút "My Voucher" dạng button riêng bên dưới card (đã có từ trước) vẫn giữ nguyên, không bị xoá — link "My Voucher" trong card là lối vào bổ sung, không thay thế.
+
+## 2026-07-13 (7) — Điều chỉnh chi tiết Pig Coin Balance Card (typography, kích thước mascot, layout 2 cột)
+
+### Lý do
+
+User phản hồi chi tiết sau khi test bản redesign trước: tiêu đề/số quá nhỏ, mascot heo quá bé, cần layout 2 cột rõ ràng và đổi màu nền.
+
+### Spec thay đổi
+
+- `specs/17_UI_LAYOUT.md` — mục "Pig Coin Balance Card": cập nhật màu nền (#FFE6EA), font-size/weight cụ thể cho tiêu đề (20px/700) và số (44px/800), thêm sub-label "Pig Coin", quy định tỉ lệ layout 2 cột (58%/42%) và tỉ lệ mascot heo (~65-75% chiều cao card).
+
+### Code thay đổi
+
+- `src/features/reward/components/reward-screen.tsx` — Pig Coin Balance Card:
+  - Nền đổi sang `bg-[#FFE6EA]`.
+  - Tiêu đề "Pig Coin của bạn": `text-title font-bold text-pace-text-primary` (20px, weight 700, màu đen) thay vì `text-caption text-pace-text-secondary` (13px, xám).
+  - Số Pig Coin: `text-[44px] font-extrabold` thay vì `text-h2` (24px). Thêm dòng label phụ "Pig Coin" màu xám bên dưới.
+  - Mascot Pig Pig: tăng từ 96px lên 150px (~65-75% chiều cao card), dùng `object-contain` để không bị bóp méo/thu nhỏ.
+  - Đổi layout từ `justify-between` (chia tuỳ nội dung) sang 2 cột cố định tỉ lệ `w-[58%]` / `w-[42%]`.
