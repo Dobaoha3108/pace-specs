@@ -35,13 +35,19 @@ export function VoucherCard({
       )}
       onClick={onClick}
     >
-      <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-card bg-pace-background">
-        {brandLogo ? (
-          <Image alt={brandName} height={56} src={brandLogo} width={56} />
-        ) : (
-          <Gift aria-hidden className="size-7 text-pace-primary" />
-        )}
-      </div>
+     <div className="flex h-[68px] w-[68px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-pace-background">
+  {brandLogo ? (
+    <Image
+      alt={brandName}
+      className="h-full w-full object-contain p-1"
+      height={68}
+      src={brandLogo}
+      width={68}
+    />
+  ) : (
+    <Gift aria-hidden className="size-7 text-pace-primary" />
+  )}
+</div>
      <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] gap-x-3 self-stretch">
   {/* Phần nội dung ở giữa */}
   <div className="flex min-w-0 flex-col">
