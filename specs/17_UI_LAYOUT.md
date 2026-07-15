@@ -1,6 +1,6 @@
 # 12. UI LAYOUT
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -971,11 +971,11 @@ Thứ tự hiển thị từ trên xuống dưới:
 
 ↓
 
-2. Spending Overview.
+2. Category Analysis.
 
 ↓
 
-3. Category Analysis.
+3. Weekly Spending Comparison (chỉ hiển thị khi Time Filter = This Month — xem `feature-specs/25_REPORT.md`).
 
 ↓
 
@@ -983,7 +983,7 @@ Thứ tự hiển thị từ trên xuống dưới:
 
 ↓
 
-5. Financial Summary.
+5. Financial Summary (Weekly/Monthly Summary).
 
 ↓
 
@@ -1020,17 +1020,6 @@ Hiển thị:
 Tất cả Category.
 
 User có thể chọn một Category để xem báo cáo.
-
----
-
-## Spending Overview
-
-Hiển thị:
-
-- Total Spending.
-- Total Budget.
-- Remaining Budget.
-- Progress Bar.
 
 ---
 
@@ -1137,10 +1126,21 @@ Open Edit Expense.
 
 ## Financial Summary
 
+Hiển thị (Weekly Summary hoặc Monthly Summary tuỳ Time Filter):
+
+- Total Budget.
+- Total Spending.
+- Remaining Budget.
+- Budget Usage Percentage.
+
+---
+
+## Pig Pig Insight
+
 Hiển thị:
 
-- Weekly Summary hoặc Monthly Summary.
-- Pig Pig Financial Insight.
+- Nội dung Insight (Báo cáo + Khuyên ngắn gọn), data-driven theo Overspend Day và Dominant Category của kỳ đang chọn (xem `feature-specs/25_REPORT.md`).
+- Button "Chat với Pig Pig" → mở Pig Pig Chat.
 
 ---
 
