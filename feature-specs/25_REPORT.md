@@ -1,6 +1,6 @@
 # 12. REPORT
 
-Version: 1.2 (MVP)
+Version: 1.3 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -45,7 +45,7 @@ Financial Report giúp User:
 Financial Report chịu trách nhiệm:
 
 - Hiển thị Spending Overview.
-- Hiển thị Category Analysis dưới dạng biểu đồ tròn (Pie Chart), mỗi Category một màu riêng biệt.
+- Hiển thị Category Analysis dưới dạng biểu đồ vành khuyên (Donut Chart), mỗi Category một màu riêng biệt.
 - Hiển thị Weekly Spending Comparison dưới dạng biểu đồ cột (chỉ khi Time Filter = This Month), mỗi tuần một màu riêng biệt.
 - Hiển thị Transaction History Preview.
 - Điều hướng tới Expense History.
@@ -121,8 +121,8 @@ Tab Report luôn ở trạng thái Selected khi User đang ở màn hình này.
 - CMP-008 Statistic Card
 - CMP-013 Empty State
 - CMP-014 Loading State
-- CMP-017 Category Pie Chart (mới — xem Section 18)
-- CMP-018 Weekly Comparison Bar Chart (mới — xem Section 18)
+- CMP-017 Category Pie Chart (Donut Chart — xem Section 18)
+- CMP-018 Weekly Comparison Bar Chart (xem Section 18)
 
 ---
 
@@ -172,16 +172,24 @@ Khoảng thời gian được hỗ trợ:
 
 ### Category Analysis
 
-Hiển thị phân bổ chi tiêu theo Category trong khoảng thời gian được chọn, dưới dạng **biểu đồ tròn (Pie Chart)**.
+Hiển thị phân bổ chi tiêu theo Category trong khoảng thời gian được chọn, dưới dạng **biểu đồ vành khuyên (Donut Chart)**.
 
 Quy tắc hiển thị:
 
+- Phía trên biểu đồ hiển thị "Tổng chi tiêu" (label nhỏ) và Total Spending (số tiền, cỡ chữ lớn, đậm) của khoảng thời gian + Category Filter đang chọn.
+- Biểu đồ là hình vành khuyên (đường tròn có lỗ rỗng ở giữa, không phải Pie Chart đặc kín), không hiển thị chữ/số bên trong lỗ rỗng.
 - Mỗi Category tương ứng với đúng một màu, cố định và nhất quán xuyên suốt toàn bộ ứng dụng (không đổi màu khi User chuyển Time Filter hoặc Category Filter).
-- Mỗi lát cắt (slice) trên Pie Chart có kích thước tỉ lệ với phần trăm chi tiêu của Category đó trên tổng chi tiêu trong khoảng thời gian đang chọn.
-- Đi kèm Pie Chart là danh sách chú thích (Legend), mỗi dòng gồm: chấm màu tương ứng, tên Category, phần trăm.
+- Mỗi cung (arc) trên Donut Chart có kích thước tỉ lệ với phần trăm chi tiêu của Category đó trên tổng chi tiêu trong khoảng thời gian đang chọn.
+- Phía dưới biểu đồ là danh sách chú thích (Legend) dạng cột dọc, chiều rộng đầy đủ (không đặt cạnh biểu đồ). Mỗi dòng Legend gồm:
+  - Chấm màu vuông bo góc tương ứng với Category.
+  - Tên Category (đậm, hàng trên).
+  - Số tiền chi tiêu của Category đó (nhạt màu hơn, hàng dưới, ngay dưới tên Category) — luôn hiển thị mặc định, không cần thao tác/tương tác gì thêm.
+  - Phần trăm chi tiêu (đậm, canh phải, cùng hàng với tên Category).
 - Áp dụng cho cả Weekly Report và Monthly Report — khác biệt duy nhất là khoảng thời gian dữ liệu (tuần hiện tại hoặc tháng hiện tại).
 
-Category Analysis vẫn giữ nguyên nội dung dữ liệu như trước (Category Name, Total Spending by Category, Percentage of Total Spending) — chỉ đổi hình thức hiển thị từ danh sách thanh phần trăm sang Pie Chart + Legend.
+Category Analysis vẫn giữ nguyên nội dung dữ liệu như trước (Category Name, Total Spending by Category, Percentage of Total Spending) — chỉ đổi hình thức hiển thị từ Pie Chart đặc + Legend nằm cạnh biểu đồ, sang Donut Chart + Total Spending ở trên + Legend dạng danh sách đầy đủ chiều rộng ở dưới, với Amount luôn hiển thị mặc định trong Legend (không còn ẩn/chờ tương tác slice).
+
+Category Analysis không hiển thị badge so sánh với kỳ trước (ví dụ "tăng/giảm X% so với tuần trước") — nằm ngoài phạm vi MVP (xem Section 20/21).
 
 ---
 
@@ -280,7 +288,7 @@ System tính màu cố định cho từng Category.
 
 ↓
 
-Render Financial Report (bao gồm Category Pie Chart).
+Render Financial Report (bao gồm Category Donut Chart).
 
 ---
 
@@ -319,7 +327,7 @@ System lọc dữ liệu theo Category trong khoảng thời gian hiện tại.
 
 ↓
 
-System tính lại Category Pie Chart và Weekly Spending Comparison (nếu đang ở Monthly Report) theo Category đã lọc.
+System tính lại Category Donut Chart và Weekly Spending Comparison (nếu đang ở Monthly Report) theo Category đã lọc.
 
 ↓
 
@@ -377,7 +385,7 @@ Save
 
 ↓
 
-Financial Report tự động Refresh (bao gồm Pie Chart và Weekly Comparison Chart).
+Financial Report tự động Refresh (bao gồm Donut Chart và Weekly Comparison Chart).
 
 ---
 
@@ -416,9 +424,9 @@ Hiển thị:
 
 Hiển thị:
 
-- Pie Chart, mỗi Category một màu.
-- Legend: chấm màu + Category Name + Spending Percentage.
-- (Giữ nguyên dữ liệu) Category Spending Amount — hiển thị khi User cần xem chi tiết (trong Legend hoặc khi tương tác với slice).
+- Tổng chi tiêu (label + số tiền) phía trên biểu đồ.
+- Donut Chart, mỗi Category một màu.
+- Legend dạng danh sách đầy đủ chiều rộng, mỗi dòng: chấm màu + Category Name + Category Spending Amount (luôn hiển thị) + Spending Percentage.
 
 ---
 
@@ -498,7 +506,7 @@ User có thể:
 - Xem Financial Report.
 - Chuyển đổi giữa Weekly Report và Monthly Report.
 - Thay đổi Category Filter.
-- Xem Category Analysis dưới dạng Pie Chart.
+- Xem Category Analysis dưới dạng Donut Chart.
 - Xem Weekly Spending Comparison dưới dạng Bar Chart (khi ở Monthly Report).
 - Xem Transaction History Preview.
 - Chọn View All.
@@ -549,7 +557,7 @@ User chuyển đổi giữa:
 System tính toán lại:
 
 - Spending Overview.
-- Category Analysis (Pie Chart).
+- Category Analysis (Donut Chart).
 - Weekly Spending Comparison (chỉ khi chuyển sang This Month; ẩn hoàn toàn khi ở This Week).
 - Transaction History Preview.
 - Summary theo khoảng thời gian được chọn.
@@ -586,7 +594,7 @@ System lọc Expense theo Category trong khoảng thời gian hiện tại.
 
 ↓
 
-Refresh toàn bộ Financial Report, bao gồm Pie Chart và Weekly Comparison Chart (nếu đang hiển thị).
+Refresh toàn bộ Financial Report, bao gồm Donut Chart và Weekly Comparison Chart (nếu đang hiển thị).
 
 ---
 
@@ -626,7 +634,7 @@ Financial Report tự động tính toán lại dữ liệu.
 
 ↓
 
-Refresh Report (bao gồm Pie Chart và Weekly Comparison Chart).
+Refresh Report (bao gồm Donut Chart và Weekly Comparison Chart).
 
 ---
 
@@ -735,11 +743,15 @@ Tất cả dữ liệu được tính theo Time Filter hiện tại.
 
 ## Category Analysis
 
-Hiển thị dưới dạng Pie Chart.
+Hiển thị dưới dạng Donut Chart (vành khuyên), không phải Pie Chart đặc kín.
+
+Total Spending hiển thị dạng label + số tiền lớn, đặt phía trên Donut Chart, tính theo Time Filter + Category Filter hiện tại.
 
 Mỗi Category có một màu cố định, không đổi giữa các lần render, không đổi khi chuyển Time Filter hoặc Category Filter.
 
-Chỉ hiển thị trong Pie Chart các Category có Total Spending > 0 trong khoảng thời gian đang chọn (Category không phát sinh chi tiêu không có slice).
+Chỉ hiển thị trong Donut Chart các Category có Total Spending > 0 trong khoảng thời gian đang chọn (Category không phát sinh chi tiêu không có cung/arc và không có dòng Legend).
+
+Legend hiển thị dạng danh sách đầy đủ chiều rộng bên dưới biểu đồ (không đặt cạnh biểu đồ). Amount của từng Category luôn hiển thị mặc định trong Legend, không cần tương tác.
 
 Dữ liệu được tính theo Time Filter hiện tại.
 
@@ -891,7 +903,7 @@ Hiển thị Empty State (Category Analysis và Weekly Spending Comparison khôn
 
 ## Category Analysis
 
-- Empty (không có Expense nào trong khoảng thời gian/Category đang lọc → ẩn Pie Chart, không hiển thị biểu đồ rỗng).
+- Empty (không có Expense nào trong khoảng thời gian/Category đang lọc → ẩn Donut Chart, không hiển thị biểu đồ rỗng).
 - Normal.
 
 ---
@@ -1043,8 +1055,8 @@ Category color (Category Analysis) và Weekly Spending Comparison là **derived 
 - CMP-008 Statistic Card
 - CMP-013 Empty State
 - CMP-014 Loading State
-- **CMP-017 Category Pie Chart** (mới): biểu đồ tròn hiển thị phân bổ chi tiêu theo Category, mỗi Category một màu cố định, kèm Legend (chấm màu + tên + phần trăm). Dùng trong Category Analysis (Weekly và Monthly Report).
-- **CMP-018 Weekly Comparison Bar Chart** (mới): biểu đồ cột so sánh Total Spending giữa các tuần trong tháng, mỗi cột một màu riêng. Chỉ dùng trong Monthly Report.
+- **CMP-017 Category Pie Chart (Donut Chart)**: biểu đồ vành khuyên hiển thị phân bổ chi tiêu theo Category, mỗi Category một màu cố định. Total Spending hiển thị phía trên biểu đồ. Legend dạng danh sách đầy đủ chiều rộng bên dưới (chấm màu + tên + số tiền + phần trăm, Amount luôn hiển thị mặc định). Dùng trong Category Analysis (Weekly và Monthly Report).
+- **CMP-018 Weekly Comparison Bar Chart**: biểu đồ cột so sánh Total Spending giữa các tuần trong tháng, mỗi cột một màu riêng. Chỉ dùng trong Monthly Report.
 
 ---
 
@@ -1088,11 +1100,12 @@ Dữ liệu được tính theo Time Filter hiện tại.
 
 ## AC-004
 
-Category Analysis hiển thị dưới dạng **Pie Chart**:
+Category Analysis hiển thị dưới dạng **Donut Chart**:
 
+- Total Spending (label + số tiền) hiển thị phía trên biểu đồ.
 - Mỗi Category một màu cố định, nhất quán.
-- Mỗi slice tỉ lệ với phần trăm chi tiêu của Category đó.
-- Legend hiển thị: chấm màu, Category Name, Spending Percentage.
+- Mỗi cung (arc) tỉ lệ với phần trăm chi tiêu của Category đó, biểu đồ có lỗ rỗng ở giữa (không phải Pie Chart đặc kín).
+- Legend dạng danh sách đầy đủ chiều rộng bên dưới biểu đồ, mỗi dòng hiển thị: chấm màu, Category Name, Category Spending Amount (luôn hiển thị mặc định), Spending Percentage.
 
 Áp dụng cho cả Weekly Report và Monthly Report.
 
@@ -1100,7 +1113,7 @@ Category Analysis hiển thị dưới dạng **Pie Chart**:
 
 ## AC-004a
 
-Category không có chi tiêu (Total Spending = 0) trong khoảng thời gian/Category Filter đang chọn thì không xuất hiện trong Pie Chart và Legend.
+Category không có chi tiêu (Total Spending = 0) trong khoảng thời gian/Category Filter đang chọn thì không xuất hiện trong Donut Chart và Legend.
 
 ---
 
@@ -1150,7 +1163,7 @@ Sau khi Expense được cập nhật.
 
 ↓
 
-Financial Report tự động Refresh (bao gồm Pie Chart và Weekly Comparison Chart).
+Financial Report tự động Refresh (bao gồm Donut Chart và Weekly Comparison Chart).
 
 ---
 
@@ -1283,6 +1296,12 @@ Cho phép User thử lại.
 
 ---
 
+## AC-017
+
+Category Analysis không hiển thị badge/nhãn so sánh với kỳ trước (ví dụ "tăng/giảm X% so với tuần trước") — mục này thuộc Future Enhancement, ngoài phạm vi MVP (xem Section 20/21).
+
+---
+
 # 20. Open Questions
 
 Hiện tại MVP đã thống nhất:
@@ -1294,7 +1313,7 @@ Hiện tại MVP đã thống nhất:
   - Monthly Report.
 - Time Filter mặc định là:
   - This Week.
-- Category Analysis hiển thị dưới dạng Pie Chart, mỗi Category một màu cố định.
+- Category Analysis hiển thị dưới dạng Donut Chart, mỗi Category một màu cố định, Total Spending hiển thị phía trên biểu đồ, Legend đầy đủ chiều rộng bên dưới với Amount luôn hiển thị.
 - Monthly Report có thêm Weekly Spending Comparison dạng Bar Chart, mỗi tuần một màu riêng.
 - Transaction History Preview hiển thị tối đa ba Expense gần nhất.
 - Expense History thuộc Report Module.
@@ -1304,10 +1323,10 @@ Hiện tại MVP đã thống nhất:
 
 Các nội dung sau chưa thuộc phạm vi MVP:
 
-- So sánh với kỳ trước.
+- So sánh với kỳ trước (bao gồm badge tăng/giảm % so với kỳ trước ở Category Analysis).
 - Xu hướng chi tiêu nhiều tháng.
 - Dự báo chi tiêu.
-- Tương tác chạm vào từng slice của Pie Chart để lọc (chỉ hiển thị, chưa hỗ trợ tương tác lọc qua biểu đồ ở MVP này).
+- Tương tác chạm vào từng cung/slice của Donut Chart để lọc (chỉ hiển thị, chưa hỗ trợ tương tác lọc qua biểu đồ ở MVP này).
 - Export PDF.
 - Export Excel.
 - Chia sẻ báo cáo.
@@ -1320,9 +1339,9 @@ Các cải tiến có thể bổ sung trong các phiên bản tiếp theo:
 
 - AI phân tích xu hướng chi tiêu.
 - AI dự báo ngân sách cuối tháng.
-- So sánh theo tháng hoặc quý.
+- So sánh theo tháng hoặc quý (bao gồm badge % so với kỳ trước ở Category Analysis).
 - Báo cáo theo nhiều khoảng thời gian.
-- Cho phép chạm vào slice/cột biểu đồ để lọc nhanh Transaction History.
+- Cho phép chạm vào cung/cột biểu đồ để lọc nhanh Transaction History.
 - Xuất báo cáo PDF.
 - Xuất báo cáo Excel.
 - Chia sẻ báo cáo.
