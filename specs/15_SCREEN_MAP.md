@@ -1,6 +1,6 @@
 # 05. SCREEN MAP
 
-Version: 1.0 (MVP)
+Version: 1.1 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -169,11 +169,14 @@ Financial Report hiển thị:
 
 - Weekly Report
 - Monthly Report
-- Expense Analytics
-- Saving Goal Progress
+- Category Analysis (Expense Analytics)
 - Transaction History
+- Weekly/Monthly Summary (Total Budget, Total Spending, Remaining Budget, Budget Usage Percentage)
+- Pig Pig Insight (nhận định data-driven, hiển thị ở cuối màn hình — xem `feature-specs/25_REPORT.md`)
 
 Budget Streak không hiển thị trong Report.
+
+Financial Report không quản lý Saving Goal (xem `feature-specs/25_REPORT.md` Section 1).
 
 ---
 
@@ -219,7 +222,9 @@ Pig Pig bao gồm:
 
 Pig Pig không hiển thị thành một Card lớn trên Dashboard.
 
-Dashboard chỉ hiển thị Pig Pig Insight Banner.
+Dashboard hiển thị Pig Pig Insight Banner riêng của Dashboard (nhận định theo ngày hiện tại).
+
+Financial Report cũng hiển thị Pig Pig Insight Banner riêng của Report (nhận định data-driven theo Weekly/Monthly, ở cuối màn hình — xem `feature-specs/25_REPORT.md`), độc lập với Insight của Dashboard.
 
 ---
 
@@ -980,7 +985,10 @@ Depends On
 
 - Budget
 - Expense
-- Saving Goal
+- Expense Category
+- Pig Pig Insight (derived data, tính runtime từ Budget/Expense — xem `feature-specs/25_REPORT.md`)
+
+Financial Report không phụ thuộc Saving Goal (xem `feature-specs/25_REPORT.md` Section 1).
 
 ---
 
@@ -1162,7 +1170,7 @@ Financial Report
 
 ## NAV-011
 
-Pig Pig Insight Banner trên Dashboard luôn mở Pig Pig Chat.
+Pig Pig Insight Banner (trên Dashboard hoặc trên Financial Report) luôn mở Pig Pig Chat qua Button "Chat với Pig Pig".
 
 Không mở trực tiếp Conversation History.
 
@@ -1258,6 +1266,7 @@ Module / Screen
 | Dashboard | Pig Pig Insight Banner | Pig Pig Chat |
 | Dashboard | Notification Button | Notification Center |
 | Dashboard | Profile Button | Profile |
+| Financial Report | Pig Pig Insight Banner ("Chat với Pig Pig") | Pig Pig Chat |
 | Saving Goal List | Select Goal | Saving Goal Detail |
 | Saving Goal List | Create Goal | Create Saving Goal |
 | Saving Goal List | Saving Goal History | Saving Goal History |
