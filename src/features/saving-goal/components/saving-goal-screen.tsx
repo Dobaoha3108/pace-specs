@@ -392,18 +392,27 @@ function SavingGoalDetail({
         primaryLabel={sheet === "deposit" ? "Deposit" : "Withdraw"}
         title={sheet === "deposit" ? "Deposit Saving Goal" : "Withdraw Saving Goal"}
       >
-        <Input
-          error={amountError}
-          inputMode="numeric"
-          label="Amount"
-          leftAddon="VND"
-          onChange={(event) => {
-            setAmount(event.target.value);
-            setAmountError(undefined);
-          }}
-          placeholder="100000"
-          value={amount}
-        />
+       <Input
+  error={amountError}
+  inputMode="numeric"
+  label="Amount"
+  leftAddon="VND"
+  onChange={(event) => {
+    const digits = event.target.value
+      .replace(/\D/g, "")
+      .replace(/^0+(?=\d)/, "");
+
+    const formattedAmount = digits.replace(
+      /\B(?=(\d{3})+(?!\d))/g,
+      ",",
+    );
+
+    setAmount(formattedAmount);
+    setAmountError(undefined);
+  }}
+  placeholder="100,000"
+  value={amount}
+/>
         {sheet === "withdraw" && goal.savingMode === "Commitment" ? (
           <p className="mt-md text-caption text-pace-warning">
             Commitment mode creates a withdraw request and releases the amount
