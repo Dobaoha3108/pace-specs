@@ -253,15 +253,29 @@ function ExpenseForm({
 
   return (
     <div className="space-y-lg">
-      <Input
-        error={errors.amount}
-        inputMode="numeric"
-        label="Amount"
-        leftAddon="VND"
-        onChange={(event) => setForm({ ...form, amount: event.target.value })}
-        placeholder="65000"
-        value={form.amount}
-      />
+     <Input
+  error={errors.amount}
+  inputMode="numeric"
+  label="Amount"
+  leftAddon="VND"
+  onChange={(event) => {
+    const digits = event.target.value
+      .replace(/\D/g, "")
+      .replace(/^0+(?=\d)/, "");
+
+    const formattedAmount = digits.replace(
+      /\B(?=(\d{3})+(?!\d))/g,
+      ",",
+    );
+
+    setForm({
+      ...form,
+      amount: formattedAmount,
+    });
+  }}
+  placeholder="65,000"
+  value={form.amount}
+/>
       <div>
   <p className="mb-3 text-sm font-semibold text-pace-text-primary">
     Category
