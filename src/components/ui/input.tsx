@@ -35,8 +35,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       </span>
       <span
         className={cn(
-          "flex h-14 items-center gap-sm rounded-input bg-pace-background px-md ring-1 ring-pace-border transition duration-micro focus-within:bg-pace-surface focus-within:ring-pace-primary",
-          error && "ring-pace-danger focus-within:ring-pace-danger",
+         "flex h-14 items-center gap-sm rounded-input border border-[#D1D5DB] bg-pace-background px-md transition duration-micro focus-within:border-pace-primary focus-within:bg-pace-surface focus-within:ring-1 focus-within:ring-pace-primary",
+         error &&
+  "border-pace-danger ring-1 ring-pace-danger focus-within:border-pace-danger focus-within:ring-pace-danger",
           props.disabled && "cursor-not-allowed opacity-50",
         )}
       >
