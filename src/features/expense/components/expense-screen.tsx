@@ -555,7 +555,7 @@ function FormSelect({
         {label}
       </span>
       <select
-        className="h-14 w-full rounded-input bg-pace-background px-md text-body text-pace-text-primary outline-none ring-1 ring-pace-border focus:bg-pace-surface focus:ring-pace-primary"
+      className="h-14 w-full rounded-input border border-[#D1D5DB] bg-pace-background px-md text-body text-pace-text-primary outline-none transition duration-micro focus:border-pace-primary focus:bg-pace-surface focus:ring-1 focus:ring-pace-primary"
         onChange={(event) => onChange(event.target.value)}
         value={value}
       >
