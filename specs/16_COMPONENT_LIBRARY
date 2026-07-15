@@ -1,6 +1,6 @@
 # 06. UI COMPONENT LIBRARY
 
-Version: 1.0 (MVP)
+Version: 1.1 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -1642,11 +1642,20 @@ Use Components
 
 ---
 
-## CMP-017 Category Pie Chart
+## CMP-017 Category Pie Chart (Donut Chart)
 
 ### Mô tả
 
-Biểu đồ tròn (Pie Chart) hiển thị phân bổ chi tiêu theo Category. Mỗi Category có một màu cố định, nhất quán trong toàn ứng dụng. Đi kèm Legend: chấm màu + tên Category + phần trăm.
+Biểu đồ vành khuyên (Donut Chart — đường tròn có lỗ rỗng ở giữa, không tô đặc như Pie Chart) hiển thị phân bổ chi tiêu theo Category. Mỗi Category có một màu cố định, nhất quán trong toàn ứng dụng.
+
+Layout theo thứ tự từ trên xuống:
+
+1. Label "Tổng chi tiêu" + số tiền tổng (cỡ chữ lớn, đậm).
+2. Donut Chart, canh giữa (không hiển thị chữ/số bên trong lỗ rỗng).
+3. Legend dạng danh sách đầy đủ chiều rộng (không đặt cạnh biểu đồ), mỗi dòng gồm:
+   - Chấm màu vuông bo góc.
+   - Category Name (đậm, hàng trên) + Category Spending Amount (nhạt màu hơn, hàng dưới, ngay dưới tên Category, luôn hiển thị mặc định).
+   - Percentage (đậm, canh phải, cùng hàng với Category Name).
 
 ### Sử dụng tại
 
@@ -1655,12 +1664,16 @@ Biểu đồ tròn (Pie Chart) hiển thị phân bổ chi tiêu theo Category. 
 ### Props / Data đầu vào
 
 - Danh sách Category kèm: màu, Total Spending, Percentage.
-- Tổng chi tiêu (để hiển thị ở tâm biểu đồ).
+- Tổng chi tiêu (hiển thị phía trên biểu đồ, không hiển thị ở tâm biểu đồ).
 
 ### Trạng thái
 
-- Có dữ liệu: hiển thị đầy đủ slice + legend.
+- Có dữ liệu: hiển thị đầy đủ Total Spending + Donut Chart + Legend.
 - Không có dữ liệu (Total Spending = 0 toàn bộ): ẩn component, không hiển thị biểu đồ rỗng.
+
+### Ghi chú
+
+Không hiển thị badge so sánh với kỳ trước (ví dụ "Giảm X% so với tuần trước") — nằm ngoài phạm vi MVP, thuộc Future Enhancement (xem `feature-specs/25_REPORT.md` Section 20/21).
 
 ---
 
@@ -1668,7 +1681,7 @@ Biểu đồ tròn (Pie Chart) hiển thị phân bổ chi tiêu theo Category. 
 
 ### Mô tả
 
-Biểu đồ cột so sánh Total Spending giữa các tuần trong một tháng. Mỗi cột đại diện một tuần, mỗi cột một màu riêng biệt (khác bảng màu của CMP-017).
+Biểu đồ cột (Bar Chart) so sánh Total Spending giữa các tuần trong một tháng. Mỗi cột đại diện một tuần, mỗi cột một màu riêng biệt (khác bảng màu của CMP-017).
 
 ### Sử dụng tại
 
