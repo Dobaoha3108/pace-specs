@@ -3,7 +3,7 @@ import { formatVnd } from "@/lib/finance/amount";
 import type { ReportCategorySummary } from "@/features/report/lib/report-service";
 
 type CategoryPieChartProps = {
-  summaries: ReportCategorySummary[];
+  summaries: ReportCategorySummary[]; 
   totalSpending: number;
 };
 
