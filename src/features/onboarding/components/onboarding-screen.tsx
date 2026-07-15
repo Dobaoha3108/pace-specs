@@ -360,14 +360,14 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
         </p>
       </div>
 
-      <div className="relative mt-5 min-h-[430px] flex-1 w-full">
+      <div className="relative mt-5 min-h-[460px] flex-1 w-full">
         <Image
           alt="Pig Pig onboarding"
-          className="object-cover object-bottom"
+          className="object-cover object-bottom scale-110"
           fill
           priority
           sizes="390px"
-          src="/assets/illustrations/onboarding_hero.png"
+          src="/assets/illustrations/onboarding_hero2.png"
         />
 
         <div className="absolute inset-x-5 bottom-5 z-20">
