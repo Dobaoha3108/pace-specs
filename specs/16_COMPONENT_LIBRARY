@@ -1,6 +1,6 @@
 # 06. UI COMPONENT LIBRARY
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -1048,6 +1048,7 @@ Hiển thị Insight tài chính mới nhất do Pig Pig tạo ra.
 ## Used By
 
 - Dashboard
+- Financial Report
 
 ---
 
@@ -1087,9 +1088,11 @@ Open Pig Pig Chat
 
 ## Display Rules
 
-Dashboard chỉ hiển thị Insight mới nhất.
+Dashboard chỉ hiển thị Insight mới nhất, tính theo dữ liệu ngày hiện tại.
 
-Không hiển thị lịch sử Insight.
+Financial Report chỉ hiển thị Insight mới nhất, tính theo Time Filter (Weekly/Monthly) và Category Filter đang chọn — độc lập với Insight trên Dashboard (xem `feature-specs/25_REPORT.md`).
+
+Không hiển thị lịch sử Insight ở cả hai màn hình.
 
 ---
 
@@ -1535,6 +1538,17 @@ Reward Marketplace
 
 ---
 
+Financial Report
+
+- CMP-001 App Header
+- CMP-002 Bottom Navigation
+- CMP-008 Statistic Card
+- CMP-010 Pig Pig Insight Banner
+- CMP-017 Category Pie Chart (Donut Chart)
+- CMP-018 Weekly Comparison Bar Chart
+
+---
+
 Pig Pig Chat
 
 - CMP-001 App Header
@@ -1626,6 +1640,25 @@ Use Components
 - CMP-001
 - CMP-002
 - CMP-009
+
+---
+
+Financial Report
+
+↓
+
+Use Components
+
+- CMP-001
+- CMP-002
+- CMP-003
+- CMP-004
+- CMP-008
+- CMP-010
+- CMP-013
+- CMP-014
+- CMP-017
+- CMP-018
 
 ---
 
