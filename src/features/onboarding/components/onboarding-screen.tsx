@@ -340,22 +340,44 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
 
 function WelcomeStep({ onStart }: { onStart: () => void }) {
   return (
-    <div className="flex min-h-full flex-col items-center text-center">
-      <Image alt="PACE" height={56} src="/assets/logos/wordmark.png" width={172} />
-      <Image
-        alt="Pig Pig planning"
-        className="my-xl"
-        height={220}
-        priority
-        src="/assets/pig-pig/pig_planning.png"
-        width={220}
-      />
-      <h1 className="text-h1">Welcome to PACE</h1>
-      <p className="mt-md text-body text-pace-text-secondary">
-        Quản lý dễ dàng - Vững vàng chi tiêu cùng Pig Pig mỗi ngày.
-      </p>
-      <div className="mt-auto w-full pt-xl">
-        <Button onClick={onStart}>Bắt đầu</Button>
+    <div className="relative flex min-h-full flex-col overflow-hidden bg-pace-surface">
+      <div className="z-10 flex flex-col items-center px-lg pt-8 text-center">
+        <Image
+          alt="PACE"
+          className="h-auto w-[172px]"
+          height={56}
+          priority
+          src="/assets/logos/wordmark.png"
+          width={172}
+        />
+
+        <h1 className="mt-8 text-[30px] font-extrabold leading-tight text-pace-text-primary">
+          Welcome to PACE
+        </h1>
+
+        <p className="mt-3 max-w-[350px] text-[17px] leading-7 text-pace-text-secondary">
+          Quản lý dễ dàng - Vững vàng chi tiêu cùng Pig Pig mỗi ngày.
+        </p>
+      </div>
+
+      <div className="relative mt-5 min-h-[430px] flex-1 w-full">
+        <Image
+          alt="Pig Pig onboarding"
+          className="object-cover object-bottom"
+          fill
+          priority
+          sizes="390px"
+          src="/assets/illustrations/onboarding_hero.png"
+        />
+
+        <div className="absolute inset-x-5 bottom-5 z-20">
+          <Button
+            className="h-14 w-full rounded-[22px] border-0 bg-[#2966E3] font-bold text-white hover:bg-[#2966E3]"
+            onClick={onStart}
+          >
+            Bắt đầu
+          </Button>
+        </div>
       </div>
     </div>
   );
