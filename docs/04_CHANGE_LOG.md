@@ -1,5 +1,39 @@
 # Change Log
  
+## 2026-07-16 (2) — Report Screen: gộp Spending Overview vào Weekly/Monthly Summary + thêm Pig Pig Insight
+
+### Nguồn gốc
+
+Requirement mới từ Dương, theo quy trình chính thức tại `docs/00_TECH_RULES.md`: viết spec chính xác, merge thẳng vào spec chính thức, cập nhật Change Log, sau đó sửa code — không dừng lại chờ duyệt trước khi gửi.
+
+### Lý do
+
+Dương gửi ảnh tham khảo thiết kế (Total Budget/Total Spending/Remaining Budget/Budget Usage hiện đang nằm thành khối riêng ở đầu màn hình Report). Yêu cầu: bỏ khối này ở đầu màn hình, gộp bốn số liệu đó vào Section "Weekly/Monthly Summary" ở cuối màn hình; đồng thời thêm một Section mới "Pig Pig Insight" ở cuối cùng màn hình, hiển thị nhận định data-driven (không phải data-informed) về chi tiêu trong kỳ, kèm Button "Chat với Pig Pig" để mở Pig Pig Chat.
+
+### Spec thay đổi
+
+- `feature-specs/25_REPORT.md` — Version 1.3 → 1.4:
+  - Bỏ Section "Spending Overview" đứng riêng đầu màn hình (cũ: Section 1). Bốn số liệu Total Budget, Total Spending, Remaining Budget, Budget Usage Percentage chuyển vào Section "Weekly/Monthly Summary" (đổi tên từ "Summary").
+  - Đổi thứ tự Section: Category Analysis (Section 1) → Weekly Spending Comparison (Section 2, chỉ Monthly) → Transaction History Preview (Section 3) → Weekly/Monthly Summary (Section 4) → Pig Pig Insight (Section 5, mới).
+  - Thêm quy tắc tính Pig Pig Insight: Rule-based (không AI/LLM), dựa trên hai chỉ số derived data — Overspend Day (ngày chi vượt mức bình quân Total Budget/số ngày trong kỳ) và Dominant Category (Category có % chi tiêu > 50% tổng chi tiêu trong kỳ). Bốn nhánh nội dung Insight theo cấu trúc Báo cáo + Khuyên ngắn gọn tuỳ tổ hợp hai chỉ số trên.
+  - Cập nhật Section 3 (Business Responsibility), Section 6 (Used Components — thêm CMP-010 Pig Pig Insight Banner), Section 9 (User Flow — thêm Chat with Pig Pig Flow), Section 10 (Screen Content), Section 11 (User Actions), Section 12 (System Response), Section 13 (Navigation), Section 14 (Display Rules), Section 16 (Screen States), Section 18 (Related Specification), Section 19 (Acceptance Criteria — sửa AC-002, AC-003, AC-007, AC-008, AC-013, AC-014; thêm AC-018), Section 20/21 (Open Questions/Future Enhancements).
+  - AC-013 (trước đây liệt kê Pig Pig Insight vào danh sách "không hiển thị") được sửa: Financial Report nay CÓ hiển thị Pig Pig Insight, chỉ không tự xử lý hội thoại Chat trên màn hình Report.
+- `specs/17_UI_LAYOUT.md` — Version 1.1 → 1.2. Section 9 "Financial Report Layout": bỏ mục "Spending Overview" riêng trong Scrollable Content list và subsection; đổi thứ tự Scrollable Content thành Filter → Category Analysis → Weekly Spending Comparison → Expense History Preview → Financial Summary → Pig Pig Insight; mục "Financial Summary" nay liệt kê rõ 4 ô thông số; tách "Pig Pig Insight" thành subsection riêng có Button "Chat với Pig Pig".
+
+### Code thay đổi
+
+Chưa thực hiện — mục này chỉ cập nhật spec/doc theo yêu cầu của Dương. Khi triển khai code, cần:
+
+- `src/features/report/lib/report-service.ts` — thêm hàm tính `overspendDays` và `dominantCategory` (derived data, runtime) theo Time Filter + Category Filter hiện tại; thêm hàm build nội dung Insight theo 4 nhánh mô tả trong `feature-specs/25_REPORT.md` Section 8 (Section 5 — Pig Pig Insight).
+- `src/features/report/components/report-screen.tsx` — đổi thứ tự render section theo layout mới; bỏ block `SpendingOverview` riêng, gộp 4 số liệu vào component Summary; thêm component `PigPigInsightBanner` (tái dùng component đã có ở Dashboard, `src/components/finance/pig-pig-insight-banner.tsx` nếu đã tồn tại) với prop điều hướng sang Pig Pig Chat.
+- `src/features/report/types.ts` — thêm field `insight` (object gồm message, kèm cờ `hasOverspendDay`, `dominantCategoryId` nếu cần debug) vào `ReportViewModel`.
+
+### Không thay đổi
+
+- `specs/11_DATA_MODEL.md` — không thêm field lưu trữ mới; Pig Pig Insight là derived data, tính runtime, cùng nguyên tắc RPT-001 đã áp dụng cho Financial Report.
+- Không đổi Category Analysis (Donut Chart) và Weekly Spending Comparison (Bar Chart) — giữ nguyên thiết kế đã merge ở Change Log ngày 2026-07-16.
+- Không thêm route hoặc Bottom Navigation item mới — Pig Pig Chat vẫn mở qua route hiện có, giống cách Dashboard đang điều hướng.
+
 ## 2026-07-13 — Budget Overview Card Redesign + Daily Budget Overspend Confirmation
 
 ### Nguồn gốc
