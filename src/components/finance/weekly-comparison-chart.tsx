@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/card"; 
 import { formatVnd } from "@/lib/finance/amount";
 import type { ReportWeeklyBreakdown } from "@/features/report/lib/report-service";
 
