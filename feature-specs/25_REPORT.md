@@ -1,6 +1,6 @@
 # 12. REPORT
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP)
 
 Project: PACE - Personal Finance Management App
 
