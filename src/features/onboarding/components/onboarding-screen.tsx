@@ -340,7 +340,7 @@ export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
 
 function WelcomeStep({ onStart }: { onStart: () => void }) {
   return (
-    <div className="relative flex min-h-full flex-col overflow-hidden bg-pace-surface">
+    <div className="relative flex min-h-full flex-col overflow-hidden bg-pace-background">
       <div className="z-10 flex flex-col items-center px-lg pt-8 text-center">
         <Image
           alt="PACE"
