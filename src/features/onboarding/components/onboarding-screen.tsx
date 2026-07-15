@@ -367,7 +367,7 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
           fill
           priority
           sizes="390px"
-          src="/assets/illustrations/onboarding_hero2.png"
+          src="/assets/illustrations/Onboarding_hero2.png"
         />
 
         <div className="absolute inset-x-5 bottom-5 z-20">
