@@ -360,25 +360,25 @@ function WelcomeStep({ onStart }: { onStart: () => void }) {
         </p>
       </div>
 
-   <div className="relative mt-5 min-h-[460px] flex-1 -mx-lg -mb-lg w-[calc(100%+48px)] overflow-hidden">
-        <Image
-          alt="Pig Pig onboarding"
-          className="object-cover object-bottom scale-110"
-          fill
-          priority
-          sizes="390px"
-          src="/assets/illustrations/Onboarding_hero2.png"
-        />
+  <div className="relative mt-5 aspect-[3/4] w-[calc(100%+40px)] -mx-5 -mb-5 overflow-hidden">
+  <Image
+    alt="Pig Pig onboarding"
+    className="object-cover object-center"
+    fill
+    priority
+    sizes="390px"
+    src="/assets/illustrations/Onboarding_hero2.png"
+  />
 
-        <div className="absolute inset-x-5 bottom-5 z-20">
-          <Button
-            className="h-14 w-full rounded-[22px] border-0 bg-[#2966E3] font-bold text-white hover:bg-[#2966E3]"
-            onClick={onStart}
-          >
-            Bắt đầu
-          </Button>
-        </div>
-      </div>
+  <div className="absolute inset-x-6 bottom-6 z-20">
+    <Button
+      className="h-14 w-full rounded-[22px] border-0 bg-[#2966E3] font-bold text-white hover:bg-[#2966E3]"
+      onClick={onStart}
+    >
+      Bắt đầu
+    </Button>
+  </div>
+</div>
     </div>
   );
 }
