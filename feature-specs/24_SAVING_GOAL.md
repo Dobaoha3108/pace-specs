@@ -1,6 +1,6 @@
 # 11. SAVING GOAL
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -972,6 +972,26 @@ Vui lòng kiểm tra lại thông tin."
 ↓
 
 Không lưu dữ liệu.
+
+---
+
+### Trường hợp riêng: vượt giới hạn Active Saving Goal (Free User)
+
+Nếu Validation Error đang hiển thị là do vượt giới hạn Active Saving Goal của Free User (SVG-001, xem `specs/12_BUSINESS_RULES.md`) và User vẫn nhấn Save.
+
+↓
+
+Hiển thị Dialog với nội dung riêng (thay cho nội dung mặc định ở trên):
+
+"Bạn đã vượt quá số lượng Active Saving Goal.
+
+Nâng cấp lên gói VIP để lập thêm hũ tiết kiệm."
+
+↓
+
+Không lưu dữ liệu.
+
+Các Validation Error khác (Goal Name trống, Target Amount không hợp lệ, Target Date không hợp lệ...) vẫn hiển thị đúng Dialog mặc định ở trên — không đổi.
 
 ---
 
