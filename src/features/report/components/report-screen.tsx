@@ -8,6 +8,7 @@ import { MobileFrame } from "@/components/app/mobile-frame";
 import { StatisticCard } from "@/components/finance/statistic-card";
 import { CategoryPieChart } from "@/components/finance/category-pie-chart";
 import { WeeklyComparisonChart } from "@/components/finance/weekly-comparison-chart";
+import { PigPigInsightBanner } from "@/components/ai/pig-pig-insight-banner";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatVnd } from "@/lib/finance/amount";
@@ -68,31 +69,6 @@ export function ReportScreen({ onBack, onNavigate }: ReportScreenProps) {
               period={period}
             />
 
-            <section className="grid grid-cols-2 gap-md">
-              <StatisticCard
-                comparison={period === "week" ? "This Week" : "This Month"}
-                icon={<BarChart3 aria-hidden className="size-5 text-pace-primary" />}
-                title="Total Budget"
-                value={formatVnd(viewModel.totalBudget)}
-              />
-              <StatisticCard
-                comparison={`${viewModel.budgetUsage}% used`}
-                title="Total Spending"
-                trend={viewModel.budgetUsage > 100 ? "down" : "flat"}
-                value={formatVnd(viewModel.totalSpending)}
-              />
-              <StatisticCard
-                title="Remaining Budget"
-                value={formatVnd(viewModel.remainingBudget)}
-              />
-              <StatisticCard
-                comparison={period === "week" ? "Weekly Usage" : "Monthly Usage"}
-                title="Budget Usage"
-                trend={viewModel.budgetUsage > 100 ? "down" : "flat"}
-                value={`${viewModel.budgetUsage}%`}
-              />
-            </section>
-
             {viewModel.categorySummaries.length === 0 ? (
               <section className="space-y-md">
                 <h2 className="text-subtitle">Category Analysis</h2>
@@ -121,18 +97,47 @@ export function ReportScreen({ onBack, onNavigate }: ReportScreenProps) {
               onViewAll={() => onNavigate("expense-history")}
             />
 
-            <Card>
-              <p className="text-caption text-pace-text-secondary">
+            <section className="space-y-md">
+              <h2 className="text-subtitle">
                 {period === "week" ? "Weekly Summary" : "Monthly Summary"}
-              </p>
-              <h2 className="mt-xs text-title">
-                {formatVnd(viewModel.totalSpending)}
               </h2>
-              <p className="mt-xs text-body text-pace-text-secondary">
-                {viewModel.budgetUsage}% of{" "}
-                {period === "week" ? "weekly" : "monthly"} budget used.
-              </p>
-            </Card>
+              <div className="grid grid-cols-2 gap-md">
+                <StatisticCard
+                  comparison={period === "week" ? "This Week" : "This Month"}
+                  icon={<BarChart3 aria-hidden className="size-5 text-pace-primary" />}
+                  title="Total Budget"
+                  value={formatVnd(viewModel.totalBudget)}
+                />
+                <StatisticCard
+                  comparison={`${viewModel.budgetUsage}% used`}
+                  title="Total Spending"
+                  trend={viewModel.budgetUsage > 100 ? "down" : "flat"}
+                  value={formatVnd(viewModel.totalSpending)}
+                />
+                <StatisticCard
+                  title="Remaining Budget"
+                  value={formatVnd(viewModel.remainingBudget)}
+                />
+                <StatisticCard
+                  comparison={period === "week" ? "Weekly Usage" : "Monthly Usage"}
+                  title="Budget Usage"
+                  trend={viewModel.budgetUsage > 100 ? "down" : "flat"}
+                  value={`${viewModel.budgetUsage}%`}
+                />
+              </div>
+            </section>
+
+            {viewModel.insight ? (
+              <section className="space-y-md">
+                <h2 className="text-subtitle">Pig Pig Insight</h2>
+                <PigPigInsightBanner
+                  content={viewModel.insight.content}
+                  insightType={viewModel.insight.insightType}
+                  onChat={() => onNavigate("pig-pig")}
+                  title={viewModel.insight.title}
+                />
+              </section>
+            ) : null}
           </div>
         </div>
         <BottomNav activeItem="report" onNavigate={onNavigate} />
