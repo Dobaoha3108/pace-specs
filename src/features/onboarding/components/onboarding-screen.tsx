@@ -42,7 +42,16 @@ type SavingGoalErrors = {
 
 const invalidFieldsMessage =
   "Vui lòng kiểm tra lại các trường dữ liệu trước khi tiếp tục.";
+function formatCurrencyInput(value: string) {
+  const digits = value
+    .replace(/\D/g, "")
+    .replace(/^0+(?=\d)/, "");
 
+  return digits.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    ",",
+  );
+}
 export function OnboardingScreen({ onCompleted }: OnboardingScreenProps) {
   const [step, setStep] = useState<OnboardingStep>("welcome");
   const [budgetResetDay, setBudgetResetDay] = useState<number | null>(null);
