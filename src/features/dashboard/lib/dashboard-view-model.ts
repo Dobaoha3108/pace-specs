@@ -1,6 +1,5 @@
 import { getTodayBudgetBreakdown } from "@/features/finance/lib/finance-service";
 import {
-  getCycleLengthDays,
   getRemainingDaysInCycle,
 } from "@/lib/finance/amount";
 import { paceLocalDataSource } from "@/lib/storage/pace-storage";
@@ -108,10 +107,14 @@ export function loadDashboardViewModel(): DashboardViewModel | null {
     weeklyBudget > 0 ? Math.round((weeklySpending / weeklyBudget) * 100) : 0;
 
   const now = new Date();
-  // "Dự kiến hết trong XX ngày" (specs/17_UI_LAYOUT.md, DELTA-007): XX = tổng
-  // số ngày của chu kỳ Budget hiện tại, tính theo Budget Reset Day (không còn
-  // phụ thuộc tốc độ chi tiêu như công thức cũ).
-  const projectedDaysLeft = getCycleLengthDays(budget.budgetResetDay, now);
+  // "Dự kiến hết trong XX ngày" (specs/17_UI_LAYOUT.md, DELTA-009): XX = số
+  // ngày CÒN LẠI của chu kỳ Budget hiện tại, tính từ hôm nay tới trước lần
+  // Budget Reset Day kế tiếp. Trước đây (DELTA-007) dùng getCycleLengthDays,
+  // tức tổng độ dài cả chu kỳ (hằng số 28-31 ngày, không phụ thuộc ngày hôm
+  // nay) — gây ra lỗi luôn hiển thị cùng một số ngày bất kể Budget Reset Day
+  // là bao nhiêu. Dùng chung công thức với baseline "Số tiền được tiêu hôm
+  // nay" bên dưới.
+  const projectedDaysLeft = getRemainingDaysInCycle(budget.budgetResetDay, now);
 
   // Today's allowance is derived from the shared getTodayBudgetBreakdown
   // helper so the Dashboard display always matches the EXP-007 overspend
