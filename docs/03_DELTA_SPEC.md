@@ -474,3 +474,53 @@ Bản deploy hiện tại hiển thị toàn bộ 20 Suggested Questions/FAQ nga
 - Danh sách nội dung 20 Suggested Questions hiện có.
 - Logic tạo response và lưu Chat History.
 
+---
+
+## DELTA-009
+
+### Status
+
+Merged vào `specs/17_UI_LAYOUT.md` trong cùng lượt (xem `docs/04_CHANGE_LOG.md`). Theo quy trình đã thống nhất: requirement mới → viết spec chính xác → merge thẳng vào spec chính thức, không cần dừng lại chờ duyệt.
+
+### Title
+
+Dashboard: Sửa lỗi công thức "Dự kiến hết" — phải tính theo số ngày CÒN LẠI từ hôm nay tới Budget Reset Day kế tiếp, không phải tổng độ dài chu kỳ
+
+### Related Screen
+
+Dashboard
+
+### Context / Lý do thay đổi
+
+Dương phát hiện lỗi: dù chọn Budget Reset Day là ngày nào (hôm nay onboard là 16, hoặc set Budget Reset Day giả lập là số bất kỳ khác), ô "Dự kiến hết" luôn hiển thị cố định 31 ngày. Ví dụ: hôm nay là ngày 16, nếu Budget Reset Day = 16 thì 31 ngày là đúng (vì hôm nay trùng đúng đầu chu kỳ mới); nhưng nếu Budget Reset Day = 6 (đã qua 10 ngày kể từ đầu chu kỳ), "Dự kiến hết" phải còn khoảng 20 ngày (tới ngày 6 tháng sau) chứ không phải 31.
+
+Nguyên nhân: công thức hiện tại (theo DELTA-007) định nghĩa "Dự kiến hết" = **tổng số ngày của cả chu kỳ Budget** (từ Budget Reset Day bắt đầu chu kỳ tới Budget Reset Day kế tiếp) — con số này luôn cố định 28–31 ngày tuỳ tháng và **không phụ thuộc vào ngày hôm nay**, nên không phản ánh đúng ý nghĩa "còn bao nhiêu ngày nữa thì hết chu kỳ". Cách tính đúng phải là **số ngày còn lại tính từ hôm nay** tới Budget Reset Day kế tiếp — tức chính là công thức "Số ngày còn lại của chu kỳ" vốn đã có sẵn và đang được dùng cho baseline "Số tiền được tiêu hôm nay" (EXP-007), chỉ là "Dự kiến hết" đã bị trỏ nhầm sang công thức "Số ngày trong chu kỳ" (tổng độ dài) thay vì "Số ngày còn lại của chu kỳ".
+
+DELTA-009 sửa lại đúng ý nghĩa ban đầu của "Dự kiến hết": số ngày còn lại tính từ hôm nay.
+
+### Requirement đã Merge
+
+1. "Dự kiến hết trong XX ngày" = **Số ngày còn lại của chu kỳ** (Ngày Budget Reset Day kế tiếp − Ngày hôm nay), dùng đúng một công thức duy nhất cho cả "Dự kiến hết" và baseline "Số tiền được tiêu hôm nay" — không còn 2 khái niệm riêng "Số ngày trong chu kỳ" (tổng độ dài) vs "Số ngày còn lại của chu kỳ" (còn lại từ hôm nay) như DELTA-007 cũ.
+2. Giá trị "Dự kiến hết" thay đổi mỗi ngày (giảm dần khi tới gần Budget Reset Day kế tiếp), không còn là hằng số cố định trong suốt chu kỳ.
+3. Không đổi rule tính "Budget Reset Day" (áp dụng rule tháng thiếu ngày như cũ), không đổi baseline "Số tiền được tiêu hôm nay", không đổi ngưỡng EXP-007.
+
+### Acceptance Criteria
+
+- **AC-001:** Nếu Budget Reset Day trùng đúng ngày hôm nay (vừa mới bắt đầu chu kỳ mới), "Dự kiến hết" hiển thị đúng bằng tổng độ dài chu kỳ tháng đó (28–31 ngày tuỳ tháng).
+- **AC-002:** Nếu Budget Reset Day khác ngày hôm nay, "Dự kiến hết" hiển thị đúng số ngày còn lại từ hôm nay tới lần Budget Reset Day kế tiếp (nhỏ hơn tổng độ dài chu kỳ).
+- **AC-003:** "Dự kiến hết" giảm dần mỗi ngày trôi qua, và nhảy trở lại giá trị lớn nhất (bằng độ dài chu kỳ mới) ngay khi qua Budget Reset Day.
+- **AC-004:** Không thay đổi cách tính "Số tiền được tiêu hôm nay", "Số tiền còn lại hôm nay" và ngưỡng cảnh báo EXP-007.
+
+### Impact — Code đã sửa
+
+- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` đổi từ `getCycleLengthDays(budget.budgetResetDay, now)` sang `getRemainingDaysInCycle(budget.budgetResetDay, now)` (hàm này đã tồn tại sẵn, đang dùng cho `weeklyBudget`/baseline — không cần viết hàm mới).
+- `src/lib/finance/amount.ts` — không cần sửa hàm (`getRemainingDaysInCycle` và `getCycleLengthDays` đều giữ nguyên định nghĩa); `getCycleLengthDays` không còn được Dashboard dùng nữa nhưng vẫn giữ lại trong file vì có thể tái sử dụng cho mục đích khác sau này (không xoá để tránh phá vỡ import khác nếu có).
+- `src/components/finance/budget-summary-card.tsx` — không cần sửa (chỉ nhận `projectedDaysLeftLabel` đã tính sẵn từ view model).
+
+### Không thay đổi
+
+- `specs/12_BUSINESS_RULES.md`.
+- `specs/11_DATA_MODEL.md`.
+- Rule tháng thiếu ngày (`resolveBudgetResetDayForMonth`).
+- Baseline "Số tiền được tiêu hôm nay" và ngưỡng EXP-007.
+- Budget Streak Flame/Reward (không liên quan tới DELTA-009).
