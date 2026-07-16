@@ -4,7 +4,13 @@ import {
   getCurrentUser,
   listUserExpenses,
 } from "@/features/finance/lib/finance-service";
-import type { Budget, Expense, ExpenseCategory, User } from "@/types/finance";
+import type {
+  Budget,
+  Expense,
+  ExpenseCategory,
+  PigPigInsightType,
+  User,
+} from "@/types/finance";
 
 export type ReportPeriod = "week" | "month";
 
@@ -21,6 +27,17 @@ export type ReportWeeklyBreakdown = {
   color: string;
 };
 
+// Pig Pig Insight của Report là derived data, tính runtime (rule-based, không AI/LLM),
+// khác với PigPigInsight lưu trữ dùng cho Dashboard — xem feature-specs/25_REPORT.md Section 8.
+export type ReportInsight = {
+  title: string;
+  content: string;
+  insightType: PigPigInsightType;
+  hasOverspendDay: boolean;
+  overspendDayCount: number;
+  dominantCategoryId?: string;
+};
+
 export type ReportViewModel = {
   user: User;
   budget: Budget;
@@ -33,6 +50,7 @@ export type ReportViewModel = {
   categorySummaries: ReportCategorySummary[];
   recentExpenses: Expense[];
   weeklyBreakdown: ReportWeeklyBreakdown[];
+  insight?: ReportInsight;
 };
 
 // Bảng màu cố định cho Category Analysis (Pie Chart).
@@ -82,6 +100,12 @@ export function loadReportViewModel(
   const remainingBudget = Math.max(0, totalBudget - totalSpending);
   const budgetUsage =
     totalBudget > 0 ? Math.min(999, Math.round((totalSpending / totalBudget) * 100)) : 0;
+  const categorySummaries = buildCategorySummaries(
+    categories,
+    expenses,
+    totalSpending,
+    categoryColorMap,
+  );
   return {
     user,
     budget,
@@ -91,16 +115,22 @@ export function loadReportViewModel(
     totalSpending,
     remainingBudget,
     budgetUsage,
-    categorySummaries: buildCategorySummaries(
-      categories,
-      expenses,
-      totalSpending,
-      categoryColorMap,
-    ),
+    categorySummaries,
     recentExpenses: [...expenses]
       .sort((a, b) => getExpenseDisplayTime(b) - getExpenseDisplayTime(a))
       .slice(0, 3),
     weeklyBreakdown: buildWeeklyBreakdown(period, expenses, range.start, range.end),
+    insight:
+      expenses.length === 0
+        ? undefined
+        : buildReportInsight({
+            categoryId,
+            categorySummaries,
+            expenses,
+            period,
+            range,
+            totalBudget,
+          }),
   };
 }
 
@@ -167,6 +197,109 @@ function buildWeeklyBreakdown(
     totalSpending,
     color: WEEK_COLOR_PALETTE[index % WEEK_COLOR_PALETTE.length],
   }));
+}
+
+// Số ngày trong kỳ đang chọn, dùng để tính mức chi tiêu bình quân cho phép mỗi ngày.
+function getDaysInPeriod(period: ReportPeriod, start: Date, end: Date) {
+  if (period === "week") {
+    return 7;
+  }
+  return end.getDate();
+}
+
+// Overspend Day: một ngày được tính là Overspend Day nếu tổng Expense phát sinh
+// trong ngày đó vượt quá mức chi tiêu bình quân cho phép mỗi ngày
+// (Total Budget của kỳ ÷ số ngày trong kỳ) — feature-specs/25_REPORT.md Section 8.
+function countOverspendDays(
+  expenses: Expense[],
+  averagePerDay: number,
+): number {
+  if (averagePerDay <= 0) {
+    return 0;
+  }
+  const totalsByDay = new Map<string, number>();
+  expenses.forEach((expense) => {
+    const dateKey = new Date(expense.completedDate ?? expense.plannedDate)
+      .toISOString()
+      .slice(0, 10);
+    totalsByDay.set(dateKey, (totalsByDay.get(dateKey) ?? 0) + expense.amount);
+  });
+  let overspendDays = 0;
+  totalsByDay.forEach((dayTotal) => {
+    if (dayTotal > averagePerDay) {
+      overspendDays += 1;
+    }
+  });
+  return overspendDays;
+}
+
+// Dominant Category: Category có Spending Percentage cao nhất trong kỳ,
+// được coi là "chi tiêu lố" nếu Spending Percentage > 50% tổng chi tiêu.
+// Không áp dụng khi đang lọc theo một Category cụ thể (đã chỉ còn 1 Category).
+function findDominantCategory(
+  categorySummaries: ReportCategorySummary[],
+  categoryId: string,
+) {
+  if (categoryId !== "All") {
+    return undefined;
+  }
+  const [top] = categorySummaries;
+  if (top && top.percentage > 50) {
+    return top;
+  }
+  return undefined;
+}
+
+function buildReportInsight({
+  categoryId,
+  categorySummaries,
+  expenses,
+  period,
+  range,
+  totalBudget,
+}: {
+  categoryId: string;
+  categorySummaries: ReportCategorySummary[];
+  expenses: Expense[];
+  period: ReportPeriod;
+  range: { start: Date; end: Date };
+  totalBudget: number;
+}): ReportInsight {
+  const daysInPeriod = getDaysInPeriod(period, range.start, range.end);
+  const averagePerDay = daysInPeriod > 0 ? totalBudget / daysInPeriod : 0;
+  const overspendDayCount = countOverspendDays(expenses, averagePerDay);
+  const hasOverspendDay = overspendDayCount > 0;
+  const dominantCategory = findDominantCategory(categorySummaries, categoryId);
+
+  const periodLabelUpper = period === "week" ? "Tuần" : "Tháng";
+  const periodLabelLower = period === "week" ? "tuần" : "tháng";
+  const title = period === "week" ? "Weekly Insight" : "Monthly Insight";
+
+  let content: string;
+  let insightType: PigPigInsightType;
+
+  if (hasOverspendDay && dominantCategory) {
+    content = `${periodLabelUpper} vừa rồi bạn đã chi tiêu lố ngân sách ${overspendDayCount} hôm và chi ${dominantCategory.percentage}% cho ${dominantCategory.category.name}, hãy cố gắng chi tiêu hợp lý hơn trong ${periodLabelLower} tới bạn nhé!`;
+    insightType = "Warning";
+  } else if (hasOverspendDay) {
+    content = `${periodLabelUpper} vừa rồi bạn đã chi tiêu lố ngân sách ${overspendDayCount} hôm, hãy cố gắng cân đối chi tiêu hơn trong ${periodLabelLower} tới bạn nhé!`;
+    insightType = "Warning";
+  } else if (dominantCategory) {
+    content = `${periodLabelUpper} vừa rồi bạn đã chi ${dominantCategory.percentage}% cho ${dominantCategory.category.name}, hãy thử cân đối chi tiêu sang các khoản khác trong ${periodLabelLower} tới bạn nhé!`;
+    insightType = "Recommendation";
+  } else {
+    content = `${periodLabelUpper} vừa rồi bạn đã chi tiêu khá hợp lý, tiếp tục duy trì phong độ này nhé!`;
+    insightType = "Achievement";
+  }
+
+  return {
+    content,
+    dominantCategoryId: dominantCategory?.category.id,
+    hasOverspendDay,
+    insightType,
+    overspendDayCount,
+    title,
+  };
 }
 
 function getReportRange(period: ReportPeriod) {
