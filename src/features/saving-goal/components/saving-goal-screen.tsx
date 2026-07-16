@@ -458,10 +458,12 @@ function GoalForm({
   }));
   const [errors, setErrors] = useState<GoalFormErrors>({});
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [dialogTitle, setDialogTitle] = useState<string>("Không thể lưu Saving Goal");
 
   function validate() {
     const nextErrors: GoalFormErrors = {};
     const targetAmount = parseCurrencyInput(form.targetAmount);
+    let isGoalLimitExceeded = false;
 
     if (!form.name.trim()) {
       nextErrors.name = "Vui lòng nhập Goal Name.";
@@ -483,15 +485,23 @@ function GoalForm({
       ).length >= 2
     ) {
       nextErrors.name = "Free User chỉ được có tối đa hai Saving Goal Active.";
+      isGoalLimitExceeded = true;
     }
 
     setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+    return { valid: Object.keys(nextErrors).length === 0, isGoalLimitExceeded };
   }
 
   function submit() {
-    if (!validate()) {
-      setDialogMessage("Không thể lưu Saving Goal. Vui lòng kiểm tra lại thông tin.");
+    const { valid, isGoalLimitExceeded } = validate();
+    if (!valid) {
+      if (isGoalLimitExceeded) {
+        setDialogTitle("Bạn đã vượt quá số lượng Active Saving Goal");
+        setDialogMessage("Nâng cấp lên gói VIP để lập thêm hũ tiết kiệm.");
+      } else {
+        setDialogTitle("Không thể lưu Saving Goal");
+        setDialogMessage("Vui lòng kiểm tra lại thông tin.");
+      }
       return;
     }
 
@@ -576,7 +586,7 @@ function GoalForm({
         message={dialogMessage}
         onCancel={() => setDialogMessage(null)}
         onConfirm={() => setDialogMessage(null)}
-        title="Không thể lưu Saving Goal"
+        title={dialogTitle}
       />
     </div>
   );
