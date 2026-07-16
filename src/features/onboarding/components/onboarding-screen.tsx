@@ -438,7 +438,7 @@ function FinancialSetupStep({
           label="Monthly Income"
           leftAddon="VND"
           onChange={(event) =>
-            onChange({ ...inputs, monthlyIncome: event.target.value })
+            onChange({ ...inputs, monthlyIncome: formatCurrencyInput(event.target.value) })
           }
           placeholder="5000000"
           value={inputs.monthlyIncome}
@@ -449,7 +449,7 @@ function FinancialSetupStep({
           label="Fixed Cost"
           leftAddon="VND"
           onChange={(event) =>
-            onChange({ ...inputs, fixedExpenses: event.target.value })
+            onChange({ ...inputs, fixedExpenses: formatCurrencyInput(event.target.value) })
           }
           placeholder="1500000"
           value={inputs.fixedExpenses}
@@ -549,17 +549,20 @@ function SavingGoalStep({
           placeholder="New laptop fund"
           value={inputs.name}
         />
-        <Input
-          error={errors.targetAmount}
-          inputMode="numeric"
-          label="Target Amount"
-          leftAddon="VND"
-          onChange={(event) =>
-            onChange({ ...inputs, targetAmount: event.target.value })
-          }
-          placeholder="10000000"
-          value={inputs.targetAmount}
-        />
+       <Input
+  error={errors.targetAmount}
+  inputMode="numeric"
+  label="Target Amount"
+  leftAddon="VND"
+  onChange={(event) =>
+    onChange({
+      ...inputs,
+      targetAmount: formatCurrencyInput(event.target.value),
+    })
+  }
+  placeholder="10,000,000"
+  value={inputs.targetAmount}
+/>
         <Input
           error={errors.targetDate}
           label="Target Date"
