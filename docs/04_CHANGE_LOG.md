@@ -1,5 +1,30 @@
 # Change Log
  
+## 2026-07-16 (3) — Dashboard: Sửa lỗi công thức "Dự kiến hết" luôn cố định XX ngày, không theo Budget Reset Day thực tế
+
+### Nguồn gốc
+
+Dương phát hiện: dù chọn Budget Reset Day là ngày nào, ô "Dự kiến hết" trên Dashboard luôn hiển thị cố định 31 ngày — kể cả khi Budget Reset Day khác xa ngày hiện tại (ví dụ hôm nay 16, Budget Reset Day = 6 → đáng lẽ phải còn khoảng 20 ngày, không phải 31).
+
+### Lý do
+
+Xem chi tiết root cause và requirement đầy đủ tại `docs/03_DELTA_SPEC.md` → DELTA-009. Tóm tắt: công thức cũ (DELTA-007) tính "Dự kiến hết" = tổng độ dài cả chu kỳ Budget (hằng số 28–31 ngày, không phụ thuộc ngày hôm nay) thay vì số ngày còn lại tính từ hôm nay tới Budget Reset Day kế tiếp.
+
+### Spec thay đổi
+
+- `specs/17_UI_LAYOUT.md` — Version 1.2 → 1.3. Mục "Budget Overview Card": đổi công thức Ô 2 "Dự kiến hết" từ "Số ngày trong chu kỳ" (tổng độ dài chu kỳ, hằng số) sang dùng chung công thức "Số ngày còn lại của chu kỳ" (tính từ hôm nay tới Budget Reset Day kế tiếp) — cùng công thức đang dùng cho baseline "Số tiền được tiêu hôm nay". Bỏ khái niệm "Số ngày trong chu kỳ" khỏi công thức hiển thị Dashboard.
+- `docs/03_DELTA_SPEC.md` — thêm DELTA-009 ghi lại đầy đủ root cause, requirement và Acceptance Criteria.
+
+### Code thay đổi
+
+- `src/features/dashboard/lib/dashboard-view-model.ts` — `projectedDaysLeft` đổi từ `getCycleLengthDays(budget.budgetResetDay, now)` sang `getRemainingDaysInCycle(budget.budgetResetDay, now)`.
+
+### Không thay đổi
+
+- `src/lib/finance/amount.ts` — không sửa hàm, chỉ đổi hàm nào được gọi ở Dashboard. `getCycleLengthDays` vẫn giữ trong file (không dùng ở Dashboard nữa) để tránh phá vỡ chỗ khác nếu có import.
+- `src/components/finance/budget-summary-card.tsx`.
+- Baseline "Số tiền được tiêu hôm nay", ngưỡng cảnh báo EXP-007, rule tháng thiếu ngày.
+
 ## 2026-07-16 (2) — Report Screen: gộp Spending Overview vào Weekly/Monthly Summary + thêm Pig Pig Insight
 
 ### Nguồn gốc
