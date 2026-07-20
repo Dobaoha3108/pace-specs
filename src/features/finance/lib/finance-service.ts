@@ -253,7 +253,9 @@ export function checkDailyBudgetOverspend({
   newDailyAverage: number;
 } {
   const todayKey = getTodayKey(new Date());
-  const effectiveDateKey = new Date(effectiveDate).toISOString().slice(0, 10);
+const effectiveDateKey = getLocalDateKey(
+  new Date(effectiveDate),
+);
   const budget = getCurrentBudget(userId);
 
   if (!budget || effectiveDateKey !== todayKey) {
