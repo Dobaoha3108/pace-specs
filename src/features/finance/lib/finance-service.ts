@@ -12,6 +12,12 @@ import type {
   User,
 } from "@/types/finance";
 
+/**
+ * Fallback Budget Reset Day (1st of month) used to self-heal Budget records
+ * created before this field existed. See getCurrentBudget().
+ */
+const DEFAULT_BUDGET_RESET_DAY = 1;
+
 const defaultCategoryNames: ExpenseCategoryName[] = [
   "Food",
   "Transportation",
@@ -31,10 +37,33 @@ export function getCurrentUser(): User | undefined {
 }
 
 export function getCurrentBudget(userId: string): Budget | undefined {
-  return paceLocalDataSource
+  const budget = paceLocalDataSource
     .budgets
     .list()
     .find((budget) => budget.userId === userId);
+
+  if (!budget) {
+    return undefined;
+  }
+
+  // Self-heal Budget records saved before Budget Reset Day existed. Without
+  // this, budget.budgetResetDay is undefined, which cascades into NaN
+  // through getRemainingDaysInCycle -> breaks the EXP-007 overspend check
+  // (NaN comparisons are always false, so the warning never fires) and the
+  // Dashboard "Hôm nay nên tiêu" figures (NaN never visibly decreases).
+  if (
+    typeof budget.budgetResetDay !== "number" ||
+    !Number.isFinite(budget.budgetResetDay)
+  ) {
+    const healedBudget: Budget = {
+      ...budget,
+      budgetResetDay: DEFAULT_BUDGET_RESET_DAY,
+    };
+    paceLocalDataSource.budgets.upsert(healedBudget);
+    return healedBudget;
+  }
+
+  return budget;
 }
 
 export function ensureDefaultExpenseCategories(): ExpenseCategory[] {
