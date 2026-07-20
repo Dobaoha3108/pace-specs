@@ -1,6 +1,6 @@
 # 06. UI COMPONENT LIBRARY
 
-Version: 1.2 (MVP)
+Version: 1.3 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -245,6 +245,7 @@ Cho phép User:
 
 - Click Notification.
 - Click Profile.
+- Click Back Button (khi Header ở chế độ có Back Button, `showBackButton = true`).
 
 ---
 
@@ -263,6 +264,14 @@ Profile Button
 ↓
 
 Profile
+
+---
+
+Back Button
+
+↓
+
+Màn hình liền trước trong Navigation Stack của phiên hiện tại (xem NAV-012, `specs/15_SCREEN_MAP.md`) — không cố định về Dashboard.
 
 ---
 
@@ -291,6 +300,7 @@ Profile
 
 - NAV-005
 - NAV-006
+- NAV-012
 
 ---
 
