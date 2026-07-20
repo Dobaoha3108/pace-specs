@@ -469,3 +469,31 @@ Bản hiện tại (Pie Chart đặc kín, Legend đặt cạnh biểu đồ, Am
 - `src/features/report/components/report-screen.tsx` — không đổi, vẫn render `<CategoryPieChart summaries={...} totalSpending={...} />` như cũ.
 - Không thêm badge so sánh "tăng/giảm X% so với kỳ trước" — mục này đã được ghi nhận từ trước là ngoài phạm vi MVP (`feature-specs/25_REPORT.md` Section 20 "Các nội dung sau chưa thuộc phạm vi MVP" → "So sánh với kỳ trước"), giữ nguyên định hướng đó, không tự ý bổ sung.
 - Không thêm dependency chart ngoài — vẫn dùng CSS `conic-gradient` thuần như cũ, không ảnh hưởng `pnpm install --frozen-lockfile` khi deploy.
+
+## 2026-07-14 (4) — Bug fix: Pop-up cảnh báo vượt ngân sách biến mất + "Hôm nay nên tiêu" không tự trừ
+
+### Nguyên nhân gốc (root cause) — đã xác minh, không phải đoán
+
+Đây là **lỗi thật, không phải bạn nhớ nhầm** — 2 tính năng vẫn còn nguyên trong code, không hề bị xoá. Nguyên nhân là do **thiếu migration dữ liệu** khi có thay đổi schema song song từ người cộng tác khác:
+
+1. Người cộng tác đã thêm tính năng "Budget Reset Day" (cho phép chọn ngày reset ngân sách hàng tháng), thêm field `budgetResetDay` **bắt buộc** vào type `Budget`, và thay `getRemainingDaysInMonth()` bằng `getRemainingDaysInCycle(budgetResetDay, ...)` ở khắp nơi tính toán ngân sách hôm nay.
+2. Field này chỉ được set khi User làm Onboarding **sau khi** code mới đã lên. Nhưng tài khoản bạn đang test đã tồn tại từ **trước đó** — object `Budget` đã lưu sẵn trong Local Storage trình duyệt của bạn (`pace:data-store:v1`) không có field `budgetResetDay`.
+3. App không có cơ chế migrate/backfill dữ liệu cũ (field `schemaVersion` có tồn tại nhưng chưa từng được dùng để chạy migration nào).
+4. Hậu quả: `budget.budgetResetDay` = `undefined` → `Math.min(undefined, ...)` = `NaN` → toàn bộ chuỗi tính toán ngày còn lại trong chu kỳ trả về `NaN`.
+5. `NaN` lan ra 2 nơi:
+   - Điều kiện cảnh báo `checkDailyBudgetOverspend`: so sánh với `NaN` **luôn luôn là `false`** trong JavaScript → pop-up không bao giờ hiện, bất kể chi tiêu bao nhiêu.
+   - `todayRemainingBudget`/`todayBudgetBaseline` = `NaN` → hiển thị "Hôm nay nên tiêu" bị đứng/sai (không phản ánh đúng chi tiêu mới) vì mọi phép tính tiếp theo trên `NaN` đều cho ra `NaN`.
+
+Đây là lỗi **kỹ thuật hệ quả từ việc 2 người cùng sửa song song** (không phải lỗi cố ý, không ai xoá code của ai) — người cộng tác thêm field mới hợp lệ nhưng thiếu bước xử lý cho dữ liệu cũ đã tồn tại sẵn trong trình duyệt của bạn.
+
+### Cách sửa
+
+Thêm cơ chế "tự chữa lành" (self-healing) ngay tại điểm đọc Budget duy nhất trong toàn app (`getCurrentBudget()`): nếu phát hiện Budget đã lưu thiếu `budgetResetDay` (hoặc không phải số hợp lệ), tự động gán giá trị mặc định (ngày 1 hàng tháng) và lưu lại — chỉ xảy ra 1 lần cho mỗi tài khoản bị ảnh hưởng, không cần bạn xoá dữ liệu hay làm lại Onboarding.
+
+### Code thay đổi
+
+- `src/features/finance/lib/finance-service.ts` — `getCurrentBudget()`: thêm kiểm tra + tự backfill `budgetResetDay` mặc định (=1) cho Budget cũ thiếu field này, ghi lại vào Local Storage.
+
+### Lưu ý cho lần sau (giảm rủi ro tái diễn)
+
+Khi có thay đổi schema (thêm field bắt buộc mới vào một type đã tồn tại), cần luôn tính đến dữ liệu **đã lưu sẵn** trong Local Storage của User thật — không chỉ dữ liệu tạo mới. Vì đây là 1 trong các rủi ro chính khi 2 người sửa `src/types/finance.ts` song song không đồng bộ trực tiếp với nhau.
