@@ -43,8 +43,25 @@ const routeTitles: Record<DashboardNavigationTarget, string> = {
   "expense-edit": "Edit Expense",
 };
 
+// Bottom Navigation tab-level routes (specs/15_SCREEN_MAP.md, NAV-012).
+// Navigating to one of these always starts a fresh navigation context: the
+// in-session Navigation Stack is cleared instead of accumulating history
+// across tabs.
+const TAB_ROUTES: ReadonlySet<DashboardNavigationTarget> = new Set([
+  "dashboard",
+  "report",
+  "add-expense",
+  "reward",
+  "pig-pig",
+]);
+
 export function AppEntry() {
   const [route, setRoute] = useState<AppRoute>("splash");
+  // Navigation Stack of the current session (specs/15_SCREEN_MAP.md,
+  // NAV-012): holds the screens the User drilled down from, so Back Button
+  // can return to the nearest previous screen instead of always jumping to
+  // Dashboard.
+  const [history, setHistory] = useState<DashboardNavigationTarget[]>([]);
   const [hasSplashError, setHasSplashError] = useState(false);
   const [selectedExpenseId, setSelectedExpenseId] = useState<string>();
   const [selectedGoalId, setSelectedGoalId] = useState<string>();
@@ -73,11 +90,33 @@ export function AppEntry() {
       setSelectedNotificationId(id);
     }
 
+    if (TAB_ROUTES.has(target)) {
+      // Switching Bottom Navigation tab: start a fresh navigation context.
+      setHistory([]);
+    } else if (route !== "splash" && route !== "onboarding" && route !== target) {
+      // Drilling into a sub-screen: remember where we came from.
+      setHistory((previousHistory) => [...previousHistory, route]);
+    }
+
     setRoute(target);
+  }
+
+  function goBack() {
+    setHistory((previousHistory) => {
+      if (previousHistory.length === 0) {
+        setRoute("dashboard");
+        return previousHistory;
+      }
+
+      const nextHistory = previousHistory.slice(0, -1);
+      setRoute(previousHistory[previousHistory.length - 1]);
+      return nextHistory;
+    });
   }
 
   function logoutToSplash() {
     setHasSplashError(false);
+    setHistory([]);
     setRoute("splash");
     window.setTimeout(() => {
       setRoute("onboarding");
@@ -131,7 +170,7 @@ export function AppEntry() {
   if (route === "report") {
     return (
       <ReportScreen
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
       />
     );
@@ -155,7 +194,7 @@ export function AppEntry() {
     return (
       <RewardScreen
         mode={rewardMode}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
         selectedRewardId={selectedRewardId}
         selectedVoucherId={selectedVoucherId}
@@ -167,7 +206,7 @@ export function AppEntry() {
     return (
       <PigPigScreen
         mode={route === "pig-pig-history" ? "history" : "chat"}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
       />
     );
@@ -177,7 +216,7 @@ export function AppEntry() {
     return (
       <NotificationScreen
         mode={route === "notification-detail" ? "detail" : "list"}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
         selectedNotificationId={selectedNotificationId}
       />
@@ -188,7 +227,7 @@ export function AppEntry() {
     return (
       <ProfileScreen
         mode={route === "profile-financial-settings" ? "financial-settings" : "overview"}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onLogout={logoutToSplash}
         onNavigate={navigate}
       />
@@ -213,7 +252,7 @@ export function AppEntry() {
     return (
       <ExpenseScreen
         mode={expenseMode}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
         selectedExpenseId={selectedExpenseId}
       />
@@ -241,7 +280,7 @@ export function AppEntry() {
     return (
       <SavingGoalScreen
         mode={savingGoalMode}
-        onBack={() => setRoute("dashboard")}
+        onBack={goBack}
         onNavigate={navigate}
         selectedGoalId={selectedGoalId}
       />
@@ -250,7 +289,7 @@ export function AppEntry() {
 
   return (
     <PlaceholderScreen
-      onBack={() => setRoute("dashboard")}
+      onBack={goBack}
       onNavigate={navigate}
       route={route}
     />
