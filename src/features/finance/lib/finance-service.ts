@@ -166,14 +166,22 @@ export function countCompletedExpensesCreatedThisWeek(userId: string) {
     }).length;
 }
 
+function getLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function getTodayKey(now: Date) {
-  return now.toISOString().slice(0, 10);
+  return getLocalDateKey(now);
 }
 
 function getExpenseDayKey(expense: Expense) {
-  return new Date(expense.completedDate ?? expense.plannedDate)
-    .toISOString()
-    .slice(0, 10);
+  return getLocalDateKey(
+    new Date(expense.completedDate ?? expense.plannedDate),
+  );
 }
 
 export function getTodaysExpenseTotal(
