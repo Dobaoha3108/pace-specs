@@ -1,6 +1,6 @@
 # 05. SCREEN MAP
 
-Version: 1.1 (MVP)
+Version: 1.2 (MVP)
 
 Project: PACE - Personal Finance Management App
 
@@ -1173,6 +1173,32 @@ Financial Report
 Pig Pig Insight Banner (trên Dashboard hoặc trên Financial Report) luôn mở Pig Pig Chat qua Button "Chat với Pig Pig".
 
 Không mở trực tiếp Conversation History.
+
+---
+
+## NAV-012
+
+Back Button (mũi tên "←" trên App Header, CMP-001) luôn điều hướng về **màn hình liền trước trong lịch sử điều hướng của phiên hiện tại** (Navigation Stack theo phiên, dựa trên đường đi thực tế User đã đi qua) — **không** phải luôn cố định quay về Dashboard.
+
+Nguyên tắc:
+
+- Mỗi khi User điều hướng "đi sâu vào" một màn hình con (ví dụ từ Profile mở Financial Settings, từ Saving Goal List mở Create Saving Goal), màn hình xuất phát được đẩy vào Navigation Stack.
+- Back Button lấy đúng màn hình ở đỉnh Navigation Stack để quay lại, sau đó gỡ màn hình đó khỏi Stack.
+- Nếu Navigation Stack rỗng (ví dụ User vừa mở một trong năm màn hình Bottom Navigation: Dashboard, Financial Report, Add Expense, Reward Marketplace, Pig Pig Chat), Back Button quay về Dashboard.
+- Chuyển tab qua Bottom Navigation (Dashboard/Report/Add Expense/Reward/Pig Pig) được coi là bắt đầu một ngữ cảnh điều hướng mới: làm rỗng lại Navigation Stack, không cộng dồn lịch sử giữa các tab.
+
+Ví dụ minh hoạ (không giới hạn):
+
+- Back trong Financial Settings → Profile (không phải Dashboard).
+- Back trong Notification Detail → Notification (không phải Dashboard).
+- Back trong Create Saving Goal → Saving Goal List (không phải Dashboard).
+- Back trong Saving Goal History → Saving Goal List (không phải Dashboard).
+- Back trong Transaction History (mở từ Financial Report) → Financial Report (không phải Dashboard).
+- Back trong My Voucher → Reward Marketplace (không phải Dashboard).
+- Back trong Expense Detail (mở từ Recent Expense trên Dashboard) → Dashboard.
+- Back trong Expense Detail (mở từ Transaction History trong Financial Report) → Transaction History.
+
+NAV-012 áp dụng cho toàn bộ Back Button trong App — không chỉ các ví dụ liệt kê ở trên. NAV-008 (điều hướng sau khi hoàn tất thao tác, ví dụ Save) và NAV-012 (Back Button) là hai rule độc lập, không thay thế nhau.
 
 ---
 
